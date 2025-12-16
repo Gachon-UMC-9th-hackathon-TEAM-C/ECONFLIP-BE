@@ -1,6 +1,5 @@
 package com.example.econflip.domain.user.entity;
 
-import com.example.econflip.domain.card.enums.TagType;
 import com.example.econflip.domain.user.enums.SocialType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -21,8 +20,7 @@ public class User {
     private SocialType socialType;
 
     @Column(name = "social_key", nullable = false)
-    @Builder.Default
-    private String socialId = "1234";
+    private String socialId;
 
     @Column(name = "image_url", length = 255, nullable = false)
     private String imageUrl;
@@ -44,7 +42,7 @@ public class User {
     private Boolean status = true;
 
     @Column(name = "goal", length = 255, nullable = false)
-    private String gaol;
+    private String goal;
 
     @Column(name = "daily_study", nullable = false)
     private Integer dailyStudy;
