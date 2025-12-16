@@ -19,10 +19,6 @@ bin/
 
 ### IntelliJ IDEA ###
 .idea
-*.iws
-*.iml
-*.ipr
-*.jar
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
@@ -39,3 +35,4 @@ out/
 
 ## db ##
 src/main/resources/application-local.yml
+src/main/resources/application-local.yaml
