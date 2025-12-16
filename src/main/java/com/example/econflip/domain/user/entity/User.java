@@ -1,0 +1,51 @@
+package com.example.econflip.domain.user.entity;
+
+import com.example.econflip.domain.card.enums.TagType;
+import com.example.econflip.domain.user.enums.SocialType;
+import jakarta.persistence.*;
+import lombok.*;
+
+@Entity
+@Builder
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Table(name = "user")
+public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // 자동으로 id값 생성
+    private Long id;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 30)
+    private SocialType socialType;
+
+    @Column(name = "social_key", nullable = false)
+    @Builder.Default
+    private String socialId = "1234";
+
+    @Column(name = "image_url", length = 255, nullable = false)
+    private String imageUrl;
+
+    @Column(name = "level", nullable = false)
+    @Builder.Default
+    private Integer level = 1;
+
+    @Column(name = "xp", nullable = false)
+    @Builder.Default
+    private Integer xp = 0;
+
+    @Column(name = "streak", nullable = false)
+    @Builder.Default
+    private Integer streak = 0;
+
+    @Column(name = "active", nullable = false)
+    @Builder.Default
+    private Boolean status = true;
+
+    @Column(name = "goal", length = 255, nullable = false)
+    private String gaol;
+
+    @Column(name = "daily_study", nullable = false)
+    private Integer dailyStudy;
+}
