@@ -1,5 +1,7 @@
 package com.example.econflip.global.apiPayload;
 
+import com.example.econflip.global.apiPayload.code.BaseCode;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AllArgsConstructor;
@@ -22,12 +24,13 @@ public class ApiResponse<T> {
     private T result;
 
     // 성공
-    public static <T> ApiResponse<T> onSuccess(BaseSuccessCode code, T result) {
+    public static <T> ApiResponse<T> onSuccess(BaseCode code, T result) {
+
         return new ApiResponse<>(true, code.getCode(), code.getMessage(), result);
     }
 
     // 실패
-    public static <T> ApiResponse<T> onFailure(BaseErrorCode code, T result) {
+    public static <T> ApiResponse<T> onFailure(BaseCode code, T result) {
         return new ApiResponse<>(false, code.getCode(), code.getMessage(), result);
     }
 }
