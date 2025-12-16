@@ -7,7 +7,9 @@ import com.example.econflip.global.apiPayload.exception.GeneralException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestControllerAdvice
 public class GeneralExceptionAdvice {
 
@@ -15,6 +17,8 @@ public class GeneralExceptionAdvice {
     public ResponseEntity<ApiResponse<Void>> handleException(
             GeneralException ex
     ) {
+        log.warn("GeneralException occurred: code={}, message={}",
+                ex.getCode().getCode(), ex.getCode().getMessage(), ex);
         return ResponseEntity.status(ex.getCode().getStatus())
                 .body(ApiResponse.onFailure(
                                 ex.getCode(),
@@ -27,11 +31,12 @@ public class GeneralExceptionAdvice {
     public ResponseEntity<ApiResponse<String>> handleException(
             Exception ex
     ) {
+        log.error("Unexpected exception occurred: {}", ex.getMessage(), ex);
         BaseCode code = GeneralErrorCode.INTERNAL_SERVER_ERROR;
         return ResponseEntity.status(code.getStatus())
                 .body(ApiResponse.onFailure(
                         code,
-                        ex.getMessage()
+                        null
                 ));
     }
 }
