@@ -1,5 +1,6 @@
 package com.example.econflip.domain.user.entity.mapping;
 
+import com.example.econflip.domain.card.enums.CategoryType;
 import com.example.econflip.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -19,7 +20,7 @@ public class UserCategory {
     private Integer pointer;
 
     @Column(name = "category", nullable = false)
-    private String category;
+    private CategoryType category;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
