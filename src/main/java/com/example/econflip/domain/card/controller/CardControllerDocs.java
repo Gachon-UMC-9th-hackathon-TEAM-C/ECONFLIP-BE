@@ -17,7 +17,7 @@ public interface CardControllerDocs {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "실패")
     })
-    ApiResponse<CardResDTO.TodayStudySet> getTodayStudySet(Long userId, Integer daily_study, List<String> category);
+    ApiResponse<CardResDTO.TodayStudySet> getTodayStudySet(Long userId, Integer daily_study, List<String> selectedCategories);
 
 
     // api/card/study/{studySetId}/quiz
