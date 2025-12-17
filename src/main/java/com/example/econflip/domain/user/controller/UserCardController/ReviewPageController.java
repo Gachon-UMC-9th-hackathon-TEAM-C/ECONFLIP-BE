@@ -13,9 +13,10 @@ public class ReviewPageController implements ReviewPageControllerDocs{
     private final UserCardService userCardService;
 
     @GetMapping("/review")
-    public ApiResponse<> reviewPage(Long userId){
+    public ApiResponse<UserCardResDTO.reviewPage> reviewPage(Long userId){
         UserCardResDTO.reviewPage result = userCardService.getReviewPage(userId);
 
-        return ApiResponse.onSuccess(Basecode code, result);
+        // UserSuccessCode.OK 추가 예정
+        return ApiResponse.onSuccess(null, result);
     }
 }
