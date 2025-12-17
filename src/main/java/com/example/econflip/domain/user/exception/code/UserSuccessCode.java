@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 @RequiredArgsConstructor
 public enum UserSuccessCode implements BaseCode {
-    FOUND(HttpStatus.OK,
+    OK(HttpStatus.OK,
             "USER200_1",
             "해당 사용자를 찾았습니다."),
     ;

@@ -21,7 +21,7 @@ public class UserController implements UserControllerDocs{
             @AuthenticationPrincipal CustomUserPrincipal me
     ) {
         Long userId = me.getUserId();
-        UserSuccessCode code = UserSuccessCode.FOUND;
+        UserSuccessCode code = UserSuccessCode.OK;
         return ApiResponse.onSuccess(code, userService.getMypage(userId));
     }
 
