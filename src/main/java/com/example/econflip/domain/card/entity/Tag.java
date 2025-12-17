@@ -1,6 +1,6 @@
 package com.example.econflip.domain.card.entity;
 
-import com.example.econflip.domain.card.enums.TagType;
+import com.example.econflip.domain.card.enums.CategoryType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,7 +20,7 @@ public class Tag {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
-    private TagType tag;
+    private CategoryType categoryType;
 
     @Column(name = "last_card_id")
     private Long lastCardId;
