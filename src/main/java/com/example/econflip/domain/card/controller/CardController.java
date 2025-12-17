@@ -28,15 +28,6 @@ public class CardController implements CardControllerDocs{
                 cardService.getTodayStudySet(userId, daily_study, selectedCategories));
     }
 
-    // 퀴즈 문제 조회
-    @Override
-    @GetMapping("/study/{studySetId}/quiz")
-    public List<CardResDTO.QuizQuestion> getQuiz(
-            @PathVariable Long studySetId
-    ) {
-        return null;
-    }
-
     // 퀴즈 답안 저장
     @Override
     @PostMapping("/study/{studySetId}/quiz")

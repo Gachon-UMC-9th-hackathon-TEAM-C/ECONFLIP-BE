@@ -8,7 +8,8 @@ public class CardResDTO {
     @Builder
     public record TodayStudySet (
             Long studySetId,
-            List<StudyCard> cards
+            List<StudyCard> cards,
+            List<QuizQuestion> quizzes
     ){}
 
     @Builder
@@ -23,16 +24,17 @@ public class CardResDTO {
 
     @Builder
     public record QuizQuestion  (
-            Long quizId,
+            Long cardId,
             String question,
-            String quiz_type,
-            List<QuizChoice> choices
+            String quizType,
+            List<QuizChoice> choices,
+            String commentary
     ){}
 
     @Builder
     public record QuizChoice  (
             Long answerId,
-            String content
+            String answer
     ){}
 
     @Builder

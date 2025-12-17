@@ -8,9 +8,12 @@ import org.springframework.http.HttpStatus;
 @Getter
 @RequiredArgsConstructor
 public enum CardErrorCode implements BaseCode {
-    Not_Found(HttpStatus.NOT_FOUND,
+    CARD_Not_Found(HttpStatus.NOT_FOUND,
             "CARD404_1",
             "카드를 찾을 수 없습니다."),
+    QUIZ_Not_Found(HttpStatus.NOT_FOUND,
+            "QUIZ404_1",
+            "퀴즈를 찾을 수 없습니다."),
     ;
     private final HttpStatus status;
     private final String code;

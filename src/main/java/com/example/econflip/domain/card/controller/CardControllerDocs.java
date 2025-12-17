@@ -22,18 +22,6 @@ public interface CardControllerDocs {
 
     // api/card/study/{studySetId}/quiz
     @Operation(
-            summary = "퀴즈 문제 조회 API",
-            description = "학습 세트에 포함된 카드 기반의 퀴즈 문제를 조회합니다."
-    )
-    @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "실패")
-    })
-    List<CardResDTO.QuizQuestion> getQuiz(Long studySetId);
-
-
-    // api/card/study/{studySetId}/quiz
-    @Operation(
             summary = "퀴즈 답안 제출 API",
             description = "퀴즈 답안을 저장하고 정답 여부를 판단합니다."
     )

@@ -2,7 +2,6 @@ package com.example.econflip.domain.card.repository;
 
 import com.example.econflip.domain.card.entity.Card;
 import com.example.econflip.domain.card.enums.CategoryType;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
