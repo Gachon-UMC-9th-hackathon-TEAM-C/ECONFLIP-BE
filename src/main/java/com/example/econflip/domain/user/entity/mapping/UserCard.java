@@ -1,7 +1,6 @@
 package com.example.econflip.domain.user.entity.mapping;
 
 import com.example.econflip.domain.card.entity.Card;
-import com.example.econflip.domain.card.enums.TagType;
 import com.example.econflip.domain.user.entity.User;
 import com.example.econflip.domain.user.enums.QuizResult;
 import jakarta.persistence.*;
@@ -20,7 +19,7 @@ public class UserCard {
     private Long id;
 
     @Column(name = "is_bookmarked", nullable = false)
-    private Boolean is_bookmarked;
+    private Boolean isBookmarked;
 
     @Column(name="quiz_result", nullable = false)
     @Enumerated(EnumType.STRING)
