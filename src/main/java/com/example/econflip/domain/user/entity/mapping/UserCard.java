@@ -21,6 +21,9 @@ public class UserCard {
     @Column(name = "is_bookmarked", nullable = false)
     private Boolean isBookmarked;
 
+    @Column(name = "dont_know", nullable = false)
+    private Boolean dontKnow;
+
     @Column(name="quiz_result", nullable = false)
     @Enumerated(EnumType.STRING)
     private QuizResult quizResult;
