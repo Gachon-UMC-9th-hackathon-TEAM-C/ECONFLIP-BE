@@ -1,6 +1,6 @@
 package com.example.econflip.domain.user.repository;
 
-import com.example.econflip.domain.user.dto.UserCardResDTO;
+import com.example.econflip.domain.user.dto.reviewCard;
 import com.example.econflip.domain.user.entity.mapping.UserCard;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -12,7 +12,7 @@ import java.util.List;
 public interface UserCardRepository extends JpaRepository<UserCard, Long> {
 
     @Query("""
-    select new com.example.econflip.domain.user.dto.UserCardResDTO.reviewCard(c.term, c.category)
+    select new com.example.econflip.domain.user.dto.reviewCard(c.term, c.categoryType)
     from UserCard uc
     join uc.card c
     where uc.user.id = :userId
@@ -22,6 +22,6 @@ public interface UserCardRepository extends JpaRepository<UserCard, Long> {
         or uc.dontKnow = true
       )
 """)
-    List<UserCardResDTO.reviewCard> findReviewByUserId(Long userId);
+    List<reviewCard> findReviewByUserId(Long userId);
 
 }
