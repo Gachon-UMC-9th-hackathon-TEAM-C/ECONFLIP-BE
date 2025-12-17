@@ -1,6 +1,7 @@
 package com.example.econflip.domain.user.service;
 
 import com.example.econflip.domain.user.dto.UserResDTO;
+import com.example.econflip.domain.user.entity.Badge;
 import com.example.econflip.domain.user.entity.User;
 import com.example.econflip.domain.user.entity.mapping.UserBadge;
 import com.example.econflip.domain.user.entity.mapping.UserTitle;
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -72,7 +74,10 @@ public class UserService {
                 .findTop4ByUser_IdOrderByCreatedAtDesc(userId);
 
         return recentBadges.stream()
-                .map(userBadge -> userBadge.getBadge().getTitle())
+                .map(UserBadge::getBadge)
+                .filter(Objects::nonNull)
+                .map(Badge::getTitle)
+                .filter(Objects::nonNull)
                 .toList();
     }
 
