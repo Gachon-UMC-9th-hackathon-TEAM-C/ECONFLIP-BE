@@ -54,8 +54,8 @@ public class UserService {
                 .findTopByUser_IdOrderByCreatedAtDesc(userId)
                 .orElse(null);
 
-        if (userTitle == null) {
-            return null;
+        if (userTitle == null || userTitle.getTitle() == null) {
+            return "경제 학습자";
         }
         return userTitle.getTitle().getTitle();
     }
