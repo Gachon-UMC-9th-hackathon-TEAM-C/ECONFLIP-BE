@@ -14,15 +14,18 @@ public class CardResDTO {
     @Builder
     public record StudyCard (
             Long cardId,
+            String category,
             String term,
             String descript,
-            String example
+            String example,
+            List<String> relatedTerms // 관련 용어
     ){}
 
     @Builder
     public record QuizQuestion  (
             Long quizId,
             String question,
+            String quiz_type,
             List<QuizChoice> choices
     ){}
 
