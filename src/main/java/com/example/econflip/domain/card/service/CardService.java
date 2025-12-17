@@ -92,6 +92,7 @@ public class CardService {
                                 .term(card.getTerm())
                                 .descript(card.getDescript())
                                 .example(card.getExample())
+                                .tip(card.getTip())
                                 .relatedTerms(relatedTerms)
                                 .build()
                 );

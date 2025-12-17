@@ -19,6 +19,7 @@ public class CardResDTO {
             String term,
             String descript,
             String example,
+            String tip,
             List<String> relatedTerms // 관련 용어
     ){}
 
