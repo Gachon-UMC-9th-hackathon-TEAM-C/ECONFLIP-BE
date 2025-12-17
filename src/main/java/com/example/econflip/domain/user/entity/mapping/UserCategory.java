@@ -17,7 +17,8 @@ public class UserCategory {
     private Long id;
 
     @Column(name = "pointer", nullable = false)
-    private Integer pointer;
+    @Builder.Default
+    private Integer pointer = 0;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "category", nullable = false)
