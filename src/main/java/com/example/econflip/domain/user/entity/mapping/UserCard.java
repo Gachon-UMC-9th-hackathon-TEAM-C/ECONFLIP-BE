@@ -19,7 +19,10 @@ public class UserCard {
     private Long id;
 
     @Column(name = "is_bookmarked", nullable = false)
-    private Boolean isBookmarked;
+    private boolean isBookmarked;
+
+    @Column(name = "dont_know", nullable = false)
+    private boolean dontKnow;
 
     @Column(name="quiz_result", nullable = false)
     @Enumerated(EnumType.STRING)
