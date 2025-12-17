@@ -1,7 +1,9 @@
 package com.example.econflip.domain.card.controller;
 
 import com.example.econflip.domain.card.dto.CardResDTO;
+import com.example.econflip.domain.card.exception.code.CardSuccessCode;
 import com.example.econflip.domain.card.service.CardService;
+import com.example.econflip.global.apiPayload.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,23 +14,18 @@ import java.util.List;
 @RequestMapping("/cards")
 public class CardController implements CardControllerDocs{
     private final CardService cardService;
-    
+
     // 오늘의 학습 세트 조회
     @Override
     @GetMapping("/study/today")
-    public CardResDTO.TodayStudySet getTodayStudySet(
-            @RequestParam(required = false) Long tagId
+    public ApiResponse<CardResDTO.TodayStudySet> getTodayStudySet(
+            @RequestParam Long userId,
+            @RequestParam Integer daily_study,
+            @RequestParam(required = false) List<String> selectedCategories
     ) {
-        return null;
-    }
-
-    // 퀴즈 문제 조회
-    @Override
-    @GetMapping("/study/{studySetId}/quiz")
-    public List<CardResDTO.QuizQuestion> getQuiz(
-            @PathVariable Long studySetId
-    ) {
-        return null;
+        return ApiResponse.onSuccess(
+                CardSuccessCode.OK,
+                cardService.getTodayStudySet(userId, daily_study, selectedCategories));
     }
 
     // 퀴즈 답안 저장
