@@ -1,4 +1,4 @@
-package com.example.econflip.domain.user.controller;
+package com.example.econflip.domain.user.controller.UserController;
 
 import com.example.econflip.domain.user.dto.UserResDTO;
 import com.example.econflip.domain.user.exception.code.UserSuccessCode;
@@ -11,16 +11,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-public class UserController implements UserControllerDocs{
+public class UserController implements UserControllerDocs {
     private final UserService userService;
 
     // 마이페이지 조회
     @Override
     @GetMapping("/mypage")
-    public ApiResponse<UserResDTO.UserMyPage> getMyPage(
-            @AuthenticationPrincipal CustomUserPrincipal me
-    ) {
-        Long userId = me.getUserId();
+    public ApiResponse<UserResDTO.UserMyPage> getMyPage(Long userId) {
         UserSuccessCode code = UserSuccessCode.OK;
         return ApiResponse.onSuccess(code, userService.getMypage(userId));
     }

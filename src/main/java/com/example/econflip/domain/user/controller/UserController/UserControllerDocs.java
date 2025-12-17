@@ -1,4 +1,4 @@
-package com.example.econflip.domain.user.controller;
+package com.example.econflip.domain.user.controller.UserController;
 
 import com.example.econflip.domain.user.dto.UserResDTO;
 import com.example.econflip.global.apiPayload.ApiResponse;
@@ -16,7 +16,7 @@ public interface UserControllerDocs {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "실패")
     })
-    ApiResponse<UserResDTO.UserMyPage> getMyPage(@AuthenticationPrincipal CustomUserPrincipal me);
+    ApiResponse<UserResDTO.UserMyPage> getMyPage(Long userId);
 
     // api/me
     @Operation(
