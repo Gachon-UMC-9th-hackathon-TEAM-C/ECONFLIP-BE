@@ -1,10 +1,10 @@
 package com.example.econflip.domain.user.controller;
 
 import com.example.econflip.domain.user.dto.UserResDTO;
+import com.example.econflip.global.apiPayload.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.validation.Valid;
+
 
 public interface UserControllerDocs {
     // api/mypage
@@ -13,10 +13,10 @@ public interface UserControllerDocs {
             description = "유저 마이페이지 화면 데이터를 조회합니다."
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "성공"),
-            @ApiResponse(responseCode = "400", description = "실패")
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "실패")
     })
-    UserResDTO.UserMyPage getMyPage();
+    ApiResponse<UserResDTO.UserMyPage> getMyPage(@AuthenticationPrincipal CustomUserPrincipal me);
 
     // api/me
     @Operation(
@@ -24,8 +24,8 @@ public interface UserControllerDocs {
             description = "하루 학습 분량 등 사용자 설정 정보를 수정합니다. 온보딩 과정에서도 사용됩니다."
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "성공"),
-            @ApiResponse(responseCode = "400", description = "실패")
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "실패")
     })
     UserResDTO.UserSetting updateMySetting();
 
@@ -36,8 +36,8 @@ public interface UserControllerDocs {
             description = "홈 화면에 필요한 데이터를 조회합니다."
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "성공"),
-            @ApiResponse(responseCode = "400", description = "실패")
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "실패")
     })
     UserResDTO.UserMyPage getHome();
 }
