@@ -42,7 +42,8 @@ public class User {
     private Boolean status = true;
 
     @Column(name = "is_learned", nullable = false)
-    private Boolean is_learned;
+    @Builder.Default
+    private Boolean isLearned = false;
 
     @Column(name = "daily_study", nullable = false)
     private Integer dailyStudy;

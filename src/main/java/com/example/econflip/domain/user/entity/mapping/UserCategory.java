@@ -19,6 +19,7 @@ public class UserCategory {
     @Column(name = "pointer", nullable = false)
     private Integer pointer;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "category", nullable = false)
     private CategoryType category;
 
