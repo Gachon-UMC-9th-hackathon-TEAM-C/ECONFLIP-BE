@@ -9,8 +9,10 @@ public class UserResDTO {
     public record UserMyPage(
             String title,
             String imageUrl,
-            Integer level,
-            Integer xp,
+            Integer currentLevel,
+            Integer currentXp,
+            Integer requiredXpForNextLevel,
+            Integer remainingXpToNextLevel,
             Integer streak,
             Integer totalLearnedCard,
             List<String> badges,

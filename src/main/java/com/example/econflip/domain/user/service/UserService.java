@@ -36,11 +36,17 @@ public class UserService {
 
         int totalBookmarkedCard = getTotalBookmarkedCardCount(userId);
 
+        int reqXp = getRequiredXpForNextLevel(user.getLevel());
+
+        int remXp = getRemainingXpToNextLevel(user.getLevel(), user.getXp());
+
         return UserResDTO.UserMyPage.builder()
                 .title(titleName)
-                .level(user.getLevel())
+                .currentLevel(user.getLevel())
                 .imageUrl(user.getImageUrl())
-                .xp(user.getXp())
+                .currentXp(user.getXp())
+                .remainingXpToNextLevel(remXp)
+                .requiredXpForNextLevel(reqXp)
                 .streak(user.getStreak())
                 .totalLearnedCard(totalLearnedCard)
                 .totalBookmarkedCard(totalBookmarkedCard)
@@ -78,5 +84,19 @@ public class UserService {
     // 북마크 카드 총 개수
     private int getTotalBookmarkedCardCount(Long userId) {
         return userCardRepository.countByUser_IdAndIsBookmarkedTrue(userId);
+    }
+
+    // 다음 레벨로 가기 위해 필요한 총 경험치 (해당 레벨 구간 필요 xp)
+    private int getRequiredXpForNextLevel(int level){
+        return 50 * (level + 1);
+    }
+
+    // 다음 레벨까지 남은 경험치
+    private int getRemainingXpToNextLevel(int level, int curXp){
+        int total = 0;
+        for(int i = 1; i <= level; i++){
+            total += 50 * (i + 1);
+        }
+        return Math.max(total - curXp, 0);
     }
 }
