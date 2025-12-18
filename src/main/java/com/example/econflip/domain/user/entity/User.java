@@ -7,6 +7,8 @@ import com.example.econflip.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import static com.example.econflip.domain.user.enums.Role.USER;
+
 @Entity
 @Builder
 @Getter
@@ -65,7 +67,8 @@ public class User extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private Role role;
+    @Builder.Default
+    private Role role = USER;
 
     public static User createSocialUser(
             SocialType socialType,
@@ -78,7 +81,7 @@ public class User extends BaseEntity {
                 .socialId(socialId)
                 .name(name)
                 .imageUrl(imageUrl)
-                .role(Role.USER)
+                .role(USER)
                 .build();
     }
 }
