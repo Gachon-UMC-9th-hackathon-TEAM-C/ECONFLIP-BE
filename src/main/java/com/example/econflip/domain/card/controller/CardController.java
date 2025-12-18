@@ -17,15 +17,15 @@ public class CardController implements CardControllerDocs{
 
     // 오늘의 학습 세트 조회
     @Override
-    @GetMapping("/study/today")
-    public ApiResponse<CardResDTO.TodayStudySet> getTodayStudySet(
+    @PostMapping("/study/today")
+    public ApiResponse<CardResDTO.TodayStudySet> startTodayStudySet(
             @RequestParam Long userId,
             @RequestParam Integer daily_study,
             @RequestParam(required = false) List<String> selectedCategories
     ) {
         return ApiResponse.onSuccess(
                 CardSuccessCode.OK,
-                cardService.getTodayStudySet(userId, daily_study, selectedCategories));
+                cardService.startTodayStudySet(userId, daily_study, selectedCategories));
     }
 
     // 퀴즈 답안 저장

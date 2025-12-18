@@ -10,14 +10,14 @@ import java.util.List;
 public interface CardControllerDocs {
     // api/card/study/today
     @Operation(
-            summary = "오늘의 학습 세트 조회 조회 API",
+            summary = "오늘의 학습 세트 시작/복구 API",
             description = "랜덤 또는 선택한 tag(주제)로 생성한 하루 분량의 학습 카드 데이터를 조회합니다."
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "실패")
     })
-    ApiResponse<CardResDTO.TodayStudySet> getTodayStudySet(Long userId, Integer daily_study, List<String> selectedCategories);
+    ApiResponse<CardResDTO.TodayStudySet> startTodayStudySet(Long userId, Integer daily_study, List<String> selectedCategories);
 
 
     // api/card/study/{studySetId}/quiz
