@@ -39,4 +39,8 @@ public class UserCard extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "card_id")
     private Card card;
+
+    public void confirm() {
+        this.isConfirmed = true;
+    }
 }

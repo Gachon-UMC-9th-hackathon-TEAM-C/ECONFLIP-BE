@@ -21,6 +21,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -56,8 +57,9 @@ public class CardService {
         }
 
         // 2. 오늘 생성된 user_card 존재 여부 확인 => (학습 복구 or 새 학습 시작)
-        LocalDateTime today = LocalDateTime.now();
-        List<UserCard> todayUserCards = userCardRepository.findByUserIdAndCreatedAt(userId, today);
+        LocalDateTime start = LocalDate.now().atStartOfDay();
+        LocalDateTime end = start.plusDays(1);
+        List<UserCard> todayUserCards = userCardRepository.findByUserIdAndCreatedAtBetween(userId, start, end);
         boolean isNewStudy = todayUserCards.isEmpty();
 
 
@@ -110,7 +112,7 @@ public class CardService {
             }
 
             // 새로 생성한 user_card 다시 조회
-            todayUserCards = userCardRepository.findByUserIdAndCreatedAt(userId, today);
+            todayUserCards = userCardRepository.findByUserIdAndCreatedAtBetween(userId, start, end);
         }
 
         // 4. is_confirmed=false(학습완료되지 않음)인 카드부터 DTO 리스트 구성
@@ -177,6 +179,18 @@ public class CardService {
                 .cards(cards)
                 .quizzes(quizzes)
                 .build();
+    }
+
+    // 카드 학습 완료 처리 API
+    @Transactional
+    public void confirmCard(Long userId, Long cardId) {
+        LocalDateTime start = LocalDate.now().atStartOfDay();
+        LocalDateTime end = start.plusDays(1);
+        UserCard userCard = userCardRepository.findByUserIdAndCardIdAndCreatedAtBetween(userId, cardId, start, end);
+
+        if(!userCard.isConfirmed()) {
+            userCard.confirm();
+        }
     }
 
     // 동일한 주제 리스트 내에서 랜덤으로 관련 용어 3개 추출
