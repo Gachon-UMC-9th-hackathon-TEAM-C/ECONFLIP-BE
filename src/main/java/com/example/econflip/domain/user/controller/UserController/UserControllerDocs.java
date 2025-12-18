@@ -16,8 +16,7 @@ public interface UserControllerDocs {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "실패")
     })
-    ApiResponse<UserResDTO.UserMyPage> getMyPage(Long userId);
-
+    ApiResponse<UserResDTO.UserMyPage> getMyPage();
     // api/me
     @Operation(
             summary = "사용자 설정 업데이트 API",
