@@ -2,6 +2,7 @@ package com.example.econflip.domain.user.entity.mapping;
 
 import com.example.econflip.domain.card.enums.CategoryType;
 import com.example.econflip.domain.user.entity.User;
+import com.example.econflip.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,7 +12,7 @@ import lombok.*;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 @Table(name = "user_category")
-public class UserCategory {
+public class UserCategory extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
