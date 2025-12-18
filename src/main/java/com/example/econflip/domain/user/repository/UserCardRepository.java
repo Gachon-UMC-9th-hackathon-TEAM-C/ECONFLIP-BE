@@ -27,6 +27,8 @@ public interface UserCardRepository extends JpaRepository<UserCard, Long> {
 """)
     List<reviewCard> findReviewByUserId(Long userId);
 
+    List<UserCard> findByUserIdAndCreatedAt(Long userId, LocalDateTime createdAt);
+
     // 유저가 학습한 전체 카드 수
     int countByUser_Id(Long userId);
            

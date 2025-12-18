@@ -19,6 +19,9 @@ public class UserCard extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "is_confirmed", nullable = false)
+    private boolean isConfirmed;
+
     @Column(name = "is_bookmarked", nullable = false)
     private boolean isBookmarked;
 
