@@ -27,7 +27,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String registrationId =
                 userRequest.getClientRegistration().getRegistrationId();
 
-        // ✅ 네이버 로그인
+        // 네이버
         if ("naver".equals(registrationId)) {
 
             Map<String, Object> response =
@@ -58,6 +58,42 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             return new CustomOAuth2User(user, oAuth2User.getAttributes());
         }
 
+        // 카카오
+        if ("kakao".equals(registrationId)) {
+
+            Map<String, Object> attributes = oAuth2User.getAttributes();
+
+            String socialId = attributes.get("id").toString();
+
+            Map<String, Object> kakaoAccount =
+                    (Map<String, Object>) attributes.get("kakao_account");
+
+            Map<String, Object> profile =
+                    (Map<String, Object>) kakaoAccount.get("profile");
+
+            String name = profile.get("nickname") != null
+                    ? profile.get("nickname").toString()
+                    : "카카오유저";
+
+            String imageUrl = profile.get("profile_image_url") != null
+                    ? profile.get("profile_image_url").toString()
+                    : null;
+
+            User user = userRepository
+                    .findBySocialTypeAndSocialId(SocialType.KAKAO, socialId)
+                    .orElseGet(() ->
+                            userRepository.save(
+                                    User.createSocialUser(
+                                            SocialType.KAKAO,
+                                            socialId,
+                                            name,
+                                            imageUrl
+                                    )
+                            )
+                    );
+
+            return new CustomOAuth2User(user, oAuth2User.getAttributes());
+        }
         throw new IllegalArgumentException("Unsupported OAuth provider: " + registrationId);
     }
 }
