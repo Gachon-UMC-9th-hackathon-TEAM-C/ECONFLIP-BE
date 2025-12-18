@@ -1,9 +1,11 @@
 package com.example.econflip.domain.user.controller.UserController;
 
 import com.example.econflip.domain.user.dto.UserResDTO;
+import com.example.econflip.domain.user.entity.User;
 import com.example.econflip.global.apiPayload.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 
 public interface UserControllerDocs {
@@ -16,7 +18,7 @@ public interface UserControllerDocs {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "실패")
     })
-    ApiResponse<UserResDTO.UserMyPage> getMyPage();
+    ApiResponse<UserResDTO.UserMyPage> getMyPage(@AuthenticationPrincipal(expression = "user") User user);
     // api/me
     @Operation(
             summary = "사용자 설정 업데이트 API",
@@ -26,7 +28,7 @@ public interface UserControllerDocs {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "실패")
     })
-    UserResDTO.UserSetting updateMySetting();
+    UserResDTO.UserSetting updateMySetting(@AuthenticationPrincipal(expression = "user") User user);
 
 
     // api/home
@@ -38,5 +40,5 @@ public interface UserControllerDocs {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "실패")
     })
-    ApiResponse<UserResDTO.UserHomePage> getHome(Long userId);
+    UserResDTO.UserMyPage getHome(@AuthenticationPrincipal(expression = "user") User user);
 }
