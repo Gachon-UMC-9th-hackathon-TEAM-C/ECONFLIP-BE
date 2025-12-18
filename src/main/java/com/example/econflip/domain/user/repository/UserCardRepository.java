@@ -2,10 +2,13 @@ package com.example.econflip.domain.user.repository;
 
 import com.example.econflip.domain.user.dto.reviewCard;
 import com.example.econflip.domain.user.entity.mapping.UserCard;
+import com.example.econflip.domain.user.enums.QuizResult;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -29,4 +32,20 @@ public interface UserCardRepository extends JpaRepository<UserCard, Long> {
            
     // 유저가 북마크한 카드 수
     int countByUser_IdAndIsBookmarkedTrue(Long userId);
+    
+    int countByUser_IdAndCreatedAtBetween(Long userId, LocalDateTime startOfToday, LocalDateTime startOfTomorrow);
+
+    int countByUser_IdAndQuizResultNotAndCreatedAtBetween(Long userId, QuizResult quizResult, LocalDateTime startOfToday, LocalDateTime startOfTomorrow);
+
+    @Query("""
+    select count(uc)
+    from UserCard uc
+    where uc.user.id = :userId
+      and(
+           uc.quizResult = :wrong
+        or uc.isBookmarked = true
+        or uc.dontKnow = true)
+""")
+    int countReviewRequiredCards(@Param("userId") Long userId, @Param("wrong") QuizResult wrong);
+
 }
