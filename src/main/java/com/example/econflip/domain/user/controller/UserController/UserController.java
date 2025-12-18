@@ -4,6 +4,7 @@ import com.example.econflip.domain.user.dto.UserResDTO;
 import com.example.econflip.domain.user.exception.code.UserSuccessCode;
 import com.example.econflip.domain.user.service.UserService;
 import com.example.econflip.global.apiPayload.ApiResponse;
+import com.example.econflip.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -17,9 +18,13 @@ public class UserController implements UserControllerDocs {
     // 마이페이지 조회
     @Override
     @GetMapping("/mypage")
-    public ApiResponse<UserResDTO.UserMyPage> getMyPage(Long userId) {
-        UserSuccessCode code = UserSuccessCode.OK;
-        return ApiResponse.onSuccess(code, userService.getMypage(userId));
+    public ApiResponse<UserResDTO.UserMyPage> getMyPage() {
+        Long userId = SecurityUtil.getCurrentUserId();
+
+        return ApiResponse.onSuccess(
+                UserSuccessCode.OK,
+                userService.getMypage(userId)
+        );
     }
 
     // User 설정 업데이트
