@@ -1,4 +1,4 @@
-package com.example.econflip.global.auth.service;
+package com.example.econflip.global.config.security.auth.service;
 
 import com.example.econflip.domain.user.entity.User;
 import com.example.econflip.global.config.security.jwt.JwtUtil;
