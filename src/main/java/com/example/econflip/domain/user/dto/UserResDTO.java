@@ -20,6 +20,18 @@ public class UserResDTO {
     ){}
 
     @Builder
+    public record UserHomePage(
+            Integer streak,
+            Integer level,
+            Boolean isLearned,
+            Integer dailyGoalCount,
+            Integer studyCompletedCardCount,
+            Integer quizCompletedCardCount,
+            Integer reviewRequiredCardCount,
+            List<String> recommendedCategory
+    ){}
+
+    @Builder
     public record UserSetting(
             Integer dailyStudy
     ){}

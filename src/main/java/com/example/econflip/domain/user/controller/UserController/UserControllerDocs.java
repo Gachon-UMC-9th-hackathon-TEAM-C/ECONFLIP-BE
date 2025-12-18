@@ -39,5 +39,5 @@ public interface UserControllerDocs {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "실패")
     })
-    UserResDTO.UserMyPage getHome();
+    ApiResponse<UserResDTO.UserHomePage> getHome(Long userId);
 }

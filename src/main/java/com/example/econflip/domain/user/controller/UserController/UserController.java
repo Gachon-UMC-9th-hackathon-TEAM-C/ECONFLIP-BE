@@ -32,7 +32,8 @@ public class UserController implements UserControllerDocs {
     // 홈 화면 조회
     @Override
     @GetMapping("/home")
-    public UserResDTO.UserMyPage getHome() {
-        return null;
+    public ApiResponse<UserResDTO.UserHomePage> getHome(Long userId) {
+        UserSuccessCode code = UserSuccessCode.OK;
+        return ApiResponse.onSuccess(code, userService.getHomePage(userId));
     }
 }
