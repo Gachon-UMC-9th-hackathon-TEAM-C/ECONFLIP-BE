@@ -16,21 +16,21 @@ public class LibraryPageController implements LibraryPageControllerDocs{
     private final UserCardService userCardService;
 
     @GetMapping("/library")
-    public ApiResponse<UserCardResDTO.entireLibraryPage> libraryPage(Long userId){
-        UserCardResDTO.entireLibraryPage result = userCardService.getEntireLibraryPage(userId);
-
-        UserSuccessCode code = UserSuccessCode.OK;
-        return ApiResponse.onSuccess(code, result);
-    }
-
-    @GetMapping("/library/category")
-    public ApiResponse<UserCardResDTO.categoryLibraryPage> libraryWithCategory(
+    public ApiResponse<UserCardResDTO.libraryPage> libraryPage(
             Long userId,
-            @RequestParam CategoryType category  //  category validation 필요
+            @RequestParam(required = false) CategoryType category
     ){
-        UserCardResDTO.categoryLibraryPage result = userCardService.getCategoryLibraryPage(userId, category);
+        if (category == null) {
+            UserCardResDTO.libraryPage result = userCardService.getEntireLibraryPage(userId);
 
-        UserSuccessCode code = UserSuccessCode.OK;
-        return ApiResponse.onSuccess(code, result);
+            UserSuccessCode code = UserSuccessCode.OK;
+            return ApiResponse.onSuccess(code, result);
+        } else {
+            UserCardResDTO.libraryPage result = userCardService.getCategoryLibraryPage(userId, category);
+
+            UserSuccessCode code = UserSuccessCode.OK;
+            return ApiResponse.onSuccess(code, result);
+        }
+
     }
 }
