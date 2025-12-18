@@ -1,9 +1,11 @@
 package com.example.econflip.domain.user.repository;
 
+import com.example.econflip.domain.card.enums.CategoryType;
 import com.example.econflip.domain.user.dto.reviewCard;
 import com.example.econflip.domain.user.entity.mapping.UserCard;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import com.example.econflip.domain.user.dto.libraryCard;
 
@@ -32,6 +34,16 @@ public interface UserCardRepository extends JpaRepository<UserCard, Long> {
     where uc.user.id = :userId
 """)
     List<libraryCard> findLibraryCardByUserId(Long userId);
+
+    @Query("""
+    select new com.example.econflip.domain.user.dto.libraryCard(uc.isBookmarked, c.term, c.descript, c.category)
+    from UserCard uc
+    join uc.card c
+    where uc.user.id = :userId
+    and c.category = :category
+""")
+    List<libraryCard> findCategoryLibraryCardByUserId(@Param("userId") Long userId,
+                                                      @Param("category") CategoryType category);
 
     // 유저가 학습한 전체 카드 수
     int countByUser_Id(Long userId);

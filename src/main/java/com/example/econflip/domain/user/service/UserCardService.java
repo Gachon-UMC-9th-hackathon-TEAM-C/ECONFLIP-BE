@@ -48,28 +48,53 @@ public class UserCardService {
         List<libraryCard> libraryCardList =
                 userCardRepository.findLibraryCardByUserId(userId);
 
-        UserCardResDTO.entireLibraryPage libraryPage
+        UserCardResDTO.entireLibraryPage page
                 = toEntireLibraryPageDTO(categories, libraryCardList);
 
-        return libraryPage;
+        return page;
+    }
+
+    public UserCardResDTO.categoryLibraryPage getCategoryLibraryPage(Long userId, CategoryType category){
+        if (!userRepository.existsById(userId)) {
+            throw new UserException(UserErrorCode.Not_Found);
+        }
+        // 나중에 파라미터 단에서 예외처리
+
+        List<libraryCard> list =
+                userCardRepository.findCategoryLibraryCardByUserId(userId, category);
+
+        UserCardResDTO.categoryLibraryPage page
+                = toCategoryLibraryPage(category, list);
+
+        return page;
     }
 
     // converter
-    private UserCardResDTO.reviewPage toReviewPageDto(int totalReviewCount, List<reviewCard> reviewCardList, int estimatedDurationMinutes) {
-        return new UserCardResDTO.reviewPage(
-                totalReviewCount,
-                reviewCardList,
-                estimatedDurationMinutes
-        );
+    private UserCardResDTO.reviewPage toReviewPageDto(int count, List<reviewCard> list, int min) {
+        return UserCardResDTO.reviewPage.builder()
+                .totalReviewCount(count)
+                .reviewCardList(list)
+                .estimatedDurationMinutes(min)
+                .build();
     }
 
     private UserCardResDTO.entireLibraryPage toEntireLibraryPageDTO(
             List<CategoryType> categories,
             List<libraryCard> libraryCardList
     ){
-        return new UserCardResDTO.entireLibraryPage(
-                categories,
-                libraryCardList
-        );
+        return UserCardResDTO.entireLibraryPage.builder()
+                .categories(categories)
+                .libraryCardList(libraryCardList)
+                .build();
+    }
+
+    private UserCardResDTO.categoryLibraryPage toCategoryLibraryPage(
+            CategoryType category,
+            List<libraryCard> list
+    ){
+        return UserCardResDTO.categoryLibraryPage.builder()
+                .category(category)
+                .libraryCardList(list)
+                .build();
     }
 }

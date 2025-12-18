@@ -26,4 +26,12 @@ public class UserCardResDTO {
             // userCard table, card table
             List<libraryCard> libraryCardList
     ){}
+
+    @Builder
+    public record categoryLibraryPage(
+            CategoryType category,
+
+            // userCard table, card table
+            List<libraryCard> libraryCardList
+    ){}
 }
