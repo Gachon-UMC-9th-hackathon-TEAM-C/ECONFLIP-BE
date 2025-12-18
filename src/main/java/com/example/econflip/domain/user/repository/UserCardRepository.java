@@ -5,6 +5,7 @@ import com.example.econflip.domain.user.entity.mapping.UserCard;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import com.example.econflip.domain.user.dto.libraryCard;
 
 import java.util.List;
 
@@ -12,7 +13,7 @@ import java.util.List;
 public interface UserCardRepository extends JpaRepository<UserCard, Long> {
 
     @Query("""
-    select new com.example.econflip.domain.user.dto.reviewCard(c.term, c.categoryType)
+    select new com.example.econflip.domain.user.dto.reviewCard(c.term, c.category)
     from UserCard uc
     join uc.card c
     where uc.user.id = :userId
@@ -23,6 +24,14 @@ public interface UserCardRepository extends JpaRepository<UserCard, Long> {
       )
 """)
     List<reviewCard> findReviewByUserId(Long userId);
+
+    @Query("""
+    select new com.example.econflip.domain.user.dto.libraryCard(uc.isBookmarked, c.term, c.descript, c.category)
+    from UserCard uc
+    join uc.card c
+    where uc.user.id = :userId
+""")
+    List<libraryCard> findLibraryCardByUserId(Long userId);
 
     // 유저가 학습한 전체 카드 수
     int countByUser_Id(Long userId);
