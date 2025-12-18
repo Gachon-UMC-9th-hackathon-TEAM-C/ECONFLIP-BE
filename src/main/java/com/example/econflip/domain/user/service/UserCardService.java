@@ -2,7 +2,10 @@ package com.example.econflip.domain.user.service;
 
 import com.example.econflip.domain.user.dto.UserCardResDTO;
 import com.example.econflip.domain.user.dto.reviewCard;
+import com.example.econflip.domain.user.exception.UserException;
+import com.example.econflip.domain.user.exception.code.UserErrorCode;
 import com.example.econflip.domain.user.repository.UserCardRepository;
+import com.example.econflip.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,8 +16,13 @@ import java.util.List;
 public class UserCardService {
 
     private final UserCardRepository userCardRepository;
+    private final UserRepository userRepository;
 
     public UserCardResDTO.reviewPage getReviewPage(Long userId){
+        if (!userRepository.existsById(userId)) {
+            throw new UserException(UserErrorCode.Not_Found);
+        }
+        // 나중에 파라미터 단에서 예외처리
 
         List<reviewCard> reviewCardList =
                 userCardRepository.findReviewByUserId(userId);
