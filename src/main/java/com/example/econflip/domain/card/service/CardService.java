@@ -105,6 +105,8 @@ public class CardService {
                                     .user(user)
                                     .card(cardList.get(k))
                                     .isConfirmed(false)  // 아직 학습 안함
+                                    .isBookmarked(false)
+                                    .dontKnow(false)
                                     .quizResult(QuizResult.UNSEEN)
                                     .build()
                     );
