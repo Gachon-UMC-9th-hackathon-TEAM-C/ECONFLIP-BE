@@ -31,18 +31,13 @@ public class UserService {
     public UserResDTO.UserMyPage getMypage(Long userId){
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserException(UserErrorCode.Not_Found));
+                .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
 
         String titleName = getLatestTitleName(userId);
-
         List<String> badgeTitles = getRecentBadgeTitles(userId);
-
         int totalLearnedCard = getTotalLearnedCardCount(userId);
-
         int totalBookmarkedCard = getTotalBookmarkedCardCount(userId);
-
         int reqXp = getRequiredXpForNextLevel(user.getLevel());
-
         int remXp = getRemainingXpToNextLevel(user.getLevel(), user.getXp());
 
         UserResDTO.UserMyPage myPage = buildUserMyPage(user,
@@ -59,14 +54,11 @@ public class UserService {
 
     public UserResDTO.UserHomePage getHomePage(Long userId){
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserException(UserErrorCode.Not_Found));
+                .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
 
         int studyCompletedCardCount = getTodayStudyCompletedCardCount(userId);
-
         int quizCompletedCardCount = getTodayQuizCompletedCardCount(userId);
-
         int reviewRequiredCardCount = getReviewRequiredCardCount(userId);
-
         List<String> recCategory = getRandomRecommendedCategories();
 
         UserResDTO.UserHomePage homePage
@@ -81,6 +73,12 @@ public class UserService {
         return homePage;
     }
 
+    public void updateDailyStudy(Long userId, Integer count) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
+
+        user.updateDailyStudy(count);
+    }
 
     private UserResDTO.UserHomePage buildUserHomePage(
             User user,

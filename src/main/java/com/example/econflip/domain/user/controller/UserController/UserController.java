@@ -4,11 +4,15 @@ import com.example.econflip.domain.user.dto.UserResDTO;
 import com.example.econflip.domain.user.exception.code.UserSuccessCode;
 import com.example.econflip.domain.user.service.UserService;
 import com.example.econflip.global.apiPayload.ApiResponse;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Validated
 @RestController
 @RequiredArgsConstructor
 public class UserController implements UserControllerDocs {
@@ -18,22 +22,24 @@ public class UserController implements UserControllerDocs {
     @Override
     @GetMapping("/mypage")
     public ApiResponse<UserResDTO.UserMyPage> getMyPage(Long userId) {
-        UserSuccessCode code = UserSuccessCode.OK;
+        UserSuccessCode code = UserSuccessCode.MYPAGE_OK;
         return ApiResponse.onSuccess(code, userService.getMypage(userId));
     }
 
     // User 설정 업데이트
     @Override
-    @PatchMapping("/me")
-    public UserResDTO.UserSetting  updateMySetting() {
-        return null;
+    @PatchMapping("/dailyStudy")
+    public ApiResponse<Void> updateMyDailyStudy(Long userId, @NotNull @RequestParam Integer count) {
+        UserSuccessCode code = UserSuccessCode.DAILY_STUDY_UPDATED;
+        userService.updateDailyStudy(userId, count);
+        return ApiResponse.onSuccess(code, null);
     }
 
     // 홈 화면 조회
     @Override
     @GetMapping("/home")
     public ApiResponse<UserResDTO.UserHomePage> getHome(Long userId) {
-        UserSuccessCode code = UserSuccessCode.OK;
+        UserSuccessCode code = UserSuccessCode.HOMEPAGE_OK;
         return ApiResponse.onSuccess(code, userService.getHomePage(userId));
     }
 }

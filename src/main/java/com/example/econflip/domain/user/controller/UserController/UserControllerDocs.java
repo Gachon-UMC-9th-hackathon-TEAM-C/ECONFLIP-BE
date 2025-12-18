@@ -4,6 +4,8 @@ import com.example.econflip.domain.user.dto.UserResDTO;
 import com.example.econflip.global.apiPayload.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.constraints.NotNull;
+import org.springframework.web.bind.annotation.RequestParam;
 
 
 public interface UserControllerDocs {
@@ -18,7 +20,7 @@ public interface UserControllerDocs {
     })
     ApiResponse<UserResDTO.UserMyPage> getMyPage(Long userId);
 
-    // api/me
+    // api/dailyStudy
     @Operation(
             summary = "사용자 설정 업데이트 API",
             description = "하루 학습 분량 등 사용자 설정 정보를 수정합니다. 온보딩 과정에서도 사용됩니다."
@@ -27,7 +29,7 @@ public interface UserControllerDocs {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "실패")
     })
-    UserResDTO.UserSetting updateMySetting();
+    ApiResponse<Void> updateMyDailyStudy(Long userId, @NotNull @RequestParam Integer count);
 
 
     // api/home
