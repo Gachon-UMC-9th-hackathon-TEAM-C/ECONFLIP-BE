@@ -1,9 +1,11 @@
 package com.example.econflip.domain.card.controller;
 
 import com.example.econflip.domain.card.dto.CardResDTO;
+import com.example.econflip.domain.user.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import com.example.econflip.global.apiPayload.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import java.util.List;
 
@@ -17,7 +19,7 @@ public interface CardControllerDocs {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "실패")
     })
-    ApiResponse<CardResDTO.TodayStudySet> getTodayStudySet(Long userId, Integer daily_study, List<String> selectedCategories);
+    ApiResponse<CardResDTO.TodayStudySet> getTodayStudySet(@AuthenticationPrincipal(expression = "user") User user, Integer daily_study, List<String> selectedCategories);
 
 
     // api/card/study/{studySetId}/quiz
@@ -29,7 +31,7 @@ public interface CardControllerDocs {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "실패")
     })
-    void submitQuizAnswer(Long studySetId);
+    void submitQuizAnswer(@AuthenticationPrincipal(expression = "user") User user,Long studySetId);
 
 
     // api/card/study/{studySetId}/complete
@@ -41,5 +43,5 @@ public interface CardControllerDocs {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "실패")
     })
-    CardResDTO.StudyComplete completeStudy(Long studySetId);
+    CardResDTO.StudyComplete completeStudy(@AuthenticationPrincipal(expression = "user") User user,Long studySetId);
 }
