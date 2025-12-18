@@ -12,7 +12,7 @@ import java.util.List;
 public interface UserCardRepository extends JpaRepository<UserCard, Long> {
 
     @Query("""
-    select new com.example.econflip.domain.user.dto.reviewCard(c.term, c.categoryType)
+    select new com.example.econflip.domain.user.dto.reviewCard(c.term, c.category)
     from UserCard uc
     join uc.card c
     where uc.user.id = :userId
