@@ -1,5 +1,6 @@
 package com.example.econflip.domain.user.entity;
 
+import com.example.econflip.domain.user.enums.Role;
 import com.example.econflip.domain.user.enums.SocialType;
 import com.example.econflip.global.entity.BaseEntity;
 import jakarta.persistence.*;
@@ -10,21 +11,33 @@ import lombok.*;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Table(name = "user")
+@Table(
+        name = "user",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_user_social",
+                        columnNames = {"social_Type", "social_id"}
+                )
+        }
+)
 public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // 자동으로 id값 생성
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 30)
+    @Column(name = "social_Type", nullable = false, length = 30)
     private SocialType socialType;
 
-    @Column(name = "social_key", nullable = false)
+    @Column(name = "social_id", nullable = false)
     private String socialId;
 
-    @Column(name = "image_url", length = 255, nullable = false)
+
+    @Column(name = "image_url")
     private String imageUrl;
+
+    @Column(nullable = false, length = 50)
+    private String name;
 
     @Column(name = "level", nullable = false)
     @Builder.Default
@@ -47,5 +60,25 @@ public class User extends BaseEntity {
     private Boolean isLearned = false;
 
     @Column(name = "daily_study", nullable = false)
-    private Integer dailyStudy;
+    @Builder.Default
+    private Integer dailyStudy = 5;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private Role role;
+
+    public static User createSocialUser(
+            SocialType socialType,
+            String socialId,
+            String name,
+            String imageUrl
+    ) {
+        return User.builder()
+                .socialType(socialType)
+                .socialId(socialId)
+                .name(name)
+                .imageUrl(imageUrl)
+                .role(Role.USER)
+                .build();
+    }
 }
