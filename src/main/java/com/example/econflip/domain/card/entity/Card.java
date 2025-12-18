@@ -17,7 +17,7 @@ public class Card{
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
-    private CategoryType categoryType;
+    private CategoryType category;
 
     @Column(name = "term", length = 100, nullable = false)
     private String term;

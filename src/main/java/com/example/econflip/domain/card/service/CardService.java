@@ -88,7 +88,7 @@ public class CardService {
                 cards.add(
                         CardResDTO.StudyCard.builder()
                                 .cardId(card.getId())
-                                .category(card.getCategoryType().name())
+                                .category(card.getCategory().name())
                                 .term(card.getTerm())
                                 .descript(card.getDescript())
                                 .example(card.getExample())
