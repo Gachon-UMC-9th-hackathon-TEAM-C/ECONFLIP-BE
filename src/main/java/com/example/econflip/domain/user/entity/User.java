@@ -23,7 +23,7 @@ public class User extends BaseEntity {
     @Column(name = "social_key", nullable = false)
     private String socialId;
 
-    @Column(name = "image_url", length = 255, nullable = false)
+    @Column(name = "image_url", length = 255)
     private String imageUrl;
 
     @Column(name = "level", nullable = false)

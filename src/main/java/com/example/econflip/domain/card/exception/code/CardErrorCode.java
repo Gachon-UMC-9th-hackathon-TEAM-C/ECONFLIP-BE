@@ -14,6 +14,9 @@ public enum CardErrorCode implements BaseCode {
     QUIZ_Not_Found(HttpStatus.NOT_FOUND,
             "QUIZ404_1",
             "퀴즈를 찾을 수 없습니다."),
+    CATEGORY_Not_Found(HttpStatus.NOT_FOUND,
+            "CATEGORY404_1",
+            "존재하지 않는 카테고리입니다."),
     ;
     private final HttpStatus status;
     private final String code;
