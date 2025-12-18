@@ -1,6 +1,10 @@
 package com.example.econflip.global.config.security.jwt;
 
+import com.example.econflip.domain.user.entity.User;
+import com.example.econflip.domain.user.repository.UserRepository;
+import com.example.econflip.global.config.security.auth.CustomUserDetails;
 import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -10,11 +14,14 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import java.io.IOException;
+
 @Component
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
+    private final UserRepository userRepository;
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
@@ -30,7 +37,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             HttpServletRequest request,
             HttpServletResponse response,
             FilterChain filterChain
-    ) throws java.io.IOException, jakarta.servlet.ServletException {
+    ) throws IOException, ServletException {
 
         String token = null;
         if (request.getCookies() != null) {
@@ -41,13 +48,33 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             }
         }
 
-        if (token != null) {
+        if (token != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             var claims = jwtUtil.validateToken(token);
-            var auth = new UsernamePasswordAuthenticationToken(
-                    claims.getSubject(), null, null
-            );
-            auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-            SecurityContextHolder.getContext().setAuthentication(auth);
+
+            Long userId = Long.valueOf(claims.getSubject());
+
+            User user = userRepository.findById(userId).orElse(null);
+
+            if (user != null) {
+                CustomUserDetails userDetails =
+                        new CustomUserDetails(user);
+
+                UsernamePasswordAuthenticationToken auth =
+                        new UsernamePasswordAuthenticationToken(
+                                userDetails,
+                                null,
+                                userDetails.getAuthorities()
+                        );
+
+                auth.setDetails(
+                        new WebAuthenticationDetailsSource()
+                                .buildDetails(request)
+                );
+
+                SecurityContextHolder
+                        .getContext()
+                        .setAuthentication(auth);
+            }
         }
 
         filterChain.doFilter(request, response);
