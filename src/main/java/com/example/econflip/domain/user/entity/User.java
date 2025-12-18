@@ -1,7 +1,6 @@
 package com.example.econflip.domain.user.entity;
 
 import com.example.econflip.domain.user.enums.Role;
-import com.example.econflip.domain.user.enums.Role;
 import com.example.econflip.domain.user.enums.SocialType;
 import com.example.econflip.global.entity.BaseEntity;
 import jakarta.persistence.*;
