@@ -203,14 +203,14 @@ public class UserService {
 
     // 다음 레벨로 가기 위해 필요한 총 경험치 (해당 레벨 구간 필요 xp)
     private int getRequiredXpForNextLevel(int level){
-        return 50 * (level + 1);
+        return 50 + 100 * (level - 1);
     }
 
     // 다음 레벨까지 남은 경험치
     private int getRemainingXpToNextLevel(int level, int curXp){
         int total = 0;
         for(int i = 1; i <= level; i++){
-            total += 50 * (i + 1);
+            total += 50 + 100 * (i - 1);
         }
         return Math.max(total - curXp, 0);
     }
