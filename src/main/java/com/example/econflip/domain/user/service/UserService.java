@@ -43,6 +43,7 @@ public class UserService {
         int remXp = getRemainingXpToNextLevel(user.getLevel(), user.getXp());
 
         return UserResDTO.UserMyPage.builder()
+                .name(user.getName())
                 .title(titleName)
                 .currentLevel(user.getLevel())
                 .imageUrl(user.getImageUrl())
