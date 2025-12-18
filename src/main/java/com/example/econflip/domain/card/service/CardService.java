@@ -34,9 +34,13 @@ public class CardService {
             categories.addAll(Arrays.asList(CategoryType.values()));
         }
         else {
-            categories = selectedCategories.stream()
-                    .map(CategoryType::valueOf)
-                    .toList();
+            try {
+                categories = selectedCategories.stream()
+                        .map(CategoryType::valueOf)
+                        .toList();
+            } catch (IllegalArgumentException e) {
+                throw new CardException(CardErrorCode.CATEGORY_Not_Found);
+            }
         }
 
         // 학습분량, 주제개수를 고려해 주제별 카드 개수 분배

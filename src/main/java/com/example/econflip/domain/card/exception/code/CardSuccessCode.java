@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
 public enum CardSuccessCode implements BaseCode {
     OK(HttpStatus.OK,
             "CODE200_1",
-            "해당 카드를 찾았습니다."),
+            "카드 조회에 성공했습니다."),
     ;
     private final HttpStatus status;
     private final String code;
