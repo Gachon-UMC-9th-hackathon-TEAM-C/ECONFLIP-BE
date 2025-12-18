@@ -1,6 +1,6 @@
 package com.example.econflip.global.config.security.oauth.handler;
 
-import com.example.econflip.global.auth.service.AuthService;
+import com.example.econflip.global.config.security.auth.service.AuthService;
 import com.example.econflip.global.config.security.oauth.CustomOAuth2User;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -36,7 +36,6 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         cookie.setMaxAge(60 * 60);
 
         response.addCookie(cookie);
-        //todo 배포 후 리다이렉트 주소변경
-        response.sendRedirect("/swagger-ui/index.html");
+        response.sendRedirect("/home");
     }
 }
