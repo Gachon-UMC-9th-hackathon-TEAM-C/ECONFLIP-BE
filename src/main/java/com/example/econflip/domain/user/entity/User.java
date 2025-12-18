@@ -1,6 +1,7 @@
 package com.example.econflip.domain.user.entity;
 
 import com.example.econflip.domain.user.enums.SocialType;
+import com.example.econflip.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,7 +11,7 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "user")
-public class User {
+public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // 자동으로 id값 생성
     private Long id;

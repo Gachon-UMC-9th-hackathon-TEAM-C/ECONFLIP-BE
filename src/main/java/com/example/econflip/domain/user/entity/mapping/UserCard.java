@@ -3,6 +3,7 @@ package com.example.econflip.domain.user.entity.mapping;
 import com.example.econflip.domain.card.entity.Card;
 import com.example.econflip.domain.user.entity.User;
 import com.example.econflip.domain.user.enums.QuizResult;
+import com.example.econflip.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,7 +13,7 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "user_card")
-public class UserCard {
+public class UserCard extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
