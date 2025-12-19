@@ -6,8 +6,11 @@ import com.example.econflip.domain.user.entity.User;
 import com.example.econflip.global.apiPayload.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -24,7 +27,10 @@ public interface UserControllerDocs {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "마이페이지 조회 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증되지 않은 사용자")
     })
-    ApiResponse<UserResDTO.UserMyPage> getMyPage(@AuthenticationPrincipal(expression = "user") User user);
+    @GetMapping("/api/mypage")
+    public ApiResponse<UserResDTO.UserMyPage> getMyPage(
+            User user
+    );
 
    // api/dailyStudy
     @Operation(
@@ -45,10 +51,9 @@ public interface UserControllerDocs {
                     description = "인증되지 않은 사용자"
             )
     })
-    ApiResponse<Void> updateMyDailyStudy(
-            @AuthenticationPrincipal(expression = "user") User user,
-            @NotNull @RequestParam Integer count
-    );
+    @PatchMapping("/api/dailyStudy")
+    public ApiResponse<Void> updateMyDailyStudy(
+            User user, @NotNull @RequestParam Integer count);
 
 
     // api/home
@@ -66,9 +71,9 @@ public interface UserControllerDocs {
                     description = "인증되지 않은 사용자"
             )
     })
-    ApiResponse<UserResDTO.UserHomePage> getHome(
-            @AuthenticationPrincipal(expression = "user") User user
-    );
+    @GetMapping("/api/home")
+    public ApiResponse<UserResDTO.UserHomePage> getHome(
+            User user);
 
     // GET api/mypage/badges
     @Operation(
@@ -85,8 +90,9 @@ public interface UserControllerDocs {
                     description = "인증되지 않은 사용자"
             )
     })
+    @GetMapping("/api/mypage/badges")
     ApiResponse<List<UserResDTO.BadgeStatus>> getUserBadges(
-            @AuthenticationPrincipal(expression = "user") User user
+            User user
     );
     // PATCH api/mypage/badges
     @Operation(
@@ -97,8 +103,9 @@ public interface UserControllerDocs {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "실패")
     })
-    ApiResponse<Void> selectMyPageBadges(
-            @AuthenticationPrincipal(expression = "user") User user,
-            @RequestBody UserReqDTO.BadgeSelectReqDTO request
+    @PatchMapping("/api/mypage/badges")
+    public ApiResponse<Void> selectMyPageBadges(
+            User user,
+            @Valid @RequestBody UserReqDTO.BadgeSelectReqDTO request
     );
 }

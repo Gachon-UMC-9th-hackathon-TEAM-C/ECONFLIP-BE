@@ -6,10 +6,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/login")
+@RequestMapping("/api/auth")
 public class OAuthSwaggerController {
 
-    @GetMapping("/naver")
+    @GetMapping("/login/naver")
     @Operation(
             summary = "네이버 로그인 (브라우저 리다이렉트)",
             description = """
@@ -25,7 +25,7 @@ public class OAuthSwaggerController {
     )
     public void naverLoginInfo(){}
 
-    @GetMapping("/kakao")
+    @GetMapping("/login/kakao")
     @Operation(
             summary = "카카오 로그인 (브라우저 리다이렉트)",
             description = """
