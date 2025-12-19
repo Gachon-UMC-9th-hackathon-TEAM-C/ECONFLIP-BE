@@ -1,5 +1,6 @@
 package com.example.econflip.domain.user.dto;
 
+import com.example.econflip.domain.card.enums.CategoryType;
 import lombok.Builder;
 
 import java.util.List;
@@ -16,5 +17,13 @@ public class UserCardResDTO {
 
             // no domain
             int estimatedDurationMinutes
+    ){}
+
+    @Builder
+    public record libraryPage(
+            List<CategoryType> categories,
+
+            // userCard table, card table
+            List<libraryCard> libraryCardList
     ){}
 }

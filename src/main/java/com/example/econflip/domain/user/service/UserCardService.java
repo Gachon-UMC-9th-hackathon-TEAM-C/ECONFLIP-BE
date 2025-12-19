@@ -1,6 +1,8 @@
 package com.example.econflip.domain.user.service;
 
+import com.example.econflip.domain.card.enums.CategoryType;
 import com.example.econflip.domain.user.dto.UserCardResDTO;
+import com.example.econflip.domain.user.dto.libraryCard;
 import com.example.econflip.domain.user.dto.reviewCard;
 import com.example.econflip.domain.user.exception.UserException;
 import com.example.econflip.domain.user.exception.code.UserErrorCode;
@@ -35,12 +37,55 @@ public class UserCardService {
         return reviewPage;
     }
 
+    public UserCardResDTO.libraryPage getEntireLibraryPage(Long userId){
+        if (!userRepository.existsById(userId)) {
+            throw new UserException(UserErrorCode.Not_Found);
+        }
+        // 나중에 파라미터 단에서 예외처리
+
+        List<CategoryType> categories = List.of(CategoryType.values());
+
+        List<libraryCard> libraryCardList =
+                userCardRepository.findLibraryCardByUserId(userId);
+
+        UserCardResDTO.libraryPage page
+                = toLibraryPageDTO(categories, libraryCardList);
+
+        return page;
+    }
+
+    public UserCardResDTO.libraryPage getCategoryLibraryPage(Long userId, CategoryType category){
+        if (!userRepository.existsById(userId)) {
+            throw new UserException(UserErrorCode.Not_Found);
+        }
+        // 나중에 파라미터 단에서 예외처리
+        List<CategoryType> categories = List.of(category);
+
+        List<libraryCard> list =
+                userCardRepository.findCategoryLibraryCardByUserId(userId, category);
+
+        UserCardResDTO.libraryPage page
+                = toLibraryPageDTO(categories, list);
+
+        return page;
+    }
+
     // converter
-    private UserCardResDTO.reviewPage toReviewPageDto(int totalReviewCount, List<reviewCard> reviewCardList, int estimatedDurationMinutes) {
-        return new UserCardResDTO.reviewPage(
-                totalReviewCount,
-                reviewCardList,
-                estimatedDurationMinutes
-        );
+    private UserCardResDTO.reviewPage toReviewPageDto(int count, List<reviewCard> list, int min) {
+        return UserCardResDTO.reviewPage.builder()
+                .totalReviewCount(count)
+                .reviewCardList(list)
+                .estimatedDurationMinutes(min)
+                .build();
+    }
+
+    private UserCardResDTO.libraryPage toLibraryPageDTO(
+            List<CategoryType> categories,
+            List<libraryCard> libraryCardList
+    ){
+        return UserCardResDTO.libraryPage.builder()
+                .categories(categories)
+                .libraryCardList(libraryCardList)
+                .build();
     }
 }
