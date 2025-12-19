@@ -4,8 +4,10 @@ import com.example.econflip.domain.card.dto.CardReqDTO;
 import com.example.econflip.domain.card.dto.CardResDTO;
 import com.example.econflip.domain.card.exception.code.CardSuccessCode;
 import com.example.econflip.domain.card.service.CardService;
+import com.example.econflip.domain.user.entity.User;
 import com.example.econflip.global.apiPayload.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,30 +22,30 @@ public class CardController implements CardControllerDocs{
     @Override
     @PostMapping("/today")
     public ApiResponse<CardResDTO.TodayStudySet> startTodayStudySet(
-            @RequestParam Long userId,
+            @AuthenticationPrincipal(expression = "user") User user,
             @RequestParam Integer daily_study,
             @RequestParam(required = false) List<String> selectedCategories
     ) {
         return ApiResponse.onSuccess(
                 CardSuccessCode.CARD_OK,
-                cardService.startTodayStudySet(userId, daily_study, selectedCategories));
+                cardService.startTodayStudySet(user.getId(), daily_study, selectedCategories));
     }
 
     // 카드 학습 완료 처리
     @Override
     @PostMapping("/card/{cardId}/confirm")
     public void confirmCard(
-            @RequestParam Long userId,
+            @AuthenticationPrincipal(expression = "user") User user,
             @PathVariable Long cardId
     ) {
-        cardService.confirmCard(userId, cardId);
+        cardService.confirmCard(user.getId(), cardId);
     }
 
     // 퀴즈 답안 저장
     @Override
     @PostMapping("/quiz/{cardId}/answer")
     public ApiResponse<CardResDTO.QuizAnswer> submitQuizAnswer(
-            @PathVariable Long userId,
+            @AuthenticationPrincipal(expression = "user") User user,
             @PathVariable Long cardId,
             @RequestBody CardReqDTO.QuizAnswer request
     ) {
@@ -56,6 +58,7 @@ public class CardController implements CardControllerDocs{
     @Override
     @PostMapping("/study/{studySetId}/complete")
     public CardResDTO.StudyComplete completeStudy(
+            @AuthenticationPrincipal(expression = "user") User user,
             @PathVariable Long studySetId
     ) {
         return null;
