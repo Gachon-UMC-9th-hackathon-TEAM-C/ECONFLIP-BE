@@ -33,6 +33,10 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             Map<String, Object> response =
                     (Map<String, Object>) oAuth2User.getAttributes().get("response");
 
+            if (response == null || response.get("id") == null) {
+                throw new IllegalStateException("Naver OAuth response is missing required fields");
+            }
+
             String socialId = response.get("id").toString();
             String name = response.get("name") != null
                     ? response.get("name").toString()
@@ -63,13 +67,25 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
             Map<String, Object> attributes = oAuth2User.getAttributes();
 
+            if (attributes.get("id") == null) {
+                throw new IllegalStateException("Kakao OAuth response is missing id field");
+            }
+
             String socialId = attributes.get("id").toString();
 
             Map<String, Object> kakaoAccount =
                     (Map<String, Object>) attributes.get("kakao_account");
 
+            if (kakaoAccount == null) {
+                throw new IllegalStateException("Kakao OAuth response is missing kakao_account");
+            }
+
             Map<String, Object> profile =
                     (Map<String, Object>) kakaoAccount.get("profile");
+
+            if (profile == null) {
+                throw new IllegalStateException("Kakao OAuth response is missing profile");
+            }
 
             String name = profile.get("nickname") != null
                     ? profile.get("nickname").toString()
