@@ -22,5 +22,5 @@ public interface QuizRepository extends JpaRepository<Quiz, Long> {
     """)
     Optional<Quiz> findCorrectQuizByCardId(@Param("cardId") Long cardId);
 
-    Optional<Quiz> findByQuizId(Long quizId);
+    Optional<Quiz> findById(Long quizId);
 }
