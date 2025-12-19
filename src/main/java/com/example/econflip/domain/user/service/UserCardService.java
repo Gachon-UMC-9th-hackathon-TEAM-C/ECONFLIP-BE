@@ -20,7 +20,7 @@ public class UserCardService {
 
     public UserCardResDTO.reviewPage getReviewPage(Long userId){
         if (!userRepository.existsById(userId)) {
-            throw new UserException(UserErrorCode.Not_Found);
+            throw new UserException(UserErrorCode.NOT_FOUND);
         }
         // 나중에 파라미터 단에서 예외처리
 
