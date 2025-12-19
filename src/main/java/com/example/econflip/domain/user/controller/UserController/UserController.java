@@ -23,7 +23,7 @@ public class UserController implements UserControllerDocs {
 
     // 마이페이지 조회
     @Override
-    @GetMapping("/mypage")
+    @GetMapping("/api/mypage")
     public ApiResponse<UserResDTO.UserMyPage> getMyPage(
             @AuthenticationPrincipal(expression = "user") User user
     ) {
@@ -35,7 +35,7 @@ public class UserController implements UserControllerDocs {
 
     // User 설정 업데이트
     @Override
-    @PatchMapping("/dailyStudy")
+    @PatchMapping("/api/dailyStudy")
     public ApiResponse<Void> updateMyDailyStudy(
       @AuthenticationPrincipal(expression = "user") User user, @NotNull @RequestParam Integer count) {
 
@@ -47,7 +47,7 @@ public class UserController implements UserControllerDocs {
 
     // 홈 화면 조회
     @Override
-    @GetMapping("/home")
+    @GetMapping("/api/home")
     public ApiResponse<UserResDTO.UserHomePage> getHome(
       @AuthenticationPrincipal(expression = "user") User user) {
         Long userId = user.getId();
@@ -56,7 +56,7 @@ public class UserController implements UserControllerDocs {
     }
 
     @Override
-    @GetMapping("/mypage/badges")
+    @GetMapping("/api/mypage/badges")
     public ApiResponse<List<UserResDTO.BadgeStatus>> getUserBadges(
     @AuthenticationPrincipal(expression = "user") User user){
         Long userId = user.getId();
@@ -65,7 +65,7 @@ public class UserController implements UserControllerDocs {
     }
 
     @Override
-    @PatchMapping("/mypage/badges")
+    @PatchMapping("/api/mypage/badges")
     public ApiResponse<Void> selectMyPageBadges(
             @AuthenticationPrincipal(expression = "user") User user,
             @Valid @RequestBody UserReqDTO.BadgeSelectReqDTO request

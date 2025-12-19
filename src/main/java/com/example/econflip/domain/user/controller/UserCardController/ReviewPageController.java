@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ReviewPageController implements ReviewPageControllerDocs{
     private final UserCardService userCardService;
 
-    @GetMapping("/review")
+    @GetMapping("/api/review")
     public ApiResponse<UserCardResDTO.reviewPage> reviewPage(
             @AuthenticationPrincipal(expression = "user") User user
     ){
