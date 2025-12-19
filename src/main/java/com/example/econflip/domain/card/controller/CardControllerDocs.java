@@ -2,6 +2,7 @@ package com.example.econflip.domain.card.controller;
 
 import com.example.econflip.domain.card.dto.CardReqDTO;
 import com.example.econflip.domain.card.dto.CardResDTO;
+import com.example.econflip.domain.user.dto.UserCardReqDTO;
 import com.example.econflip.domain.user.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import com.example.econflip.global.apiPayload.ApiResponse;
@@ -20,7 +21,7 @@ public interface CardControllerDocs {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "실패")
     })
-    ApiResponse<CardResDTO.TodayStudySet> startTodayStudySet(@AuthenticationPrincipal(expression = "user") User user, List<String> selectedCategories);
+    ApiResponse<CardResDTO.TodayStudySet> startTodayStudySet(User user, List<String> selectedCategories);
 
     // api/study/card/{cardId}/confirm
     @Operation(
@@ -31,7 +32,7 @@ public interface CardControllerDocs {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "실패")
     })
-    void confirmCard(@AuthenticationPrincipal(expression = "user") User user, Long cardId);
+    void confirmCard(User user, Long cardId, UserCardReqDTO.DontKnowReqDTO request);
 
 
     // api/study/{studySetId}/quiz
@@ -43,7 +44,7 @@ public interface CardControllerDocs {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "실패")
     })
-    ApiResponse<CardResDTO.QuizAnswer> submitQuizAnswer(@AuthenticationPrincipal(expression = "user") User user, Long cardId, CardReqDTO.QuizAnswer request);
+    ApiResponse<CardResDTO.QuizAnswer> submitQuizAnswer(User user, Long cardId, CardReqDTO.QuizAnswer request);
 
 
     // api/study/{studySetId}/complete
@@ -55,5 +56,5 @@ public interface CardControllerDocs {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "실패")
     })
-    CardResDTO.StudyComplete completeStudy(@AuthenticationPrincipal(expression = "user") User user,Long studySetId);
+    CardResDTO.StudyComplete completeStudy(User user,Long studySetId);
 }

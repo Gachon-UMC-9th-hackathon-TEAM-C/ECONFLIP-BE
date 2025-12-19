@@ -4,6 +4,7 @@ import com.example.econflip.domain.card.dto.CardReqDTO;
 import com.example.econflip.domain.card.dto.CardResDTO;
 import com.example.econflip.domain.card.exception.code.CardSuccessCode;
 import com.example.econflip.domain.card.service.CardService;
+import com.example.econflip.domain.user.dto.UserCardReqDTO;
 import com.example.econflip.domain.user.entity.User;
 import com.example.econflip.global.apiPayload.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -35,9 +36,10 @@ public class CardController implements CardControllerDocs{
     @PostMapping("/{cardId}/confirm")
     public void confirmCard(
             @AuthenticationPrincipal(expression = "user") User user,
-            @PathVariable Long cardId
+            @PathVariable Long cardId,
+            @RequestBody UserCardReqDTO.DontKnowReqDTO request
     ) {
-        cardService.confirmCard(user.getId(), cardId);
+        cardService.confirmCard(user.getId(), cardId, request);
     }
 
     // 퀴즈 답안 저장
