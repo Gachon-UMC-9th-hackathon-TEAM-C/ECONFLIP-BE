@@ -20,7 +20,7 @@ public class CardController implements CardControllerDocs{
 
     // 오늘의 학습 세트 조회
     @Override
-    @PostMapping("/study/today")
+    @PostMapping("/study-sessions/today")
     public ApiResponse<CardResDTO.TodayStudySet> startTodayStudySet(
             @AuthenticationPrincipal(expression = "user") User user,
             @RequestParam(required = false) List<String> selectedCategories
@@ -42,7 +42,7 @@ public class CardController implements CardControllerDocs{
 
     // 퀴즈 답안 저장
     @Override
-    @PostMapping("/quiz/{cardId}/answer")
+    @PostMapping("/{cardId}/quiz/answer")
     public ApiResponse<CardResDTO.QuizAnswer> submitQuizAnswer(
             @AuthenticationPrincipal(expression = "user") User user,
             @PathVariable Long cardId,
@@ -55,7 +55,7 @@ public class CardController implements CardControllerDocs{
 
     // 학습 완료 처리
     @Override
-    @PostMapping("/complete")
+    @PostMapping("/study-sessions/today/complete")
     public CardResDTO.StudyComplete completeStudy(
             @AuthenticationPrincipal(expression = "user") User user,
             @PathVariable Long studySetId
