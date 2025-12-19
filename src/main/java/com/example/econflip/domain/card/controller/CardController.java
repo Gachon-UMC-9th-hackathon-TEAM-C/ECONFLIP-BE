@@ -49,7 +49,7 @@ public class CardController implements CardControllerDocs{
     ) {
         return ApiResponse.onSuccess(
                 CardSuccessCode.QUIZ_OK,
-                cardService.submitQuizAnswer(userId, cardId, request));
+                cardService.submitQuizAnswer(user.getId(), cardId, request));
     }
 
     // 학습 완료 처리
