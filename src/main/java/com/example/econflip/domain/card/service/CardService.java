@@ -38,7 +38,7 @@ public class CardService {
 
     // 오늘의 학습 세트 시작/복구 API
     @Transactional
-    public CardResDTO.TodayStudySet startTodayStudySet(Long userId, Integer dailyStudy, List<String> selectedCategories)
+    public CardResDTO.TodayStudySet startTodayStudySet(Long userId, List<String> selectedCategories)
     {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
@@ -68,8 +68,8 @@ public class CardService {
         if (isNewStudy) {
             // 학습분량, 주제개수를 고려해 주제별 카드 개수 분배
             int categoryCount = categories.size();
-            int baseCount = dailyStudy / categoryCount;
-            int remain = dailyStudy % categoryCount; // 균등 분배 후 남는 카드 수
+            int baseCount = user.getDailyStudy() / categoryCount;
+            int remain = user.getDailyStudy() % categoryCount; // 균등 분배 후 남는 카드 수
 
             int[] allocateCounts = new int[categoryCount]; // 주제별 할당 수를 같은 인덱스로 관리
             Arrays.fill(allocateCounts, baseCount); // 기본 분배
