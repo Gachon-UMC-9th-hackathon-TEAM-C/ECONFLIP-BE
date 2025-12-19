@@ -1,5 +1,6 @@
 package com.example.econflip.domain.user.controller.UserController;
 
+import com.example.econflip.domain.user.dto.UserReqDTO;
 import com.example.econflip.domain.user.dto.UserResDTO;
 import com.example.econflip.domain.user.entity.User;
 import com.example.econflip.global.apiPayload.ApiResponse;
@@ -7,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
@@ -23,7 +25,7 @@ public interface UserControllerDocs {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증되지 않은 사용자")
     })
     ApiResponse<UserResDTO.UserMyPage> getMyPage(@AuthenticationPrincipal(expression = "user") User user);
-    
+
    // api/dailyStudy
     @Operation(
             summary = "사용자 하루 학습량 설정 업데이트 API",
@@ -68,7 +70,7 @@ public interface UserControllerDocs {
             @AuthenticationPrincipal(expression = "user") User user
     );
 
-    // api/mypage/badges
+    // GET api/mypage/badges
     @Operation(
             summary = "사용자 배지 조회 API",
             description = "로그인한 사용자가 획득한 배지 목록과 상태를 조회합니다."
@@ -85,5 +87,18 @@ public interface UserControllerDocs {
     })
     ApiResponse<List<UserResDTO.BadgeStatus>> getUserBadges(
             @AuthenticationPrincipal(expression = "user") User user
+    );
+    // PATCH api/mypage/badges
+    @Operation(
+            summary = "마이페이지 배지 구성 변경 API",
+            description = "사용자가 선택한 배지들을 마이페이지에 노출시킵니다."
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "실패")
+    })
+    ApiResponse<Void> selectMyPageBadges(
+            @AuthenticationPrincipal(expression = "user") User user,
+            @RequestBody UserReqDTO.BadgeSelectReqDTO request
     );
 }

@@ -1,18 +1,17 @@
 package com.example.econflip.domain.user.controller.UserController;
 
+import com.example.econflip.domain.user.dto.UserReqDTO;
 import com.example.econflip.domain.user.dto.UserResDTO;
 import com.example.econflip.domain.user.entity.User;
 import com.example.econflip.domain.user.exception.code.UserSuccessCode;
 import com.example.econflip.domain.user.service.UserService;
 import com.example.econflip.global.apiPayload.ApiResponse;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -39,7 +38,7 @@ public class UserController implements UserControllerDocs {
     @PatchMapping("/dailyStudy")
     public ApiResponse<Void> updateMyDailyStudy(
       @AuthenticationPrincipal(expression = "user") User user, @NotNull @RequestParam Integer count) {
-      
+
       Long userId = user.getId();
       UserSuccessCode code = UserSuccessCode.DAILY_STUDY_UPDATED;
         userService.updateDailyStudy(userId, count);
@@ -63,5 +62,17 @@ public class UserController implements UserControllerDocs {
         Long userId = user.getId();
         UserSuccessCode code = UserSuccessCode.BADGES_OK;
         return ApiResponse.onSuccess(code, userService.getUserBadges(userId));
+    }
+
+    @Override
+    @PatchMapping("/mypage/badges")
+    public ApiResponse<Void> selectMyPageBadges(
+            @AuthenticationPrincipal(expression = "user") User user,
+            @Valid @RequestBody UserReqDTO.BadgeSelectReqDTO request
+            ){
+        Long userId = user.getId();
+        UserSuccessCode code = UserSuccessCode.MYPAGE_BADGES_OK;
+        userService.selectMypageBadge(userId, request.badgeIds());
+        return ApiResponse.onSuccess(code, null);
     }
 }
