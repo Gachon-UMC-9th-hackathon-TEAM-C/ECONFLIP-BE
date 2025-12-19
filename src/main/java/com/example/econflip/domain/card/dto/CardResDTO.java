@@ -39,6 +39,12 @@ public class CardResDTO {
     ){}
 
     @Builder
+    public record QuizAnswer (
+            Boolean isCorrect,
+            String commentary
+    ){}
+
+    @Builder
     public record StudyComplete (
             Integer correctRate,
             Integer xp

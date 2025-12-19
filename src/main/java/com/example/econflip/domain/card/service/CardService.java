@@ -1,5 +1,6 @@
 package com.example.econflip.domain.card.service;
 
+import com.example.econflip.domain.card.dto.CardReqDTO;
 import com.example.econflip.domain.card.dto.CardResDTO;
 import com.example.econflip.domain.card.entity.Card;
 import com.example.econflip.domain.card.entity.Quiz;
@@ -52,7 +53,7 @@ public class CardService {
                         .map(CategoryType::valueOf)
                         .toList();
             } catch (IllegalArgumentException e) {
-                throw new CardException(CardErrorCode.CATEGORY_Not_Found);
+                throw new CardException(CardErrorCode.CATEGORY_NOT_FOUND);
             }
         }
 
@@ -93,7 +94,7 @@ public class CardService {
                 List<Card> cardList = cardRepository.findByCategoryOrderByIdAsc(category);
 
                 if (cardList.isEmpty()) {
-                    throw new CardException(CardErrorCode.CARD_Not_Found);
+                    throw new CardException(CardErrorCode.CARD_NOT_FOUND);
                 }
 
                 int endIndex = Math.min(startIndex + needCount, cardList.size());
@@ -148,9 +149,9 @@ public class CardService {
             );
 
             // 퀴즈 DTO
-            List<Quiz> quizList = quizRepository.findByCardId(card.getId());
+            List<Quiz> quizList = quizRepository.findByCard(card);
             if(quizList.isEmpty()) {
-                throw new CardException(CardErrorCode.QUIZ_Not_Found);
+                throw new CardException(CardErrorCode.QUIZ_NOT_FOUND);
             }
             List<CardResDTO.QuizChoice> choices = new ArrayList<>();
             for (int m = 0; m < quizList.size(); m++) {
@@ -193,6 +194,36 @@ public class CardService {
         if(!userCard.isConfirmed()) {
             userCard.confirm();
         }
+    }
+
+    // 퀴즈 답안 채점 및 저장 API
+    @Transactional
+    public CardResDTO.QuizAnswer submitQuizAnswer(Long userId, Long cardId, CardReqDTO.QuizAnswer answer)
+    {
+        LocalDateTime start = LocalDate.now().atStartOfDay();
+        LocalDateTime end = start.plusDays(1);
+        UserCard userCard = userCardRepository.findByUserIdAndCardIdAndCreatedAtBetween(userId, cardId, start, end);
+
+        // 이미 푼 퀴즈
+        if(userCard.getQuizResult() != QuizResult.UNSEEN) {
+            throw new CardException(CardErrorCode.QUIZ_ALREADY_ANSWERED);
+        }
+
+        Quiz correctQuiz = quizRepository.findCorrectQuizByCardId(cardId)
+                .orElseThrow(() -> new CardException(CardErrorCode.QUIZ_NOT_FOUND));
+
+        boolean isCorrect = false;
+        if(correctQuiz.getId().equals(answer.answerId())) {
+            userCard.updateQuizResult(QuizResult.CORRECT);
+            isCorrect = true;
+        } else {
+            userCard.updateQuizResult(QuizResult.WRONG);
+        }
+
+        return CardResDTO.QuizAnswer.builder()
+                .isCorrect(isCorrect)
+                .commentary(correctQuiz.getCommentary())
+                .build();
     }
 
     // 동일한 주제 리스트 내에서 랜덤으로 관련 용어 3개 추출
