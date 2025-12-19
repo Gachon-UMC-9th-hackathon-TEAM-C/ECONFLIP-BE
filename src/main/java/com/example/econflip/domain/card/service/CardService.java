@@ -204,6 +204,10 @@ public class CardService {
         LocalDateTime end = start.plusDays(1);
         UserCard userCard = userCardRepository.findByUserIdAndCardIdAndCreatedAtBetween(userId, cardId, start, end);
 
+        if (userCard == null) {
+            throw new CardException(CardErrorCode.CARD_NOT_FOUND);
+        }
+
         // 이미 푼 퀴즈
         if(userCard.getQuizResult() != QuizResult.UNSEEN) {
             throw new CardException(CardErrorCode.QUIZ_ALREADY_ANSWERED);

@@ -12,7 +12,7 @@ public enum CardSuccessCode implements BaseCode {
             "CODE200_1",
             "카드 조회에 성공했습니다."),
     QUIZ_OK(HttpStatus.OK,
-            "CODE200_1",
+            "CODE200_2",
             "퀴즈 답안 저장에 성공했습니다."),
     ;
 
