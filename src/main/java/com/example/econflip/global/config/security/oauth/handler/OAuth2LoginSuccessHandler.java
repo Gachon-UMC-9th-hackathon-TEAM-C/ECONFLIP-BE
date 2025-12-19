@@ -25,10 +25,13 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             Authentication authentication
     ) throws IOException {
 
-        CustomOAuth2User principal =
-                (CustomOAuth2User) authentication.getPrincipal();
+        Object principal = authentication.getPrincipal();
+        if (!(principal instanceof CustomOAuth2User)) {
+            throw new IllegalStateException("Unexpected principal type: " + principal.getClass().getName());
+        }
+        CustomOAuth2User oauth2User = (CustomOAuth2User) principal;
 
-        String accessToken = authService.login(principal.getUser());
+        String accessToken = authService.login(oauth2User.getUser());
 
         Cookie cookie = new Cookie("accessToken", accessToken);
         cookie.setHttpOnly(true);

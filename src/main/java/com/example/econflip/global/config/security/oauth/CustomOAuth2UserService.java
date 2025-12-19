@@ -27,17 +27,24 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String registrationId =
                 userRequest.getClientRegistration().getRegistrationId();
 
-        // 네이버
+        /* ===================== 네이버 ===================== */
         if ("naver".equals(registrationId)) {
 
-            Map<String, Object> response =
-                    (Map<String, Object>) oAuth2User.getAttributes().get("response");
+            Object responseObj = oAuth2User.getAttributes().get("response");
 
-            if (response == null || response.get("id") == null) {
-                throw new IllegalStateException("Naver OAuth response is missing required fields");
+            if (!(responseObj instanceof Map)) {
+                throw new IllegalStateException("Naver OAuth response is not a Map");
             }
 
-            String socialId = response.get("id").toString();
+            Map<String, Object> response = (Map<String, Object>) responseObj;
+
+            Object idObj = response.get("id");
+            if (idObj == null) {
+                throw new IllegalStateException("Naver OAuth response is missing id");
+            }
+
+            String socialId = idObj.toString();
+
             String name = response.get("name") != null
                     ? response.get("name").toString()
                     : "네이버유저";
@@ -62,30 +69,33 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             return new CustomOAuth2User(user, oAuth2User.getAttributes());
         }
 
-        // 카카오
+        /* ===================== 카카오 ===================== */
         if ("kakao".equals(registrationId)) {
 
             Map<String, Object> attributes = oAuth2User.getAttributes();
 
-            if (attributes.get("id") == null) {
-                throw new IllegalStateException("Kakao OAuth response is missing id field");
+            Object idObj = attributes.get("id");
+            if (idObj == null) {
+                throw new IllegalStateException("Kakao OAuth response is missing id");
             }
 
-            String socialId = attributes.get("id").toString();
+            String socialId = idObj.toString();
 
-            Map<String, Object> kakaoAccount =
-                    (Map<String, Object>) attributes.get("kakao_account");
-
-            if (kakaoAccount == null) {
+            Object kakaoAccountObj = attributes.get("kakao_account");
+            if (!(kakaoAccountObj instanceof Map)) {
                 throw new IllegalStateException("Kakao OAuth response is missing kakao_account");
             }
 
-            Map<String, Object> profile =
-                    (Map<String, Object>) kakaoAccount.get("profile");
+            Map<String, Object> kakaoAccount =
+                    (Map<String, Object>) kakaoAccountObj;
 
-            if (profile == null) {
+            Object profileObj = kakaoAccount.get("profile");
+            if (!(profileObj instanceof Map)) {
                 throw new IllegalStateException("Kakao OAuth response is missing profile");
             }
+
+            Map<String, Object> profile =
+                    (Map<String, Object>) profileObj;
 
             String name = profile.get("nickname") != null
                     ? profile.get("nickname").toString()
