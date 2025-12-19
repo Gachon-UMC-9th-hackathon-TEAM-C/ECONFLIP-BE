@@ -91,6 +91,37 @@ public class UserService {
         List<UserBadge> userBadges = userBadgeRepository.findAllByUser_Id(userId);
         return mapToEarnedBadgeStatuses(userBadges);
     }
+    // 유저 선택한 배지 업데이트
+    @Transactional
+    public void selectMypageBadge(Long userId, List<Long> badgeIds) {
+        userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
+
+        List<Long> normalizedIds = normalizeBadgeIds(badgeIds);
+        if (normalizedIds.isEmpty()) return;
+
+        if (normalizedIds.size() > 4) {
+            throw new UserException(UserErrorCode.BADGE_SELECT_LIMIT_EXCEEDED);
+        }
+
+        touchSelectedBadgesOrThrow(userId, normalizedIds);
+    }
+
+    private List<Long> normalizeBadgeIds(List<Long> badgeIds) {
+        if (badgeIds == null || badgeIds.isEmpty()) return Collections.emptyList();
+
+        return badgeIds.stream()
+                .filter(Objects::nonNull)
+                .distinct()
+                .toList();
+    }
+
+    private void touchSelectedBadgesOrThrow(Long userId, List<Long> normalizedIds) {
+        int updatedCount = userBadgeRepository.touchUpdatedAt(userId, normalizedIds);
+        if (updatedCount != normalizedIds.size()) {
+            throw new UserException(UserErrorCode.BADGE_NOT_OWNED);
+        }
+    }
 
     private List<UserResDTO.BadgeStatus> mapToEarnedBadgeStatuses(List<UserBadge> userBadges) {
         return userBadges.stream()

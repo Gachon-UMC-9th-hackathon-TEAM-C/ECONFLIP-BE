@@ -1,10 +1,12 @@
 package com.example.econflip.domain.user.controller.UserController;
 
+import com.example.econflip.domain.user.dto.UserReqDTO;
 import com.example.econflip.domain.user.dto.UserResDTO;
 import com.example.econflip.global.apiPayload.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
@@ -45,7 +47,7 @@ public interface UserControllerDocs {
     })
     ApiResponse<UserResDTO.UserHomePage> getHome(Long userId);
 
-    // api/mypage/badges
+    // GET api/mypage/badges
     @Operation(
             summary = "사용자 배지 조회 API",
             description = "사용자가 획득한 배지들을 조회합니다."
@@ -55,4 +57,18 @@ public interface UserControllerDocs {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "실패")
     })
     ApiResponse<List<UserResDTO.BadgeStatus>> getUserBadges(Long userId);
+
+    // PATCH api/mypage/badges
+    @Operation(
+            summary = "마이페이지 배지 구성 변경 API",
+            description = "사용자가 선택한 배지들을 마이페이지에 노출시킵니다."
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "실패")
+    })
+    ApiResponse<Void> selectMyPageBadges(
+            Long userId,
+            @RequestBody UserReqDTO.BadgeSelectReqDTO request
+    );
 }
