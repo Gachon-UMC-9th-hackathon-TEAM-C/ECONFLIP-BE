@@ -19,6 +19,9 @@ public class UserCard extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "is_confirmed", nullable = false)
+    private boolean isConfirmed;
+
     @Column(name = "is_bookmarked", nullable = false)
     private boolean isBookmarked;
 
@@ -36,4 +39,8 @@ public class UserCard extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "card_id")
     private Card card;
+
+    public void confirm() {
+        this.isConfirmed = true;
+    }
 }

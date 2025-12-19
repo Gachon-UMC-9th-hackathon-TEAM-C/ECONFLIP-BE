@@ -2,6 +2,7 @@ package com.example.econflip.domain.user.repository;
 
 import com.example.econflip.domain.card.enums.CategoryType;
 import com.example.econflip.domain.user.dto.reviewCard;
+import com.example.econflip.domain.user.entity.User;
 import com.example.econflip.domain.user.entity.mapping.UserCard;
 import com.example.econflip.domain.user.enums.QuizResult;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -28,7 +29,10 @@ public interface UserCardRepository extends JpaRepository<UserCard, Long> {
       )
 """)
     List<reviewCard> findReviewByUserId(Long userId);
-
+           
+    List<UserCard> findByUserIdAndCreatedAtBetween(Long userId, LocalDateTime start, LocalDateTime end);
+    UserCard findByUserIdAndCardIdAndCreatedAtBetween(Long userId, Long cardId, LocalDateTime start, LocalDateTime end);
+           
     @Query("""
     select new com.example.econflip.domain.user.dto.libraryCard(uc.isBookmarked, c.term, c.descript, c.category)
     from UserCard uc
