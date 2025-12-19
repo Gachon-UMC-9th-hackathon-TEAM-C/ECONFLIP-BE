@@ -28,7 +28,7 @@ public class UserService {
     private final UserTitleRepository userTitleRepository;
     private final UserBadgeRepository userBadgeRepository;
     private final UserCardRepository userCardRepository;
-
+    // 마이페이지 조회
     public UserResDTO.UserMyPage getMypage(Long userId){
 
         User user = userRepository.findById(userId)
@@ -54,7 +54,7 @@ public class UserService {
 
         return myPage;
     }
-
+    // 홈페이지 조회
     public UserResDTO.UserHomePage getHomePage(Long userId){
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
@@ -75,13 +75,34 @@ public class UserService {
 
         return homePage;
     }
-
+    // 하루 학습분량 설정
     @Transactional
     public void updateDailyStudy(Long userId, Integer count) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
 
         user.updateDailyStudy(count);
+    }
+    // 유저 획득한 배지 조회
+    public List<UserResDTO.BadgeStatus> getUserBadges(Long userId) {
+        userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
+
+        List<UserBadge> userBadges = userBadgeRepository.findAllByUser_Id(userId);
+        return mapToEarnedBadgeStatuses(userBadges);
+    }
+
+    private List<UserResDTO.BadgeStatus> mapToEarnedBadgeStatuses(List<UserBadge> userBadges) {
+        return userBadges.stream()
+                .map(UserBadge::getBadge)
+                .filter(Objects::nonNull)
+                .map(badge -> UserResDTO.BadgeStatus.builder()
+                        .badgeId(badge.getId())
+                        .title(badge.getTitle())
+                        .earned(true)
+                        .build()
+                )
+                .toList();
     }
 
     private UserResDTO.UserHomePage buildUserHomePage(
@@ -188,8 +209,9 @@ public class UserService {
                 .map(UserBadge::getBadge)
                 .filter(Objects::nonNull)
                 .limit(4)
-                .map(b -> UserResDTO.BadgeStatus.builder()
-                        .title(b.getTitle())
+                .map(badge -> UserResDTO.BadgeStatus.builder()
+                        .badgeId(badge.getId())
+                        .title(badge.getTitle())
                         .earned(true)
                         .build())
                 .toList();
@@ -201,8 +223,9 @@ public class UserService {
         padded.addAll(
                 userBadgeRepository.findNotEarnedBadges(userId, PageRequest.of(0, remaining))
                         .stream()
-                        .map(b -> UserResDTO.BadgeStatus.builder()
-                                .title(b.getTitle())
+                        .map(badge -> UserResDTO.BadgeStatus.builder()
+                                .badgeId(badge.getId())
+                                .title(badge.getTitle())
                                 .earned(false)
                                 .build())
                         .toList()

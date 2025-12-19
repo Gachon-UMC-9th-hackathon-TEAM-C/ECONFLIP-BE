@@ -38,6 +38,7 @@ public class UserResDTO {
 
     @Builder
     public record BadgeStatus(
+            Long badgeId,
             String title,
             boolean earned
     ) {}

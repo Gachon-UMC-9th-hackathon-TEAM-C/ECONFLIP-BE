@@ -19,7 +19,10 @@ public enum UserSuccessCode implements BaseCode {
             "홈 페이지 조회에 성공했습니다."),
     DAILY_STUDY_UPDATED(HttpStatus.OK,
             "USER200_4",
-            "오늘의 학습 설정이 변경되었습니다.")
+            "오늘의 학습 설정이 변경되었습니다."),
+    BADGES_OK(HttpStatus.OK,
+            "USER200_5",
+            "유저가 획득한 배지 조회에 성공했습니다.")
     ;
     private final HttpStatus status;
     private final String code;
