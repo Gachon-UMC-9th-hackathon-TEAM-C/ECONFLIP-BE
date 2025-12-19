@@ -14,13 +14,13 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/study")
+@RequestMapping("/api/cards")
 public class CardController implements CardControllerDocs{
     private final CardService cardService;
 
     // 오늘의 학습 세트 조회
     @Override
-    @PostMapping("/today")
+    @PostMapping("/study/today")
     public ApiResponse<CardResDTO.TodayStudySet> startTodayStudySet(
             @AuthenticationPrincipal(expression = "user") User user,
             @RequestParam(required = false) List<String> selectedCategories
@@ -32,7 +32,7 @@ public class CardController implements CardControllerDocs{
 
     // 카드 학습 완료 처리
     @Override
-    @PostMapping("/card/{cardId}/confirm")
+    @PostMapping("/{cardId}/confirm")
     public void confirmCard(
             @AuthenticationPrincipal(expression = "user") User user,
             @PathVariable Long cardId
@@ -55,7 +55,7 @@ public class CardController implements CardControllerDocs{
 
     // 학습 완료 처리
     @Override
-    @PostMapping("/study/{studySetId}/complete")
+    @PostMapping("/complete")
     public CardResDTO.StudyComplete completeStudy(
             @AuthenticationPrincipal(expression = "user") User user,
             @PathVariable Long studySetId

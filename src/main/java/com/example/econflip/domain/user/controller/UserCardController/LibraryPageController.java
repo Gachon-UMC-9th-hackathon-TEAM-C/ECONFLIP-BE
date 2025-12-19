@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class LibraryPageController implements LibraryPageControllerDocs{
     private final UserCardService userCardService;
 
-    @GetMapping("/library")
+    @GetMapping("/api/library")
     public ApiResponse<UserCardResDTO.libraryPage> libraryPage(
             Long userId,
             @RequestParam(required = false) CategoryType category

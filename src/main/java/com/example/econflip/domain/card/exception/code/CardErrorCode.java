@@ -18,8 +18,8 @@ public enum CardErrorCode implements BaseCode {
             "CATEGORY404_1",
             "존재하지 않는 카테고리입니다."),
     QUIZ_ALREADY_ANSWERED(HttpStatus.BAD_REQUEST,
-            "QUIZ400_1",
-            "완료한 퀴즈입니다.")
+            "QUIZ400_2",
+            "이미 완료한 퀴즈입니다.")
     ;
     private final HttpStatus status;
     private final String code;
