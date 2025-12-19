@@ -1,6 +1,8 @@
 package com.example.econflip.domain.user.entity;
 
 import com.example.econflip.domain.user.enums.SocialType;
+import com.example.econflip.domain.user.exception.UserException;
+import com.example.econflip.domain.user.exception.code.UserErrorCode;
 import com.example.econflip.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -48,4 +50,11 @@ public class User extends BaseEntity {
 
     @Column(name = "daily_study", nullable = false)
     private Integer dailyStudy;
+
+    public void updateDailyStudy(Integer count) {
+        if (count != 5 && count != 10) {
+            throw new UserException(UserErrorCode.INVALID_DAILY_STUDY);
+        }
+        this.dailyStudy = count;
+    }
 }
