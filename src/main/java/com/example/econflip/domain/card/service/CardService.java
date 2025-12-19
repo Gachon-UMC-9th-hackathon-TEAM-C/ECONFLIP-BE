@@ -204,6 +204,8 @@ public class CardService {
             throw new CardException(CardErrorCode.QUIZ_ALREADY_ANSWERED);
         }
 
+        Quiz choiceQuiz = quizRepository.findByQuizId(answer.answerId())
+                .orElseThrow(() -> new CardException(CardErrorCode.QUIZ_NOT_FOUND));
         Quiz correctQuiz = quizRepository.findCorrectQuizByCardId(cardId)
                 .orElseThrow(() -> new CardException(CardErrorCode.QUIZ_NOT_FOUND));
 
@@ -217,7 +219,7 @@ public class CardService {
 
         return CardResDTO.QuizAnswer.builder()
                 .isCorrect(isCorrect)
-                .commentary(correctQuiz.getCommentary())
+                .commentary(choiceQuiz.getCommentary())
                 .build();
     }
 
