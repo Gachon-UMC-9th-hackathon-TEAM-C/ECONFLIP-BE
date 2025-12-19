@@ -16,7 +16,7 @@ public class UserResDTO {
             Integer remainingXpToNextLevel,
             Integer streak,
             Integer totalLearnedCard,
-            List<String> badges,
+            List<BadgeStatus> badges,
             Integer totalBookmarkedCard
     ){}
 
@@ -35,5 +35,12 @@ public class UserResDTO {
     @Builder
     public record UserSetting(
             Integer dailyStudy
+    ){}
+
+    @Builder
+    public record BadgeStatus(
+            Long badgeId,
+            String title,
+            boolean earned
     ){}
 }
