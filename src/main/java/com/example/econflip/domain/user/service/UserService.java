@@ -15,6 +15,7 @@ import com.example.econflip.domain.user.repository.UserRepository;
 import com.example.econflip.domain.user.repository.UserTitleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -73,6 +74,7 @@ public class UserService {
         return homePage;
     }
 
+    @Transactional
     public void updateDailyStudy(Long userId, Integer count) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
