@@ -1,15 +1,20 @@
-package com.example.econflip.global.config.security.oauth.Controller;
+package com.example.econflip.global.config.security.auth.Controller;
 
+import com.example.econflip.global.config.security.auth.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/login")
-public class OAuthSwaggerController {
+@RequiredArgsConstructor
+@RequestMapping("/api/auth")
+public class AuthController {
 
-    @GetMapping("/naver")
+    private final AuthService authService;
+
+    @GetMapping("/login/naver")
     @Operation(
             summary = "네이버 로그인 (브라우저 리다이렉트)",
             description = """
@@ -21,11 +26,13 @@ public class OAuthSwaggerController {
 
     [개발 환경]
     http://localhost:8080/oauth2/authorization/naver
+    [운영 환경]
+    http://52.79.121.228:8080/oauth2/authorization/naver
     """
     )
     public void naverLoginInfo(){}
 
-    @GetMapping("/kakao")
+    @GetMapping("/login/kakao")
     @Operation(
             summary = "카카오 로그인 (브라우저 리다이렉트)",
             description = """
@@ -37,6 +44,8 @@ public class OAuthSwaggerController {
 
     [개발 환경]
     http://localhost:8080/oauth2/authorization/kakao
+    [운영 환경]
+    http://52.79.121.228:8080/oauth2/authorization/kakao
     """
     )
     public void kakaoLoginInfo(){}
