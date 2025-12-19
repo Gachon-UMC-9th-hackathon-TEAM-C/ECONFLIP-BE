@@ -23,6 +23,10 @@ public final class SecurityUtil {
             throw new IllegalStateException("인증되지 않은 사용자입니다.");
         }
 
-        return Long.valueOf(principal);
+        try {
+            return Long.valueOf(principal);
+        } catch (NumberFormatException e) {
+            throw new IllegalStateException("유효하지 않은 사용자 ID 형식입니다: " + principal, e);
+        }
     }
 }
