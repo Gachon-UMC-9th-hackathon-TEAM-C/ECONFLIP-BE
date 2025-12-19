@@ -7,6 +7,7 @@ import java.util.List;
 public class UserResDTO {
     @Builder
     public record UserMyPage(
+            String name,
             String title,
             String imageUrl,
             Integer currentLevel,
@@ -41,5 +42,5 @@ public class UserResDTO {
             Long badgeId,
             String title,
             boolean earned
-    ) {}
+    ){}
 }

@@ -3,7 +3,9 @@ package com.example.econflip.domain.user.repository;
 import com.example.econflip.domain.user.entity.Badge;
 import com.example.econflip.domain.user.entity.mapping.UserBadge;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import org.springframework.data.domain.Pageable;
@@ -25,6 +27,17 @@ public interface UserBadgeRepository extends JpaRepository<UserBadge, Long> {
                 )
                 order by b.id asc
             """)
-    List<Badge> findNotEarnedBadges(Long userId, Pageable pageable);
+    List<Badge> findNotEarnedBadges(@Param("userId") Long userId, Pageable pageable);
 
-    List<UserBadge> findAllByUser_Id(Long userId);}
+    List<UserBadge> findAllByUser_Id(Long userId);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("""
+    update UserBadge ub
+       set ub.updatedAt = CURRENT_TIMESTAMP
+     where ub.user.id = :userId
+       and ub.badge.id in :badgeIds
+""")
+    int touchUpdatedAt(@Param("userId") Long userId,
+                       @Param("badgeIds") List<Long> badgeIds);
+}
