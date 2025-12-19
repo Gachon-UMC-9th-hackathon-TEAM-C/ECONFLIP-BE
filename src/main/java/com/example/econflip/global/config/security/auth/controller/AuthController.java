@@ -1,9 +1,14 @@
-package com.example.econflip.global.config.security.auth.Controller;
+package com.example.econflip.global.config.security.auth.controller;
 
 import com.example.econflip.global.config.security.auth.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -49,4 +54,19 @@ public class AuthController {
     """
     )
     public void kakaoLoginInfo(){}
+
+    @PostMapping("/refresh")
+    public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response){
+        return authService.reissue(request,response);
+    }
+
+    // 로그아웃
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(
+            @AuthenticationPrincipal String userId,
+            HttpServletResponse response
+    ) {
+        return authService.logout(Long.valueOf(userId), response);
+    }
+    //todo docs 추가하기
 }
