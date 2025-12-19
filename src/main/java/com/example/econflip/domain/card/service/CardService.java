@@ -40,7 +40,7 @@ public class CardService {
     public CardResDTO.TodayStudySet startTodayStudySet(Long userId, Integer dailyStudy, List<String> selectedCategories)
     {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserException(UserErrorCode.Not_Found));
+                .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
 
         // 1. 학습에 사용할 Category 목록
         List<CategoryType> categories = new ArrayList<>();
