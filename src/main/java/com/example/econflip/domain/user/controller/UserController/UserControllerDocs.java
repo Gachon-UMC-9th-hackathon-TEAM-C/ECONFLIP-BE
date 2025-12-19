@@ -7,6 +7,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
+
 
 public interface UserControllerDocs {
     // api/mypage
@@ -42,4 +44,15 @@ public interface UserControllerDocs {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "실패")
     })
     ApiResponse<UserResDTO.UserHomePage> getHome(Long userId);
+
+    // api/mypage/badges
+    @Operation(
+            summary = "사용자 배지 조회 API",
+            description = "사용자가 획득한 배지들을 조회합니다."
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "실패")
+    })
+    ApiResponse<List<UserResDTO.BadgeStatus>> getUserBadges(Long userId);
 }

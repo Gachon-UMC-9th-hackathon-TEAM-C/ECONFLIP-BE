@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @Validated
 @RestController
 @RequiredArgsConstructor
@@ -41,5 +43,12 @@ public class UserController implements UserControllerDocs {
     public ApiResponse<UserResDTO.UserHomePage> getHome(Long userId) {
         UserSuccessCode code = UserSuccessCode.HOMEPAGE_OK;
         return ApiResponse.onSuccess(code, userService.getHomePage(userId));
+    }
+
+    @Override
+    @GetMapping("/mypage/badges")
+    public ApiResponse<List<UserResDTO.BadgeStatus>> getUserBadges(Long userId){
+        UserSuccessCode code = UserSuccessCode.BADGES_OK;
+        return ApiResponse.onSuccess(code, userService.getUserBadges(userId));
     }
 }

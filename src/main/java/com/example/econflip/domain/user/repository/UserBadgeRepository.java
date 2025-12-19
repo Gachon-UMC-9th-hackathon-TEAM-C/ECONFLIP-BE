@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import org.springframework.data.domain.Pageable;
+
 import java.util.List;
 
 @Repository
@@ -25,4 +26,5 @@ public interface UserBadgeRepository extends JpaRepository<UserBadge, Long> {
                 order by b.id asc
             """)
     List<Badge> findNotEarnedBadges(Long userId, Pageable pageable);
-}
+
+    List<UserBadge> findAllByUser_Id(Long userId);}
