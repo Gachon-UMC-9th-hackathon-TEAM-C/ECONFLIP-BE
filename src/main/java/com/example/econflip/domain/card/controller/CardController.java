@@ -23,12 +23,11 @@ public class CardController implements CardControllerDocs{
     @PostMapping("/today")
     public ApiResponse<CardResDTO.TodayStudySet> startTodayStudySet(
             @AuthenticationPrincipal(expression = "user") User user,
-            @RequestParam Integer daily_study,
             @RequestParam(required = false) List<String> selectedCategories
     ) {
         return ApiResponse.onSuccess(
                 CardSuccessCode.CARD_OK,
-                cardService.startTodayStudySet(user.getId(), daily_study, selectedCategories));
+                cardService.startTodayStudySet(user.getId(), selectedCategories));
     }
 
     // 카드 학습 완료 처리

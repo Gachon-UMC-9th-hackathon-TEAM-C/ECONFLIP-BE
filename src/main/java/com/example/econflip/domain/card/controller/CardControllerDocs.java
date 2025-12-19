@@ -20,7 +20,7 @@ public interface CardControllerDocs {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "실패")
     })
-    ApiResponse<CardResDTO.TodayStudySet> startTodayStudySet(@AuthenticationPrincipal(expression = "user") User user, Integer daily_study, List<String> selectedCategories);
+    ApiResponse<CardResDTO.TodayStudySet> startTodayStudySet(@AuthenticationPrincipal(expression = "user") User user, List<String> selectedCategories);
 
     // api/study/card/{cardId}/confirm
     @Operation(
