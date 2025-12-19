@@ -187,10 +187,7 @@ public class CardService {
     // 카드 학습 완료 처리 API
     @Transactional
     public void confirmCard(Long userId, Long cardId) {
-        LocalDateTime start = LocalDate.now().atStartOfDay();
-        LocalDateTime end = start.plusDays(1);
-        UserCard userCard = userCardRepository.findByUserIdAndCardIdAndCreatedAtBetween(userId, cardId, start, end);
-
+        UserCard userCard = findTodayUserCard(userId, cardId);
         if(!userCard.isConfirmed()) {
             userCard.confirm();
         }
@@ -200,13 +197,7 @@ public class CardService {
     @Transactional
     public CardResDTO.QuizAnswer submitQuizAnswer(Long userId, Long cardId, CardReqDTO.QuizAnswer answer)
     {
-        LocalDateTime start = LocalDate.now().atStartOfDay();
-        LocalDateTime end = start.plusDays(1);
-        UserCard userCard = userCardRepository.findByUserIdAndCardIdAndCreatedAtBetween(userId, cardId, start, end);
-
-        if (userCard == null) {
-            throw new CardException(CardErrorCode.CARD_NOT_FOUND);
-        }
+        UserCard userCard = findTodayUserCard(userId, cardId);
 
         // 이미 푼 퀴즈
         if(userCard.getQuizResult() != QuizResult.UNSEEN) {
@@ -244,5 +235,14 @@ public class CardService {
         Collections.shuffle(terms);
         return terms.stream().limit(3)
                 .collect(Collectors.toList());
+    }
+
+    // 오늘 생성된 UserCard 데이터 조회
+    private UserCard findTodayUserCard(Long userId, Long cardId) {
+        LocalDateTime start = LocalDate.now().atStartOfDay();
+        LocalDateTime end = start.plusDays(1);
+        return userCardRepository
+                .findByUserIdAndCardIdAndCreatedAtBetween(userId, cardId, start, end)
+                .orElseThrow(() -> new CardException(CardErrorCode.CARD_NOT_FOUND));
     }
 }
