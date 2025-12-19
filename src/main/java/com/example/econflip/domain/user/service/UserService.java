@@ -2,7 +2,6 @@ package com.example.econflip.domain.user.service;
 
 import com.example.econflip.domain.card.enums.CategoryType;
 import com.example.econflip.domain.user.dto.UserResDTO;
-import com.example.econflip.domain.user.entity.Badge;
 import com.example.econflip.domain.user.entity.User;
 import com.example.econflip.domain.user.entity.mapping.UserBadge;
 import com.example.econflip.domain.user.entity.mapping.UserTitle;
@@ -14,6 +13,7 @@ import com.example.econflip.domain.user.repository.UserCardRepository;
 import com.example.econflip.domain.user.repository.UserRepository;
 import com.example.econflip.domain.user.repository.UserTitleRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -35,7 +35,7 @@ public class UserService {
 
         String titleName = getLatestTitleName(userId);
 
-        List<String> badgeTitles = getRecentBadgeTitles(userId);
+        List<UserResDTO.BadgeStatus> badges = getMyPageBadges(userId);
 
         int totalLearnedCard = getTotalLearnedCardCount(userId);
 
@@ -47,7 +47,7 @@ public class UserService {
 
         UserResDTO.UserMyPage myPage = buildUserMyPage(user,
                 titleName,
-                badgeTitles,
+                badges,
                 totalLearnedCard,
                 totalBookmarkedCard,
                 reqXp,
@@ -104,7 +104,7 @@ public class UserService {
     private UserResDTO.UserMyPage buildUserMyPage(
             User user,
             String titleName,
-            List<String> badgeTitles,
+            List<UserResDTO.BadgeStatus> badges,
             int totalLearnedCard,
             int totalBookmarkedCard,
             int reqXp,
@@ -120,7 +120,7 @@ public class UserService {
                 .streak(user.getStreak())
                 .totalLearnedCard(totalLearnedCard)
                 .totalBookmarkedCard(totalBookmarkedCard)
-                .badges(badgeTitles)
+                .badges(badges)
                 .build();
     }
 
@@ -178,17 +178,34 @@ public class UserService {
         return userTitle.getTitle().getTitle();
     }
 
-    // 배지 최신 4개 가져오기
-    private List<String> getRecentBadgeTitles(Long userId) {
-        List<UserBadge> recentBadges = userBadgeRepository
-                .findTop4ByUser_IdOrderByCreatedAtDesc(userId);
-
-        return recentBadges.stream()
+    // 마이페이지 배지 4개: 획득한 배지 우선 부족하면 미획득 배지로 채워서 4개 반환
+    private List<UserResDTO.BadgeStatus> getMyPageBadges(Long userId) {
+        List<UserResDTO.BadgeStatus> result = userBadgeRepository
+                .findByUser_IdOrderByUpdatedAtDesc(userId)
+                .stream()
                 .map(UserBadge::getBadge)
                 .filter(Objects::nonNull)
-                .map(Badge::getTitle)
-                .filter(Objects::nonNull)
+                .limit(4)
+                .map(b -> UserResDTO.BadgeStatus.builder()
+                        .title(b.getTitle())
+                        .earned(true)
+                        .build())
                 .toList();
+
+        int remaining = 4 - result.size();
+        if (remaining <= 0) return result;
+
+        List<UserResDTO.BadgeStatus> padded = new ArrayList<>(result);
+        padded.addAll(
+                userBadgeRepository.findNotEarnedBadges(userId, PageRequest.of(0, remaining))
+                        .stream()
+                        .map(b -> UserResDTO.BadgeStatus.builder()
+                                .title(b.getTitle())
+                                .earned(false)
+                                .build())
+                        .toList()
+        );
+        return padded;
     }
 
     // 학습 카드 총 개수
