@@ -37,7 +37,7 @@ public class CardController implements CardControllerDocs{
             @AuthenticationPrincipal(expression = "user") User user,
             @PathVariable Long cardId
     ) {
-        cardService.confirmCard(userId.getId(), cardId);
+        cardService.confirmCard(user.getId(), cardId);
     }
 
     // 퀴즈 답안 저장
