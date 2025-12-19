@@ -28,7 +28,7 @@ public class LibraryPageController implements LibraryPageControllerDocs{
             UserSuccessCode code = UserSuccessCode.OK;
             return ApiResponse.onSuccess(code, result);
         } else {
-            UserCardResDTO.libraryPage result = userCardService.getCategoryLibraryPage(userId, category);
+            UserCardResDTO.libraryPage result = userCardService.getCategoryLibraryPage(user.getId(), category);
 
             UserSuccessCode code = UserSuccessCode.OK;
             return ApiResponse.onSuccess(code, result);
