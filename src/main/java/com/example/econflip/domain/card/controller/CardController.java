@@ -1,5 +1,6 @@
 package com.example.econflip.domain.card.controller;
 
+import com.example.econflip.domain.card.dto.CardReqDTO;
 import com.example.econflip.domain.card.dto.CardResDTO;
 import com.example.econflip.domain.card.exception.code.CardSuccessCode;
 import com.example.econflip.domain.card.service.CardService;
@@ -26,7 +27,7 @@ public class CardController implements CardControllerDocs{
             @RequestParam(required = false) List<String> selectedCategories
     ) {
         return ApiResponse.onSuccess(
-                CardSuccessCode.OK,
+                CardSuccessCode.CARD_OK,
                 cardService.startTodayStudySet(user.getId(), daily_study, selectedCategories));
     }
 
@@ -42,11 +43,15 @@ public class CardController implements CardControllerDocs{
 
     // 퀴즈 답안 저장
     @Override
-    @PostMapping("/study/{studySetId}/quiz")
-    public void submitQuizAnswer(
+    @PostMapping("/quiz/{cardId}/answer")
+    public ApiResponse<CardResDTO.QuizAnswer> submitQuizAnswer(
             @AuthenticationPrincipal(expression = "user") User user,
-            @PathVariable Long studySetId
+            @PathVariable Long cardId,
+            @RequestBody CardReqDTO.QuizAnswer request
     ) {
+        return ApiResponse.onSuccess(
+                CardSuccessCode.QUIZ_OK,
+                cardService.submitQuizAnswer(userId, cardId, request));
     }
 
     // 학습 완료 처리

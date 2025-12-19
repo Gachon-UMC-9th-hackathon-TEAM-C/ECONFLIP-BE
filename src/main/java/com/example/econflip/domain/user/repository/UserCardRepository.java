@@ -13,6 +13,7 @@ import com.example.econflip.domain.user.dto.libraryCard;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UserCardRepository extends JpaRepository<UserCard, Long> {
@@ -31,7 +32,7 @@ public interface UserCardRepository extends JpaRepository<UserCard, Long> {
     List<reviewCard> findReviewByUserId(Long userId);
            
     List<UserCard> findByUserIdAndCreatedAtBetween(Long userId, LocalDateTime start, LocalDateTime end);
-    UserCard findByUserIdAndCardIdAndCreatedAtBetween(Long userId, Long cardId, LocalDateTime start, LocalDateTime end);
+    Optional<UserCard> findByUserIdAndCardIdAndCreatedAtBetween(Long userId, Long cardId, LocalDateTime start, LocalDateTime end);
            
     @Query("""
     select new com.example.econflip.domain.user.dto.libraryCard(uc.isBookmarked, c.term, c.descript, c.category)

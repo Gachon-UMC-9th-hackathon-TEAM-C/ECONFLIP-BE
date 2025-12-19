@@ -1,5 +1,6 @@
 package com.example.econflip.domain.card.service;
 
+import com.example.econflip.domain.card.dto.CardReqDTO;
 import com.example.econflip.domain.card.dto.CardResDTO;
 import com.example.econflip.domain.card.entity.Card;
 import com.example.econflip.domain.card.entity.Quiz;
@@ -40,7 +41,7 @@ public class CardService {
     public CardResDTO.TodayStudySet startTodayStudySet(Long userId, Integer dailyStudy, List<String> selectedCategories)
     {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserException(UserErrorCode.Not_Found));
+                .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
 
         // 1. 학습에 사용할 Category 목록
         List<CategoryType> categories = new ArrayList<>();
@@ -52,7 +53,7 @@ public class CardService {
                         .map(CategoryType::valueOf)
                         .toList();
             } catch (IllegalArgumentException e) {
-                throw new CardException(CardErrorCode.CATEGORY_Not_Found);
+                throw new CardException(CardErrorCode.CATEGORY_NOT_FOUND);
             }
         }
 
@@ -93,7 +94,7 @@ public class CardService {
                 List<Card> cardList = cardRepository.findByCategoryOrderByIdAsc(category);
 
                 if (cardList.isEmpty()) {
-                    throw new CardException(CardErrorCode.CARD_Not_Found);
+                    throw new CardException(CardErrorCode.CARD_NOT_FOUND);
                 }
 
                 int endIndex = Math.min(startIndex + needCount, cardList.size());
@@ -148,9 +149,9 @@ public class CardService {
             );
 
             // 퀴즈 DTO
-            List<Quiz> quizList = quizRepository.findByCardId(card.getId());
+            List<Quiz> quizList = quizRepository.findByCard(card);
             if(quizList.isEmpty()) {
-                throw new CardException(CardErrorCode.QUIZ_Not_Found);
+                throw new CardException(CardErrorCode.QUIZ_NOT_FOUND);
             }
             List<CardResDTO.QuizChoice> choices = new ArrayList<>();
             for (int m = 0; m < quizList.size(); m++) {
@@ -186,13 +187,40 @@ public class CardService {
     // 카드 학습 완료 처리 API
     @Transactional
     public void confirmCard(Long userId, Long cardId) {
-        LocalDateTime start = LocalDate.now().atStartOfDay();
-        LocalDateTime end = start.plusDays(1);
-        UserCard userCard = userCardRepository.findByUserIdAndCardIdAndCreatedAtBetween(userId, cardId, start, end);
-
+        UserCard userCard = findTodayUserCard(userId, cardId);
         if(!userCard.isConfirmed()) {
             userCard.confirm();
         }
+    }
+
+    // 퀴즈 답안 채점 및 저장 API
+    @Transactional
+    public CardResDTO.QuizAnswer submitQuizAnswer(Long userId, Long cardId, CardReqDTO.QuizAnswer answer)
+    {
+        UserCard userCard = findTodayUserCard(userId, cardId);
+
+        // 이미 푼 퀴즈
+        if(userCard.getQuizResult() != QuizResult.UNSEEN) {
+            throw new CardException(CardErrorCode.QUIZ_ALREADY_ANSWERED);
+        }
+
+        Quiz choiceQuiz = quizRepository.findByQuizId(answer.answerId())
+                .orElseThrow(() -> new CardException(CardErrorCode.QUIZ_NOT_FOUND));
+        Quiz correctQuiz = quizRepository.findCorrectQuizByCardId(cardId)
+                .orElseThrow(() -> new CardException(CardErrorCode.QUIZ_NOT_FOUND));
+
+        boolean isCorrect = false;
+        if(correctQuiz.getId().equals(answer.answerId())) {
+            userCard.updateQuizResult(QuizResult.CORRECT);
+            isCorrect = true;
+        } else {
+            userCard.updateQuizResult(QuizResult.WRONG);
+        }
+
+        return CardResDTO.QuizAnswer.builder()
+                .isCorrect(isCorrect)
+                .commentary(choiceQuiz.getCommentary())
+                .build();
     }
 
     // 동일한 주제 리스트 내에서 랜덤으로 관련 용어 3개 추출
@@ -209,5 +237,14 @@ public class CardService {
         Collections.shuffle(terms);
         return terms.stream().limit(3)
                 .collect(Collectors.toList());
+    }
+
+    // 오늘 생성된 UserCard 데이터 조회
+    private UserCard findTodayUserCard(Long userId, Long cardId) {
+        LocalDateTime start = LocalDate.now().atStartOfDay();
+        LocalDateTime end = start.plusDays(1);
+        return userCardRepository
+                .findByUserIdAndCardIdAndCreatedAtBetween(userId, cardId, start, end)
+                .orElseThrow(() -> new CardException(CardErrorCode.CARD_NOT_FOUND));
     }
 }

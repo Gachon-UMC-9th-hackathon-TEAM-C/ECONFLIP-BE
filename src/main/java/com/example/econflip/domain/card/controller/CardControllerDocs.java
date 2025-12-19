@@ -1,5 +1,6 @@
 package com.example.econflip.domain.card.controller;
 
+import com.example.econflip.domain.card.dto.CardReqDTO;
 import com.example.econflip.domain.card.dto.CardResDTO;
 import com.example.econflip.domain.user.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
@@ -42,7 +43,7 @@ public interface CardControllerDocs {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "실패")
     })
-    void submitQuizAnswer(@AuthenticationPrincipal(expression = "user") User user,Long studySetId);
+    ApiResponse<CardResDTO.QuizAnswer> submitQuizAnswer(@AuthenticationPrincipal(expression = "user") User user, Long cardId, CardReqDTO.QuizAnswer request);
 
 
     // api/study/{studySetId}/complete
