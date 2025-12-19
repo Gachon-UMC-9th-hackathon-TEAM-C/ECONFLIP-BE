@@ -10,7 +10,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -66,7 +65,7 @@ public class UserController implements UserControllerDocs {
     }
 
     @Override
-    @PatchMapping("mypage/badges")
+    @PatchMapping("/mypage/badges")
     public ApiResponse<Void> selectMyPageBadges(
             @AuthenticationPrincipal(expression = "user") User user,
             @Valid @RequestBody UserReqDTO.BadgeSelectReqDTO request
