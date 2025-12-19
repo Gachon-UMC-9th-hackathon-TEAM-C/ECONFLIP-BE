@@ -32,8 +32,10 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
         Cookie cookie = new Cookie("accessToken", accessToken);
         cookie.setHttpOnly(true);
+        cookie.setSecure(true);
         cookie.setPath("/");
         cookie.setMaxAge(60 * 60);
+        cookie.setAttribute("SameSite", "Lax");
 
         response.addCookie(cookie);
         response.sendRedirect("/home");
