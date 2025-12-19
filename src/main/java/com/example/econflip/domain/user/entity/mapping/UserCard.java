@@ -44,6 +44,10 @@ public class UserCard extends BaseEntity {
         this.isConfirmed = true;
     }
 
+    public void dontknow() {
+        this.dontKnow = true;
+    }
+
     public void updateQuizResult(QuizResult result) {
         this.quizResult = result;
     }
