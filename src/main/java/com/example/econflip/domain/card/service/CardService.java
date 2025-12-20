@@ -3,12 +3,10 @@ package com.example.econflip.domain.card.service;
 import com.example.econflip.domain.card.dto.CardReqDTO;
 import com.example.econflip.domain.card.dto.CardResDTO;
 import com.example.econflip.domain.card.entity.Card;
-import com.example.econflip.domain.card.entity.Quiz;
 import com.example.econflip.domain.card.enums.CategoryType;
 import com.example.econflip.domain.card.exception.CardException;
 import com.example.econflip.domain.card.exception.code.CardErrorCode;
 import com.example.econflip.domain.card.repository.CardRepository;
-import com.example.econflip.domain.card.repository.QuizRepository;
 import com.example.econflip.domain.user.dto.UserCardReqDTO;
 import com.example.econflip.domain.user.dto.UserResDTO;
 import com.example.econflip.domain.user.entity.User;
@@ -20,6 +18,7 @@ import com.example.econflip.domain.user.exception.code.UserErrorCode;
 import com.example.econflip.domain.user.repository.UserCardRepository;
 import com.example.econflip.domain.user.repository.UserCategoryRepository;
 import com.example.econflip.domain.user.repository.UserRepository;
+import com.fasterxml.jackson.core.type.TypeReference;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,6 +26,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,7 +34,6 @@ import java.util.stream.Collectors;
 public class CardService {
     private final CardRepository cardRepository;
     private final UserCategoryRepository userCategoryRepository;
-    private final QuizRepository quizRepository;
     private final UserCardRepository userCardRepository;
     private final UserRepository userRepository;
 
@@ -151,30 +150,24 @@ public class CardService {
             );
 
             // 퀴즈 DTO
-            List<Quiz> quizList = quizRepository.findByCard(card);
-            if(quizList.isEmpty()) {
-                throw new CardException(CardErrorCode.QUIZ_NOT_FOUND);
-            }
-            List<CardResDTO.QuizChoice> choices = new ArrayList<>();
-            for (int m = 0; m < quizList.size(); m++) {
-                CardResDTO.QuizChoice choice =
-                        CardResDTO.QuizChoice.builder()
-                                .answerId(quizList.get(m).getId())
-                                .answer(quizList.get(m).getAnswer())
-                                .build();
+            // 보기 생성
+            List<String> choices = new ArrayList<>();
+            choices.add(card.getTerm()); // 정답
 
-                choices.add(choice);
-            }
-            Collections.shuffle(choices); // 보기 순서 섞기
-
+            List<String> wrongTerms = pickRelatedTerms(
+                    cardRepository.findByCategoryOrderByIdAsc(card.getCategory()),
+                    card.getTerm()
+            );
+            choices.addAll(wrongTerms);
+            Collections.shuffle(choices);
             quizzes.add(
                     CardResDTO.QuizQuestion.builder()
                             .cardId(card.getId())
-                            .question(card.getQuiz())
-                            .quizType(quizList.get(0).getQuizType().name())
-                            .choices(choices)
-                            .commentary(quizList.get(0).getCommentary())
-                            .build()
+                            .question(pickRandomQuiz(card))
+                            .choices(choices.stream().map(term ->
+                                    CardResDTO.QuizChoice.builder()
+                                            .term(term)
+                                            .build()).toList()).build()
             );
         }
 
@@ -208,22 +201,18 @@ public class CardService {
             throw new CardException(CardErrorCode.QUIZ_ALREADY_ANSWERED);
         }
 
-        Quiz choiceQuiz = quizRepository.findById(answer.answerId())
-                .orElseThrow(() -> new CardException(CardErrorCode.QUIZ_NOT_FOUND));
-        Quiz correctQuiz = quizRepository.findCorrectQuizByCardId(cardId)
-                .orElseThrow(() -> new CardException(CardErrorCode.QUIZ_NOT_FOUND));
+        Card card = userCard.getCard();
+        boolean isCorrect = card.getTerm().equals(answer.selectedTerm());
 
-        boolean isCorrect = false;
-        if(correctQuiz.getId().equals(answer.answerId())) {
+        if(isCorrect) {
             userCard.updateQuizResult(QuizResult.CORRECT);
-            isCorrect = true;
         } else {
-            userCard.updateQuizResult(QuizResult.WRONG);
+            userCard.updateQuizResult(QuizResult.UNSEEN);
         }
 
         return CardResDTO.QuizAnswer.builder()
                 .isCorrect(isCorrect)
-                .commentary(choiceQuiz.getCommentary())
+                .commentary(card.getDescript())
                 .build();
     }
     
@@ -340,4 +329,13 @@ public class CardService {
                 .findByUserIdAndCardIdAndCreatedAtBetween(userId, cardId, start, end)
                 .orElseThrow(() -> new CardException(CardErrorCode.CARD_NOT_FOUND));
     }
+
+    // 두 개 타입의 퀴즈 문제(quiz_fill_blank, quiz_case) 중 랜덤하게 한개 선택
+    private String pickRandomQuiz(Card card) {
+        return ThreadLocalRandom.current().nextBoolean()
+                ? card.getQuiz_fill_blank()
+                : card.getQuiz_case();
+    }
+
+
 }

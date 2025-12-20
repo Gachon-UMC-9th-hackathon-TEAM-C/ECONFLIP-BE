@@ -27,15 +27,13 @@ public class CardResDTO {
     public record QuizQuestion  (
             Long cardId,
             String question,
-            String quizType,
             List<QuizChoice> choices,
             String commentary
     ){}
 
     @Builder
     public record QuizChoice  (
-            Long answerId,
-            String answer
+            String term
     ){}
 
     @Builder
