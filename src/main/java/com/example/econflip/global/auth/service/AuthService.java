@@ -116,10 +116,8 @@ public class AuthService {
 
     @Transactional
     public void logout(
-            Long userId,
             HttpServletResponse response
     ) {
-        refreshTokenRepository.deleteById(userId);
 
         response.addHeader(
                 "Set-Cookie",
