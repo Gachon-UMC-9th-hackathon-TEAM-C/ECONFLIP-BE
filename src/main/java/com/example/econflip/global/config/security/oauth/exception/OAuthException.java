@@ -1,11 +1,10 @@
 package com.example.econflip.global.config.security.oauth.exception;
 
 import com.example.econflip.global.apiPayload.code.BaseCode;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import com.example.econflip.global.apiPayload.exception.GeneralException;
 
-@Getter
-@AllArgsConstructor
-public class OAuthException extends RuntimeException{
-    private final BaseCode code;
+public class OAuthException extends GeneralException {
+  public OAuthException(BaseCode code) {
+    super(code);
+  }
 }

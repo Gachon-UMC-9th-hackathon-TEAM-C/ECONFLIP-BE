@@ -3,6 +3,8 @@ package com.example.econflip.global.config.security.oauth;
 import com.example.econflip.domain.user.entity.User;
 import com.example.econflip.domain.user.enums.SocialType;
 import com.example.econflip.domain.user.repository.UserRepository;
+import com.example.econflip.global.config.security.oauth.exception.OAuthException;
+import com.example.econflip.global.config.security.oauth.exception.code.OAuthErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -33,14 +35,15 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             Object responseObj = oAuth2User.getAttributes().get("response");
 
             if (!(responseObj instanceof Map)) {
-                throw new IllegalStateException("Naver OAuth response is not a Map");
+                throw new OAuthException(OAuthErrorCode.OAUTH_RESPONSE_MAPPING_FAILED);
             }
 
             Map<String, Object> response = (Map<String, Object>) responseObj;
 
             Object idObj = response.get("id");
+            // 필수 식별자 (id) 가 없을때 예외처리
             if (idObj == null) {
-                throw new IllegalStateException("Naver OAuth response is missing id");
+                throw new OAuthException(OAuthErrorCode.OAUTH_RESPONSE_MISSING_ID);
             }
 
             String socialId = idObj.toString();
@@ -68,41 +71,33 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
             return new CustomOAuth2User(user, oAuth2User.getAttributes());
         }
-
         /* ===================== 카카오 ===================== */
-        if ("kakao".equals(registrationId)) {
+        else if ("kakao".equals(registrationId)) {
 
             Map<String, Object> attributes = oAuth2User.getAttributes();
 
             Object idObj = attributes.get("id");
+            // 필수 식별자(id)가 없을때
             if (idObj == null) {
-                throw new IllegalStateException("Kakao OAuth response is missing id");
+                throw new OAuthException(OAuthErrorCode.OAUTH_RESPONSE_MISSING_ID);
             }
 
             String socialId = idObj.toString();
 
-            Object kakaoAccountObj = attributes.get("kakao_account");
-            if (!(kakaoAccountObj instanceof Map)) {
-                throw new IllegalStateException("Kakao OAuth response is missing kakao_account");
-            }
-
             Map<String, Object> kakaoAccount =
-                    (Map<String, Object>) kakaoAccountObj;
-
-            Object profileObj = kakaoAccount.get("profile");
-            if (!(profileObj instanceof Map)) {
-                throw new IllegalStateException("Kakao OAuth response is missing profile");
-            }
+                    (Map<String, Object>) attributes.get("kakao_account");
 
             Map<String, Object> profile =
-                    (Map<String, Object>) profileObj;
+                    kakaoAccount != null
+                            ? (Map<String, Object>) kakaoAccount.get("profile")
+                            : null;
 
-            String name = profile.get("nickname") != null
+            String name = profile != null && profile.get("nickname") != null
                     ? profile.get("nickname").toString()
                     : "카카오유저";
 
-            String imageUrl = profile.get("profile_image_url") != null
-                    ? profile.get("profile_image_url").toString()
+            String imageUrl = profile != null
+                    ? (String) profile.get("profile_image_url")
                     : null;
 
             User user = userRepository
@@ -118,8 +113,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                             )
                     );
 
-            return new CustomOAuth2User(user, oAuth2User.getAttributes());
+            return new CustomOAuth2User(user, attributes);
         }
-        throw new IllegalArgumentException("Unsupported OAuth provider: " + registrationId);
+        throw new OAuthException(OAuthErrorCode.NOT_SUPPORTED_OAUTH);
     }
 }

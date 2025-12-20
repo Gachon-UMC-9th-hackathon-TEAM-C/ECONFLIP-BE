@@ -1,11 +1,14 @@
-package com.example.econflip.global.config.security.auth.service;
+package com.example.econflip.global.auth.service;
 
 import com.example.econflip.domain.user.entity.User;
+import com.example.econflip.domain.user.exception.UserException;
+import com.example.econflip.domain.user.exception.code.UserErrorCode;
 import com.example.econflip.domain.user.repository.UserRepository;
-import com.example.econflip.global.config.security.auth.entity.RefreshToken;
-import com.example.econflip.global.config.security.auth.repository.RefreshTokenRepository;
+import com.example.econflip.global.auth.entity.RefreshToken;
+import com.example.econflip.global.auth.exception.AuthExcetpion;
+import com.example.econflip.global.auth.exception.code.AuthErrorCode;
+import com.example.econflip.global.auth.repository.RefreshTokenRepository;
 import com.example.econflip.global.config.security.jwt.JwtUtil;
-import com.example.econflip.global.exception.UnauthorizedException;
 import com.example.econflip.global.util.CookieUtil;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
@@ -72,7 +75,7 @@ public class AuthService {
         // refresh 토큰 쿠키 확인
         String refreshToken = CookieUtil.get(request, "refreshToken");
         if (refreshToken == null) {
-            throw new UnauthorizedException("리프레시 토큰 없음");
+            throw new AuthExcetpion(AuthErrorCode.NOT_FOUND_REFRESH_TOKEN);
         }
 
         // refresh JWT 검증
@@ -82,14 +85,14 @@ public class AuthService {
         // DB에 저장된 refresh 토큰 확인
         RefreshToken saved = refreshTokenRepository.findById(userId)
                 .orElseThrow(() ->
-                        new UnauthorizedException("저장된 리프레시 토큰 없음"));
+                        new AuthExcetpion(AuthErrorCode.NOT_FOUND_REFRESH_TOKEN));
 
         if (!saved.getToken().equals(refreshToken)) {
-            throw new UnauthorizedException("리프레시 토큰 불일치");
+            throw new AuthExcetpion(AuthErrorCode.NOT_FOUND);
         }
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UnauthorizedException("사용자를 찾을 수 없음"));
+                .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
         String newAccess =
                 jwtUtil.createAccessToken(userId, user.getRole().name());
 
