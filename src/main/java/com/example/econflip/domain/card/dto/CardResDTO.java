@@ -1,5 +1,6 @@
 package com.example.econflip.domain.card.dto;
 
+import com.example.econflip.domain.user.dto.UserResDTO;
 import lombok.Builder;
 
 import java.util.List;
@@ -49,6 +50,6 @@ public class CardResDTO {
             Integer gainedXp,
             List<String> correctTerms,
             List<String> wrongTerms,
-            List<String> newBadges
+            List<UserResDTO.BadgeInfo> newBadges
     ){}
 }

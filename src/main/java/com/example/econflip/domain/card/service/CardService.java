@@ -10,6 +10,7 @@ import com.example.econflip.domain.card.exception.code.CardErrorCode;
 import com.example.econflip.domain.card.repository.CardRepository;
 import com.example.econflip.domain.card.repository.QuizRepository;
 import com.example.econflip.domain.user.dto.UserCardReqDTO;
+import com.example.econflip.domain.user.dto.UserResDTO;
 import com.example.econflip.domain.user.entity.User;
 import com.example.econflip.domain.user.entity.mapping.UserCard;
 import com.example.econflip.domain.user.entity.mapping.UserCategory;
@@ -301,9 +302,10 @@ public class CardService {
 
 
         // TODO : badge 업데이트
-        List<String> newBadges = List.of();
+        List<UserResDTO.BadgeInfo> newBadges = List.of();
 
-
+        // 마지막 학습 일자 업데이트
+        user.updateLastStudyDate(LocalDate.now());
 
         return CardResDTO.StudyComplete.builder()
                 .correctCount(correctCount)
