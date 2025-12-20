@@ -8,10 +8,7 @@ import com.example.econflip.domain.user.entity.mapping.UserTitle;
 import com.example.econflip.domain.user.enums.QuizResult;
 import com.example.econflip.domain.user.exception.UserException;
 import com.example.econflip.domain.user.exception.code.UserErrorCode;
-import com.example.econflip.domain.user.repository.UserBadgeRepository;
-import com.example.econflip.domain.user.repository.UserCardRepository;
-import com.example.econflip.domain.user.repository.UserRepository;
-import com.example.econflip.domain.user.repository.UserTitleRepository;
+import com.example.econflip.domain.user.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -28,6 +25,7 @@ public class UserService {
     private final UserTitleRepository userTitleRepository;
     private final UserBadgeRepository userBadgeRepository;
     private final UserCardRepository userCardRepository;
+    private final BadgeService badgeService;
     // 마이페이지 조회
     public UserResDTO.UserMyPage getMypage(Long userId){
 
@@ -62,6 +60,8 @@ public class UserService {
         int studyCompletedCardCount = getTodayStudyCompletedCardCount(userId);
         int quizCompletedCardCount = getTodayQuizCompletedCardCount(userId);
         int reviewRequiredCardCount = getReviewRequiredCardCount(userId);
+        UserResDTO.BadgeInfo earnedBadge = badgeService.giveStreakBadge(userId, user.getStreak());
+
         List<String> recCategory = getRandomRecommendedCategories();
 
         UserResDTO.UserHomePage homePage
@@ -70,7 +70,8 @@ public class UserService {
                 studyCompletedCardCount,
                 quizCompletedCardCount,
                 reviewRequiredCardCount,
-                recCategory
+                recCategory,
+                earnedBadge
         );
 
         return homePage;
@@ -141,7 +142,8 @@ public class UserService {
             int studyCompletedCardCount,
             int quizCompletedCardCount,
             int reviewRequiredCardCount,
-            List<String> recommendedCategory
+            List<String> recommendedCategory,
+            UserResDTO.BadgeInfo earnedBadge
     ) {
         return UserResDTO.UserHomePage.builder()
                 .streak(user.getStreak())
@@ -152,6 +154,7 @@ public class UserService {
                 .quizCompletedCardCount(quizCompletedCardCount)
                 .reviewRequiredCardCount(reviewRequiredCardCount)
                 .recommendedCategory(recommendedCategory)
+                .earnedBadge(earnedBadge)
                 .build();
     }
 
@@ -210,7 +213,7 @@ public class UserService {
         );
     }
 
-    // 추천 주제 랜덤으로 4개 가져오기
+    // 추천 주제
     private List<String> getRandomRecommendedCategories(){
         List<CategoryType> categories = new ArrayList<>(Arrays.asList(CategoryType.values()));
 
