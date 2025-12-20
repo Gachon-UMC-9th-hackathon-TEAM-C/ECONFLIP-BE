@@ -48,10 +48,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
             String socialId = idObj.toString();
 
-            String name = response.get("name") != null
-                    ? response.get("name").toString()
-                    : "네이버유저";
-
             String imageUrl = response.get("profile_image") != null
                     ? response.get("profile_image").toString()
                     : null;
@@ -63,7 +59,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                                     User.createSocialUser(
                                             SocialType.NAVER,
                                             socialId,
-                                            name,
                                             imageUrl
                                     )
                             )
@@ -92,10 +87,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                             ? (Map<String, Object>) kakaoAccount.get("profile")
                             : null;
 
-            String name = profile != null && profile.get("nickname") != null
-                    ? profile.get("nickname").toString()
-                    : "카카오유저";
-
             String imageUrl = profile != null
                     ? (String) profile.get("profile_image_url")
                     : null;
@@ -107,7 +98,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                                     User.createSocialUser(
                                             SocialType.KAKAO,
                                             socialId,
-                                            name,
                                             imageUrl
                                     )
                             )

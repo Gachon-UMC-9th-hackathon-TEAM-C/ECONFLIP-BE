@@ -39,9 +39,6 @@ public class User extends BaseEntity {
     @Column(name = "image_url")
     private String imageUrl;
 
-    @Column(nullable = false, length = 50)
-    private String name;
-
     @Column(name = "level", nullable = false)
     @Builder.Default
     private Integer level = 1;
@@ -74,13 +71,11 @@ public class User extends BaseEntity {
     public static User createSocialUser(
             SocialType socialType,
             String socialId,
-            String name,
             String imageUrl
     ) {
         return User.builder()
                 .socialType(socialType)
                 .socialId(socialId)
-                .name(name)
                 .imageUrl(imageUrl)
                 .role(USER)
                 .build();

@@ -167,7 +167,6 @@ public class UserService {
             int remXp
     ) {
         return UserResDTO.UserMyPage.builder()
-                .name(user.getName())
                 .title(titleName)
                 .currentLevel(user.getLevel())
                 .imageUrl(user.getImageUrl())
