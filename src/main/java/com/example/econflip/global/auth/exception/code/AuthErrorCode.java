@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
 public enum AuthErrorCode implements BaseCode {
 
     NOT_FOUND_REFRESH_TOKEN(HttpStatus.NOT_FOUND,
-            "AUTH401_1",
+            "AUTH404_1",
             "RefreshToken을 찾을 수 없습니다."),
     INVALID_TOKEN(HttpStatus.BAD_REQUEST,
             "AUTH401_2",
