@@ -1,13 +1,12 @@
-package com.example.econflip.global.config.security.auth.controller;
+package com.example.econflip.global.auth.controller;
 
-import com.example.econflip.domain.user.entity.User;
-import com.example.econflip.global.config.security.auth.service.AuthService;
-
+import com.example.econflip.global.apiPayload.ApiResponse;
+import com.example.econflip.global.auth.exception.code.AuthSuccessCode;
+import com.example.econflip.global.auth.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,12 +36,10 @@ public class AuthController implements AuthControllerDocs {
     // 로그아웃
     @Override
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(
-            @AuthenticationPrincipal User user,
-            HttpServletResponse response
-    ) {
-        authService.logout(user.getId(), response);
-        return ResponseEntity.noContent().build();
+    public ApiResponse<?> logout(HttpServletResponse response) {
+
+        authService.logout(response);
+        AuthSuccessCode code = AuthSuccessCode.LOGOUT_SUCCESS;
+        return ApiResponse.onSuccess(code,null);
     }
-    //todo docs 추가하기
 }

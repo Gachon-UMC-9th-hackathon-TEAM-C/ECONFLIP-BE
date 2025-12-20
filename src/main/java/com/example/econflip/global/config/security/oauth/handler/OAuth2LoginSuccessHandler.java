@@ -1,13 +1,14 @@
 package com.example.econflip.global.config.security.oauth.handler;
 
 import com.example.econflip.domain.user.entity.User;
-import com.example.econflip.global.config.security.auth.service.AuthService;
+import com.example.econflip.global.auth.service.AuthService;
 import com.example.econflip.global.config.security.oauth.CustomOAuth2User;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
@@ -36,12 +37,14 @@ public class OAuth2LoginSuccessHandler
         // 서비스 로그인 (JWT 발급 + 쿠키 세팅)
         authService.login(user, response);
 
+        // OAuth2로 잠깐 인증했던 흔적을 지우고 JWT 인증 체계
+        SecurityContextHolder.clearContext();
+
         // 프론트엔드로 리다이렉트
         getRedirectStrategy().sendRedirect(
                 request,
                 response,
-                "https://econflip.gyeonseo.com/swagger-ui/index.html#"
-                //todo 프론트엔드로 리다이랙트 수정
+                "https://localhost:5173/auth/callback"
         );
     }
 }

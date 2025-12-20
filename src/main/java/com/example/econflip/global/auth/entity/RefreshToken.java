@@ -1,4 +1,4 @@
-package com.example.econflip.global.config.security.auth.entity;
+package com.example.econflip.global.auth.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

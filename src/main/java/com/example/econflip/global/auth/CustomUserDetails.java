@@ -1,4 +1,4 @@
-package com.example.econflip.global.config.security.auth;
+package com.example.econflip.global.auth;
 
 import com.example.econflip.domain.user.entity.User;
 import lombok.Getter;

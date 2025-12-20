@@ -2,7 +2,7 @@ package com.example.econflip.global.config.security.jwt;
 
 import com.example.econflip.domain.user.entity.User;
 import com.example.econflip.domain.user.repository.UserRepository;
-import com.example.econflip.global.config.security.auth.CustomUserDetails;
+import com.example.econflip.global.auth.CustomUserDetails;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,6 +29,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         return uri.startsWith("/oauth2/")
                 || uri.startsWith("/login/oauth2/")
                 || uri.startsWith("/swagger")
+                || uri.equals("/api/auth/logout")
+                || uri.equals("/api/auth/refresh")
                 || uri.startsWith("/v3/api-docs");
     }
 

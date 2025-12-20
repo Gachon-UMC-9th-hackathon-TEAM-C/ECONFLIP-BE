@@ -1,6 +1,5 @@
 package com.example.econflip.domain.user.service;
 
-import com.example.econflip.domain.card.enums.CategoryType;
 import com.example.econflip.domain.user.dto.UserResDTO;
 import com.example.econflip.domain.user.entity.User;
 import com.example.econflip.domain.user.entity.mapping.UserBadge;
@@ -62,7 +61,7 @@ public class UserService {
         int reviewRequiredCardCount = getReviewRequiredCardCount(userId);
         UserResDTO.BadgeInfo earnedBadge = badgeService.giveStreakBadge(userId, user.getStreak());
 
-        List<String> recCategory = getRandomRecommendedCategories();
+        List<UserResDTO.CategoryCount> recCategory = getRecommendedCategories(userId);
 
         UserResDTO.UserHomePage homePage
                 = buildUserHomePage(
@@ -142,7 +141,7 @@ public class UserService {
             int studyCompletedCardCount,
             int quizCompletedCardCount,
             int reviewRequiredCardCount,
-            List<String> recommendedCategory,
+            List<UserResDTO.CategoryCount> recommendedCategory,
             UserResDTO.BadgeInfo earnedBadge
     ) {
         return UserResDTO.UserHomePage.builder()
@@ -168,7 +167,6 @@ public class UserService {
             int remXp
     ) {
         return UserResDTO.UserMyPage.builder()
-                .name(user.getName())
                 .title(titleName)
                 .currentLevel(user.getLevel())
                 .imageUrl(user.getImageUrl())
@@ -214,15 +212,8 @@ public class UserService {
     }
 
     // 추천 주제
-    private List<String> getRandomRecommendedCategories(){
-        List<CategoryType> categories = new ArrayList<>(Arrays.asList(CategoryType.values()));
-
-        Collections.shuffle(categories);
-
-        return categories.stream()
-                .limit(4)
-                .map(Enum::name)
-                .toList();
+    private List<UserResDTO.CategoryCount> getRecommendedCategories(Long userId){
+        return userCardRepository.getRecCategory(userId);
     }
 
     // 칭호 최신 1개 가져오기

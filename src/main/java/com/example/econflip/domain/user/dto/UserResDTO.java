@@ -1,13 +1,15 @@
 package com.example.econflip.domain.user.dto;
 
+import com.example.econflip.domain.card.enums.CategoryType;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 
 import java.util.List;
 
 public class UserResDTO {
     @Builder
     public record UserMyPage(
-            String name,
             String title,
             String imageUrl,
             Integer currentLevel,
@@ -29,7 +31,7 @@ public class UserResDTO {
             Integer studyCompletedCardCount,
             Integer quizCompletedCardCount,
             Integer reviewRequiredCardCount,
-            List<String> recommendedCategory,
+            List<CategoryCount> recommendedCategory,
             BadgeInfo earnedBadge
     ){}
 
@@ -46,4 +48,11 @@ public class UserResDTO {
             String title,
             String comment
     ){}
+
+    @Getter
+    @AllArgsConstructor
+    public static class CategoryCount {
+        private CategoryType category;
+        private Long isLearnedCount;
+    }
 }

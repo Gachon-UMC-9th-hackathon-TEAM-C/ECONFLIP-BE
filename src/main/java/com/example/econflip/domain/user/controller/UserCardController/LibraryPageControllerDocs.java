@@ -2,10 +2,12 @@ package com.example.econflip.domain.user.controller.UserCardController;
 
 import com.example.econflip.domain.card.enums.CategoryType;
 import com.example.econflip.domain.user.dto.UserCardResDTO;
+import com.example.econflip.domain.user.entity.User;
 import com.example.econflip.global.apiPayload.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -20,9 +22,9 @@ public interface LibraryPageControllerDocs {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "실패")
     })
-    @GetMapping("/library")
+    @GetMapping("/api/library")
     public ApiResponse<UserCardResDTO.libraryPage> libraryPage(
-            Long userId,
+            User user,
             @RequestParam(required = false) CategoryType category
     );
 }

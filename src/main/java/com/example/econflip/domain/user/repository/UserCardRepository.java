@@ -1,9 +1,8 @@
 package com.example.econflip.domain.user.repository;
 
 import com.example.econflip.domain.card.enums.CategoryType;
+import com.example.econflip.domain.user.dto.UserResDTO;
 import com.example.econflip.domain.user.dto.reviewCard;
-import com.example.econflip.domain.user.entity.Badge;
-import com.example.econflip.domain.user.entity.User;
 import com.example.econflip.domain.user.entity.mapping.UserCard;
 import com.example.econflip.domain.user.enums.QuizResult;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -73,4 +72,14 @@ public interface UserCardRepository extends JpaRepository<UserCard, Long> {
         or uc.dontKnow = true)
 """)
     int countReviewRequiredCards(@Param("userId") Long userId, @Param("wrong") QuizResult wrong);
+
+    @Query("""
+select new com.example.econflip.domain.user.dto.UserResDTO$CategoryCount(c.category, count(uc))
+from UserCard uc
+join uc.card c
+where uc.user.id = :userId
+  and uc.isConfirmed = true
+group by c.category
+""")
+    List<UserResDTO.CategoryCount> getRecCategory(@Param("userId") Long userId);
 }
