@@ -44,6 +44,7 @@ public class UserResDTO {
 
     @Builder
     public record BadgeInfo(
+            Long badgeId,
             String title,
             String comment
     ){}

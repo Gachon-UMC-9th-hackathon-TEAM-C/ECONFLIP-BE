@@ -8,6 +8,8 @@ import com.example.econflip.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
+
 import static com.example.econflip.domain.user.enums.Role.USER;
 
 @Entity
@@ -51,6 +53,9 @@ public class User extends BaseEntity {
     @Builder.Default
     private Integer streak = 0;
 
+    @Column(name = "last_study_date", nullable = false)
+    private LocalDate lastStudyDate;
+
     @Column(name = "active", nullable = false)
     @Builder.Default
     private Boolean active = true;
@@ -93,5 +98,9 @@ public class User extends BaseEntity {
         this.level += level;
         this.streak++;
         this.isLearned = true;
+    }
+  
+    public void updateLastStudyDate(LocalDate lastStudyDate) {
+        this.lastStudyDate = lastStudyDate;
     }
 }
