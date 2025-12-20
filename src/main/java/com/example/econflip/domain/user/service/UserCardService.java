@@ -10,6 +10,7 @@ import com.example.econflip.domain.user.repository.UserCardRepository;
 import com.example.econflip.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -61,6 +62,7 @@ public class UserCardService {
         return page;
     }
 
+    @Transactional
     public UserCardResDTO.bookmarkClick updateBookmark(Long userId, Long cardId){
         int updated = userCardRepository.toggleBookmark(userId, cardId);
         if(updated==0) throw new UserException(UserErrorCode.BOOKMARK_FAILED);
