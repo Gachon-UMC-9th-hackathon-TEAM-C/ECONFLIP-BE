@@ -16,7 +16,7 @@ public class RefreshToken {
     @Id
     private Long userId;
 
-    @Column(nullable = false, length = 500)
+    @Column(nullable = false, length = 1000)
     private String token;
 
     private RefreshToken(Long userId, String token){
