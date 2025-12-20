@@ -2,6 +2,7 @@ package com.example.econflip.domain.card.controller;
 
 import com.example.econflip.domain.card.dto.CardReqDTO;
 import com.example.econflip.domain.card.dto.CardResDTO;
+import com.example.econflip.domain.user.dto.UserCardReqDTO;
 import com.example.econflip.domain.user.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import com.example.econflip.global.apiPayload.ApiResponse;
@@ -29,7 +30,7 @@ public interface CardControllerDocs {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "실패")
     })
-    void confirmCard(User user, Long cardId);
+    void confirmCard(User user, Long cardId, UserCardReqDTO.DontKnowReqDTO request);
 
 
     @Operation(
