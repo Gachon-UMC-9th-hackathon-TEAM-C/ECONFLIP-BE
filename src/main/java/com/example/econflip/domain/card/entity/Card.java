@@ -36,8 +36,8 @@ public class Card extends BaseEntity {
     private Integer difficulty;
 
     @Column(name = "quiz_fill_blank", length = 255, nullable = false)
-    private String quiz_fill_blank;
+    private String quizFillBlank;
 
     @Column(name = "quiz_case", length = 255, nullable = false)
-    private String quiz_case;
+    private String quizCase;
 }

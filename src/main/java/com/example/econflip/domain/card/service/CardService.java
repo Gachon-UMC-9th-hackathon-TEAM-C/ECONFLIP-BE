@@ -333,8 +333,8 @@ public class CardService {
     // 두 개 타입의 퀴즈 문제(quiz_fill_blank, quiz_case) 중 랜덤하게 한개 선택
     private String pickRandomQuiz(Card card) {
         return ThreadLocalRandom.current().nextBoolean()
-                ? card.getQuiz_fill_blank()
-                : card.getQuiz_case();
+                ? card.getQuizFillBlank()
+                : card.getQuizCase();
     }
 
 
