@@ -226,6 +226,60 @@ public class CardService {
                 .commentary(choiceQuiz.getCommentary())
                 .build();
     }
+    
+    @Transactional
+    public CardResDTO.StudyComplete completeTodayStudy(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
+        
+        if(user.getIsLearned()) {
+            // TODO : 예외처리
+        }
+
+        // 오늘의 user_card 조회
+        LocalDateTime start = LocalDate.now().atStartOfDay();
+        LocalDateTime end = start.plusDays(1);
+
+        List<UserCard> todayUserCards = userCardRepository.findByUserIdAndCreatedAtBetween(userId, start, end);
+        if (todayUserCards.isEmpty()) {
+            // TODO : 예외처리
+        }
+
+        // TODO : 학습 완료 여부 검증 처리
+
+        // 퀴즈 결과 집계
+        List<String> correctTerms = new ArrayList<>();
+        List<String> wrongTerms = new ArrayList<>();
+        int correctCount = 0;
+
+        for (UserCard userCard : todayUserCards) {
+            if (userCard.getQuizResult() == QuizResult.CORRECT) {
+                correctCount++;
+                correctTerms.add(userCard.getCard().getTerm());
+            } else if (userCard.getQuizResult() == QuizResult.WRONG) {
+                wrongTerms.add(userCard.getCard().getTerm());
+            }
+        }
+
+        // User XP, 레벨, streak, is_learned 업데이트
+        int gainedXp = correctCount * 10; // 한 문제당 10xp
+        int totalXp = user.getXp() + gainedXp;
+        int gainedLevel = (gainedXp > 0 && totalXp % 50 == 0) ? 1 : 0;
+        user.completeTodayStudy(totalXp, gainedLevel);
+
+        // TODO : pointer 업데이트
+
+        // TODO : badge 업데이트
+        List<String> newBades = List.of();
+
+        return CardResDTO.StudyComplete.builder()
+                .correctCount(correctCount)
+                .gainedXp(gainedXp)
+                .correctTerms(correctTerms)
+                .wrongTerms(wrongTerms)
+                .newBadges(newBades)
+                .build();
+    }
 
     // 동일한 주제 리스트 내에서 랜덤으로 관련 용어 3개 추출
     private List<String> pickRelatedTerms(List<Card> categoryCards, String currentTerm)
