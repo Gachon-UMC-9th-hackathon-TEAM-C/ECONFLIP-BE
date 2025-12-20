@@ -1,20 +1,22 @@
 package com.example.econflip.global.config.security.oauth.handler;
 
+import com.example.econflip.domain.user.entity.User;
 import com.example.econflip.global.config.security.auth.service.AuthService;
 import com.example.econflip.global.config.security.oauth.CustomOAuth2User;
-import jakarta.servlet.http.Cookie;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
-public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
+public class OAuth2LoginSuccessHandler
+        extends SimpleUrlAuthenticationSuccessHandler {
 
     private final AuthService authService;
 
@@ -23,24 +25,23 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             HttpServletRequest request,
             HttpServletResponse response,
             Authentication authentication
-    ) throws IOException {
+    ) throws IOException, ServletException {
 
-        Object principal = authentication.getPrincipal();
-        if (!(principal instanceof CustomOAuth2User)) {
-            throw new IllegalStateException("Unexpected principal type: " + principal.getClass().getName());
-        }
-        CustomOAuth2User oauth2User = (CustomOAuth2User) principal;
+        //  OAuth 인증된 사용자 꺼내기
+        CustomOAuth2User oAuth2User =
+                (CustomOAuth2User) authentication.getPrincipal();
 
-        String accessToken = authService.login(oauth2User.getUser());
+        User user = oAuth2User.getUser();
 
-        Cookie cookie = new Cookie("accessToken", accessToken);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(60 * 60);
-        cookie.setAttribute("SameSite", "Lax");
+        // 서비스 로그인 (JWT 발급 + 쿠키 세팅)
+        authService.login(user, response);
 
-        response.addCookie(cookie);
-        response.sendRedirect("/home");
+        // 프론트엔드로 리다이렉트
+        getRedirectStrategy().sendRedirect(
+                request,
+                response,
+                "https://econflip.gyeonseo.com/swagger-ui/index.html#"
+                //todo 프론트엔드로 리다이랙트 수정
+        );
     }
 }

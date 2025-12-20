@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -21,9 +22,11 @@ public class SecurityConfig {
     private final JwtAuthFilter jwtAuthFilter;
     private final OAuth2LoginSuccessHandler successHandler;
     private final CustomOAuth2UserService customOAuth2UserService;
+    private final AuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     private static final String[] PERMIT_URLS = {
             "/",
+            "/health",
             "/swagger-ui/**",
             "/v3/api-docs/**",
             "/swagger/login/**",
@@ -34,12 +37,20 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
+
         http
                 .csrf(csrf -> csrf.disable())
+                .cors(cors -> {})
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
+
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                )
+
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/logout").authenticated()
                         .requestMatchers(PERMIT_URLS).permitAll()
                         .anyRequest().authenticated()
                 )
