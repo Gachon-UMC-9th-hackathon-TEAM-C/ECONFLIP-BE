@@ -31,7 +31,8 @@ public class SecurityConfig {
             "/v3/api-docs/**",
             "/swagger/login/**",
             "/oauth2/authorization/**",
-            "/login/oauth2/code/**"
+            "/login/oauth2/code/**",
+            "/api/auth/logout"
     };
 
     @Bean
@@ -42,7 +43,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> {})
                 .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
 
                 .exceptionHandling(ex -> ex
@@ -50,7 +51,6 @@ public class SecurityConfig {
                 )
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/logout").authenticated()
                         .requestMatchers(PERMIT_URLS).permitAll()
                         .anyRequest().authenticated()
                 )

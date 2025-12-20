@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
@@ -35,6 +36,9 @@ public class OAuth2LoginSuccessHandler
 
         // 서비스 로그인 (JWT 발급 + 쿠키 세팅)
         authService.login(user, response);
+
+        // OAuth2로 잠깐 인증했던 흔적을 지우고 JWT 인증 체계
+        SecurityContextHolder.clearContext();
 
         // 프론트엔드로 리다이렉트
         getRedirectStrategy().sendRedirect(
