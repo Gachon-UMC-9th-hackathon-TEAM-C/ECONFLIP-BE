@@ -1,7 +1,8 @@
 package com.example.econflip.global.config.security.auth.controller;
 
+import com.example.econflip.domain.user.entity.User;
 import com.example.econflip.global.config.security.auth.service.AuthService;
-import io.swagger.v3.oas.annotations.Operation;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -15,58 +16,33 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auth")
-public class AuthController {
+public class AuthController implements AuthControllerDocs {
 
     private final AuthService authService;
 
+    @Override
     @GetMapping("/login/naver")
-    @Operation(
-            summary = "네이버 로그인 (브라우저 리다이렉트)",
-            description = """
-    이 엔드포인트는 API 호출용이 아닙니다.
-
-    프론트엔드에서 로그인 버튼 클릭 시
-    아래 URL로 페이지 이동(redirect)시키면
-    네이버 로그인이 시작됩니다.
-
-    [개발 환경]
-    http://localhost:8080/oauth2/authorization/naver
-    [운영 환경]
-    http://52.79.121.228:8080/oauth2/authorization/naver
-    """
-    )
     public void naverLoginInfo(){}
 
+    @Override
     @GetMapping("/login/kakao")
-    @Operation(
-            summary = "카카오 로그인 (브라우저 리다이렉트)",
-            description = """
-    이 엔드포인트는 API 호출용이 아닙니다.
-
-    프론트엔드에서 로그인 버튼 클릭 시
-    아래 URL로 페이지 이동(redirect)시키면
-    카카오 로그인이 시작됩니다.
-
-    [개발 환경]
-    http://localhost:8080/oauth2/authorization/kakao
-    [운영 환경]
-    http://52.79.121.228:8080/oauth2/authorization/kakao
-    """
-    )
     public void kakaoLoginInfo(){}
 
+    @Override
     @PostMapping("/refresh")
     public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response){
         return authService.reissue(request,response);
     }
 
     // 로그아웃
+    @Override
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(
-            @AuthenticationPrincipal String userId,
+    public ResponseEntity<Void> logout(
+            @AuthenticationPrincipal User user,
             HttpServletResponse response
     ) {
-        return authService.logout(Long.valueOf(userId), response);
+        authService.logout(user.getId(), response);
+        return ResponseEntity.noContent().build();
     }
     //todo docs 추가하기
 }
