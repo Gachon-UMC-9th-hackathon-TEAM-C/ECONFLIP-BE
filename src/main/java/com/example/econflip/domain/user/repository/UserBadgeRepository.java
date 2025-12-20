@@ -40,4 +40,6 @@ public interface UserBadgeRepository extends JpaRepository<UserBadge, Long> {
 """)
     int touchUpdatedAt(@Param("userId") Long userId,
                        @Param("badgeIds") List<Long> badgeIds);
+
+    boolean existsByUser_IdAndBadge_Id(Long userId, Long badgeId);
 }

@@ -29,12 +29,8 @@ public class UserResDTO {
             Integer studyCompletedCardCount,
             Integer quizCompletedCardCount,
             Integer reviewRequiredCardCount,
-            List<String> recommendedCategory
-    ){}
-
-    @Builder
-    public record UserSetting(
-            Integer dailyStudy
+            List<String> recommendedCategory,
+            BadgeInfo earnedBadge
     ){}
 
     @Builder
@@ -42,5 +38,11 @@ public class UserResDTO {
             Long badgeId,
             String title,
             boolean earned
+    ){}
+
+    @Builder
+    public record BadgeInfo(
+            String title,
+            String comment
     ){}
 }

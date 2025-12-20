@@ -28,4 +28,8 @@ public class UserCategory extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    public void updatePointer(Integer pointer) {
+        this.pointer = pointer;
+    }
 }

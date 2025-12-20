@@ -7,7 +7,6 @@ import java.util.List;
 public class CardResDTO {
     @Builder
     public record TodayStudySet (
-            Long studySetId,
             List<StudyCard> cards,
             List<QuizQuestion> quizzes
     ){}
@@ -46,7 +45,10 @@ public class CardResDTO {
 
     @Builder
     public record StudyComplete (
-            Integer correctRate,
-            Integer xp
+            Integer correctCount,
+            Integer gainedXp,
+            List<String> correctTerms,
+            List<String> wrongTerms,
+            List<String> newBadges
     ){}
 }
