@@ -30,7 +30,8 @@ public class CorsConfig {
         config.setAllowedHeaders(List.of("*"));
 
         // 쿠키/JWT 인증 사용 시 필수
-        config.setAllowCredentials(true);
+        //config.setAllowCredentials(true);
+        config.setAllowCredentials(false);
 
         config.setExposedHeaders(List.of(
                 "Set-Cookie",
