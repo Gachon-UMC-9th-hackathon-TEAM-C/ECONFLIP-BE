@@ -28,7 +28,7 @@ public interface AuthControllerDocs {
     [개발 환경]
     http://localhost:8080/oauth2/authorization/naver
     [운영 환경]
-    http://52.79.121.228:8080/oauth2/authorization/naver
+    https://econflip.gyeonseo.com/oauth2/authorization/naver
     """
     )
     default void naverLoginInfo(){}
@@ -46,7 +46,7 @@ public interface AuthControllerDocs {
     [개발 환경]
     http://localhost:8080/oauth2/authorization/kakao
     [운영 환경]
-    http://52.79.121.228:8080/oauth2/authorization/kakao
+    https://econflip.gyeonseo.com/oauth2/authorization/kakao
     """
     )
     default void kakaoLoginInfo(){}
