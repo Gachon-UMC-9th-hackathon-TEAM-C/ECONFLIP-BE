@@ -189,10 +189,11 @@ public class UserService {
         LocalDateTime startOfToday = LocalDate.now().atStartOfDay();
         LocalDateTime startOfTomorrow = startOfToday.plusDays(1);
 
-        return userCardRepository.countByUser_IdAndCreatedAtBetween(
+        return userCardRepository.countByUser_IdAndCreatedAtBetweenAndIsConfirmed(
                         userId,
                         startOfToday,
-                        startOfTomorrow
+                        startOfTomorrow,
+                        true
                 );
     }
 

@@ -2,6 +2,7 @@ package com.example.econflip.domain.user.repository;
 
 import com.example.econflip.domain.card.enums.CategoryType;
 import com.example.econflip.domain.user.dto.reviewCard;
+import com.example.econflip.domain.user.entity.Badge;
 import com.example.econflip.domain.user.entity.User;
 import com.example.econflip.domain.user.entity.mapping.UserCard;
 import com.example.econflip.domain.user.enums.QuizResult;
@@ -58,7 +59,7 @@ public interface UserCardRepository extends JpaRepository<UserCard, Long> {
     // 유저가 북마크한 카드 수
     int countByUser_IdAndIsBookmarkedTrue(Long userId);
     
-    int countByUser_IdAndCreatedAtBetween(Long userId, LocalDateTime startOfToday, LocalDateTime startOfTomorrow);
+    int countByUser_IdAndCreatedAtBetweenAndIsConfirmed(Long userId, LocalDateTime startOfToday, LocalDateTime startOfTomorrow, boolean isConfirmed);
 
     int countByUser_IdAndQuizResultNotAndCreatedAtBetween(Long userId, QuizResult quizResult, LocalDateTime startOfToday, LocalDateTime startOfTomorrow);
 
