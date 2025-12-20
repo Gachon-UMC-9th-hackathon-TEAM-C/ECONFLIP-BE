@@ -42,7 +42,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> {})
                 .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
 
                 .exceptionHandling(ex -> ex
