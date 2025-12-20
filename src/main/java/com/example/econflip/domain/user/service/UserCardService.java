@@ -61,6 +61,14 @@ public class UserCardService {
         return page;
     }
 
+    public UserCardResDTO.bookmarkClick updateBookmark(Long userId, Long cardId){
+        int updated = userCardRepository.toggleBookmark(userId, cardId);
+        if(updated==0) throw new UserException(UserErrorCode.BOOKMARK_FAILED);
+
+        boolean bookmarked = userCardRepository.findBookmark(userId, cardId);
+        return toBookmarkClick(cardId, bookmarked);
+    }
+
     // converter
     private UserCardResDTO.reviewPage toReviewPageDto(int count, List<reviewCard> list, int min) {
         return UserCardResDTO.reviewPage.builder()
@@ -77,6 +85,16 @@ public class UserCardService {
         return UserCardResDTO.libraryPage.builder()
                 .categories(categories)
                 .libraryCardList(libraryCardList)
+                .build();
+    }
+
+    private UserCardResDTO.bookmarkClick toBookmarkClick(
+            Long id,
+            boolean bookmarked
+    ){
+        return UserCardResDTO.bookmarkClick.builder()
+                .cardId(id)
+                .bookmarked(bookmarked)
                 .build();
     }
 }
