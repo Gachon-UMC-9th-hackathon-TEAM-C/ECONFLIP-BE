@@ -1,6 +1,7 @@
 package com.example.econflip.global.config.security.auth.service;
 
 import com.example.econflip.domain.user.entity.User;
+import com.example.econflip.domain.user.repository.UserRepository;
 import com.example.econflip.global.config.security.auth.entity.RefreshToken;
 import com.example.econflip.global.config.security.auth.repository.RefreshTokenRepository;
 import com.example.econflip.global.config.security.jwt.JwtUtil;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthService {
 
     private final JwtUtil jwtUtil;
+    private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
 
     // OAuth 로그인 성공 후 AccessToken 생성
@@ -86,9 +88,10 @@ public class AuthService {
             throw new UnauthorizedException("리프레시 토큰 불일치");
         }
 
-        // 새 AccessToken 발급
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UnauthorizedException("사용자를 찾을 수 없음"));
         String newAccess =
-                jwtUtil.createAccessToken(userId, "USER");
+                jwtUtil.createAccessToken(userId, user.getRole().name());
 
         // (권장) Refresh Token 회전
         String newRefresh =
@@ -109,7 +112,7 @@ public class AuthService {
     }
 
     @Transactional
-    public ResponseEntity<?> logout(
+    public void logout(
             Long userId,
             HttpServletResponse response
     ) {
@@ -123,7 +126,5 @@ public class AuthService {
                 "Set-Cookie",
                 CookieUtil.delete("refreshToken").toString()
         );
-
-        return ResponseEntity.ok().build();
     }
 }
