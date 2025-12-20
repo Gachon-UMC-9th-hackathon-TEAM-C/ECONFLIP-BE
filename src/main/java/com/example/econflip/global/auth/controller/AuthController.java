@@ -1,7 +1,7 @@
-package com.example.econflip.global.config.security.auth.controller;
+package com.example.econflip.global.auth.controller;
 
 import com.example.econflip.domain.user.entity.User;
-import com.example.econflip.global.config.security.auth.service.AuthService;
+import com.example.econflip.global.auth.service.AuthService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -44,5 +44,4 @@ public class AuthController implements AuthControllerDocs {
         authService.logout(user.getId(), response);
         return ResponseEntity.noContent().build();
     }
-    //todo docs 추가하기
 }

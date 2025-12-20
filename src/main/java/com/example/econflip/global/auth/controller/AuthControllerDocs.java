@@ -1,4 +1,4 @@
-package com.example.econflip.global.config.security.auth.controller;
+package com.example.econflip.global.auth.controller;
 
 import com.example.econflip.domain.user.entity.User;
 import io.swagger.v3.oas.annotations.Operation;

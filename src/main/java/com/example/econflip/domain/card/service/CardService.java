@@ -9,6 +9,7 @@ import com.example.econflip.domain.card.exception.CardException;
 import com.example.econflip.domain.card.exception.code.CardErrorCode;
 import com.example.econflip.domain.card.repository.CardRepository;
 import com.example.econflip.domain.card.repository.QuizRepository;
+import com.example.econflip.domain.user.dto.UserCardReqDTO;
 import com.example.econflip.domain.user.entity.User;
 import com.example.econflip.domain.user.entity.mapping.UserCard;
 import com.example.econflip.domain.user.entity.mapping.UserCategory;
@@ -185,10 +186,13 @@ public class CardService {
 
     // 카드 학습 완료 처리 API
     @Transactional
-    public void confirmCard(Long userId, Long cardId) {
+    public void confirmCard(Long userId, Long cardId, UserCardReqDTO.DontKnowReqDTO dto) {
         UserCard userCard = findTodayUserCard(userId, cardId);
         if(!userCard.isConfirmed()) {
             userCard.confirm();
+        }
+        if(dto.dontKnow()) {
+            userCard.dontknow();
         }
     }
 
