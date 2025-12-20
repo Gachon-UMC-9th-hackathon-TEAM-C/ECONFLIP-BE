@@ -9,6 +9,7 @@ public record libraryCard(
         boolean isBookmarked,
 
         // card table
+        Long cardId,
         String term,
         String descript,
         CategoryType category

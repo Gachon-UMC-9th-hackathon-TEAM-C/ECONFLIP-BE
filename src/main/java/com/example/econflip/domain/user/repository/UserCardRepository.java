@@ -35,7 +35,7 @@ public interface UserCardRepository extends JpaRepository<UserCard, Long> {
     Optional<UserCard> findByUserIdAndCardIdAndCreatedAtBetween(Long userId, Long cardId, LocalDateTime start, LocalDateTime end);
            
     @Query("""
-    select new com.example.econflip.domain.user.dto.libraryCard(uc.isBookmarked, c.term, c.descript, c.category)
+    select new com.example.econflip.domain.user.dto.libraryCard(uc.isBookmarked, c.id, c.term, c.descript, c.category)
     from UserCard uc
     join uc.card c
     where uc.user.id = :userId
@@ -43,7 +43,7 @@ public interface UserCardRepository extends JpaRepository<UserCard, Long> {
     List<libraryCard> findLibraryCardByUserId(Long userId);
 
     @Query("""
-    select new com.example.econflip.domain.user.dto.libraryCard(uc.isBookmarked, c.term, c.descript, c.category)
+    select new com.example.econflip.domain.user.dto.libraryCard(uc.isBookmarked, c.id, c.term, c.descript, c.category)
     from UserCard uc
     join uc.card c
     where uc.user.id = :userId
