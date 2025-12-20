@@ -34,4 +34,7 @@ public class Card extends BaseEntity {
 
     @Column(name = "example", length = 255, nullable = false)
     private String example;
+
+    @Column(name = "difficulty", nullable = false)
+    private Integer difficulty;
 }

@@ -92,4 +92,11 @@ public class User extends BaseEntity {
         }
         this.dailyStudy = count;
     }
+
+    public void completeTodayStudy(Integer xp, Integer level) {
+        this.xp = xp;
+        this.level += level;
+        this.streak++;
+        this.isLearned = true;
+    }
 }
