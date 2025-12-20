@@ -1,7 +1,7 @@
 package com.example.econflip.global.config.security.oauth.handler;
 
 import com.example.econflip.domain.user.entity.User;
-import com.example.econflip.global.config.security.auth.service.AuthService;
+import com.example.econflip.global.auth.service.AuthService;
 import com.example.econflip.global.config.security.oauth.CustomOAuth2User;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
