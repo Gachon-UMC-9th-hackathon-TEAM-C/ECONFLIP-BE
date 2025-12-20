@@ -74,11 +74,11 @@ public interface UserCardRepository extends JpaRepository<UserCard, Long> {
     int countReviewRequiredCards(@Param("userId") Long userId, @Param("wrong") QuizResult wrong);
 
     @Query("""
-select new com.example.econflip.domain.user.dto.UserResDTO.CategoryCount(c.category, count(uc))
+select new com.example.econflip.domain.user.dto.UserResDTO$CategoryCount(c.category, count(uc))
 from UserCard uc
 join uc.card c
-where uc.user.id = :userId and
-uc.isConfirmed = true
+where uc.user.id = :userId
+  and uc.isConfirmed = true
 group by c.category
 """)
     List<UserResDTO.CategoryCount> getRecCategory(@Param("userId") Long userId);
