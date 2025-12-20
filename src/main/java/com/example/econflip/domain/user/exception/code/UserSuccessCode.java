@@ -25,7 +25,16 @@ public enum UserSuccessCode implements BaseCode {
             "유저가 획득한 배지 조회에 성공했습니다."),
     MYPAGE_BADGES_OK(HttpStatus.OK,
             "USER200_6",
-            "마이페이지 배지 구성이 변경되었습니다.")
+            "마이페이지 배지 구성이 변경되었습니다."),
+    REVIEW_PAGE_OK(HttpStatus.OK,
+            "USER200_7",
+                    "리뷰페이지 조회에 성공했습니다."),
+    ENTIRE_LIBRARY_OK(HttpStatus.OK,
+            "USER200_8",
+            "전체 라이브러리 페이지 조회에 성공했습니다."),
+    CATEGORY_LIBRARY_OK(HttpStatus.OK,
+            "USER200_9",
+            "카테고리 라이브러리 페이지 조회에 성공했습니다.")
     ;
     private final HttpStatus status;
     private final String code;

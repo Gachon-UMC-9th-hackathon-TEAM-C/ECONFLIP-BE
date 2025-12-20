@@ -21,7 +21,7 @@ public class ReviewPageController implements ReviewPageControllerDocs{
     ){
         UserCardResDTO.reviewPage result = userCardService.getReviewPage(user.getId());
 
-        UserSuccessCode code = UserSuccessCode.OK;
+        UserSuccessCode code = UserSuccessCode.REVIEW_PAGE_OK;
         return ApiResponse.onSuccess(code, result);
     }
 }
