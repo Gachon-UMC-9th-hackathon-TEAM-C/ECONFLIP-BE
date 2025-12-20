@@ -6,6 +6,7 @@ import com.example.econflip.domain.user.entity.User;
 import com.example.econflip.global.apiPayload.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -99,6 +100,6 @@ public interface UserControllerDocs {
     })
     ApiResponse<Void> selectMyPageBadges(
             @AuthenticationPrincipal(expression = "user") User user,
-            @RequestBody UserReqDTO.BadgeSelectReqDTO request
+            @Valid @RequestBody UserReqDTO.BadgeSelectReqDTO request
     );
 }
