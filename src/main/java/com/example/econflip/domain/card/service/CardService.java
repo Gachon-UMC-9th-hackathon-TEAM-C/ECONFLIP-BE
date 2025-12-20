@@ -179,7 +179,6 @@ public class CardService {
 
         // 5. TodayStudySet 반환
         return CardResDTO.TodayStudySet.builder()
-                .studySetId(UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE)
                 .cards(cards)
                 .quizzes(quizzes)
                 .build();
@@ -240,6 +239,7 @@ public class CardService {
         LocalDateTime start = LocalDate.now().atStartOfDay();
         LocalDateTime end = start.plusDays(1);
 
+        // 오늘 학습한 카드 리스트
         List<UserCard> todayUserCards = userCardRepository.findByUserIdAndCreatedAtBetween(userId, start, end);
         if (todayUserCards.isEmpty()) {
             // TODO : 예외처리
@@ -267,10 +267,31 @@ public class CardService {
         int gainedLevel = (gainedXp > 0 && totalXp % 50 == 0) ? 1 : 0;
         user.completeTodayStudy(totalXp, gainedLevel);
 
-        // TODO : pointer 업데이트
+        // pointer 업데이트
+        // 오늘 학습한 카드들을 카테고리별로 그룹화
+        Map<CategoryType, Long> learnedCountByCategory = todayUserCards.stream()
+                .filter(UserCard :: isConfirmed)
+                .collect(Collectors.groupingBy(userCard -> userCard.getCard().getCategory(),
+                        Collectors.counting()));
+
+        // 해당 카테고리의 UserCategory 조회
+        List<UserCategory> userCategories = userCategoryRepository.findByUserIdAndCategoryIn(userId,
+                new ArrayList<>(learnedCountByCategory.keySet()));
+
+        // 카테고리별 pointer 업데이트
+        for (UserCategory userCategory : userCategories) {
+            CategoryType category = userCategory.getCategory();
+            int currentPointer = userCategory.getPointer();
+            long learnedCount = learnedCountByCategory.get(category);
+
+            userCategory.updatePointer(currentPointer + (int) learnedCount);
+        }
+
 
         // TODO : badge 업데이트
         List<String> newBades = List.of();
+
+
 
         return CardResDTO.StudyComplete.builder()
                 .correctCount(correctCount)
