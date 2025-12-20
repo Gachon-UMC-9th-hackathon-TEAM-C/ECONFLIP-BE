@@ -37,7 +37,7 @@ public class CardController implements CardControllerDocs{
     public void confirmCard(
             @AuthenticationPrincipal(expression = "user") User user,
             @PathVariable Long cardId,
-            @RequestBody UserCardReqDTO.DontKnowReqDTO request
+            UserCardReqDTO.DontKnowReqDTO request
     ) {
         cardService.confirmCard(user.getId(), cardId, request);
     }
