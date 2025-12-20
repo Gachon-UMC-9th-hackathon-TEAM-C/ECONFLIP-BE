@@ -40,8 +40,7 @@ public class OAuth2LoginSuccessHandler
         getRedirectStrategy().sendRedirect(
                 request,
                 response,
-                "https://econflip.gyeonseo.com/swagger-ui/index.html#"
-                //todo 프론트엔드로 리다이랙트 수정
+                "https://localhost:5173/auth/callback"
         );
     }
 }
