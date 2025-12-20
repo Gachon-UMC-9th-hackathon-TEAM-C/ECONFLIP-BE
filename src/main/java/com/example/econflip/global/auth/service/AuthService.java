@@ -5,7 +5,7 @@ import com.example.econflip.domain.user.exception.UserException;
 import com.example.econflip.domain.user.exception.code.UserErrorCode;
 import com.example.econflip.domain.user.repository.UserRepository;
 import com.example.econflip.global.auth.entity.RefreshToken;
-import com.example.econflip.global.auth.exception.AuthExcetpion;
+import com.example.econflip.global.auth.exception.AuthException;
 import com.example.econflip.global.auth.exception.code.AuthErrorCode;
 import com.example.econflip.global.auth.repository.RefreshTokenRepository;
 import com.example.econflip.global.config.security.jwt.JwtUtil;
@@ -75,7 +75,7 @@ public class AuthService {
         // refresh 토큰 쿠키 확인
         String refreshToken = CookieUtil.get(request, "refreshToken");
         if (refreshToken == null) {
-            throw new AuthExcetpion(AuthErrorCode.NOT_FOUND_REFRESH_TOKEN);
+            throw new AuthException(AuthErrorCode.NOT_FOUND_REFRESH_TOKEN);
         }
 
         // refresh JWT 검증
@@ -85,10 +85,10 @@ public class AuthService {
         // DB에 저장된 refresh 토큰 확인
         RefreshToken saved = refreshTokenRepository.findById(userId)
                 .orElseThrow(() ->
-                        new AuthExcetpion(AuthErrorCode.NOT_FOUND_REFRESH_TOKEN));
+                        new AuthException(AuthErrorCode.NOT_FOUND_REFRESH_TOKEN));
 
         if (!saved.getToken().equals(refreshToken)) {
-            throw new AuthExcetpion(AuthErrorCode.NOT_FOUND);
+            throw new AuthException(AuthErrorCode.NOT_FOUND);
         }
 
         User user = userRepository.findById(userId)
