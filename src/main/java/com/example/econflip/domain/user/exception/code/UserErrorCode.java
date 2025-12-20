@@ -19,7 +19,10 @@ public enum UserErrorCode implements BaseCode {
             "배지 선택은 최대 4까지 설정할 수 있습니다."),
     BADGE_NOT_OWNED(HttpStatus.BAD_REQUEST,
             "USER400_3",
-            "획득한 배지만 선택할 수 있습니다.")
+            "획득한 배지만 선택할 수 있습니다."),
+    BADGE_NOT_FOUND(HttpStatus.NOT_FOUND,
+            "USER404_2",
+            "해당 배지를 찾을 수 없습니다.")
     ;
     private final HttpStatus status;
     private final String code;
