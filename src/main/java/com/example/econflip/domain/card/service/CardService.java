@@ -245,7 +245,19 @@ public class CardService {
             // TODO : 예외처리
         }
 
-        // TODO : 학습 완료 여부 검증 처리
+        // 학습 완료 여부 검증 처리
+        boolean hasUnconfirmedCard = todayUserCards.stream().anyMatch(userCard -> !userCard.isConfirmed());
+        boolean hasUnsolvedQuiz = todayUserCards.stream()
+                .anyMatch(userCard -> userCard.getQuizResult() == QuizResult.UNSEEN);
+
+        if (hasUnconfirmedCard) {
+            throw new CardException(CardErrorCode.STUDY_CARD_NOT_FINISHED);
+        }
+        if (hasUnsolvedQuiz) {
+            throw new CardException(CardErrorCode.STUDY_QUIZ_NOT_FINISHED);
+        }
+
+
 
         // 퀴즈 결과 집계
         List<String> correctTerms = new ArrayList<>();
