@@ -272,13 +272,13 @@ public class CardService {
         // User XP, 레벨, streak, is_learned 업데이트
         int gainedXp = correctCount * 10; // 한 문제당 10xp
         int totalXp = user.getXp() + gainedXp;
-        int gainedLevel = (gainedXp > 0 && totalXp % 50 == 0) ? 1 : 0;
+        int gainedLevel = totalXp / 50 - user.getXp() / 50;
         user.completeTodayStudy(totalXp, gainedLevel);
 
         // pointer 업데이트
         // 오늘 학습한 카드들을 카테고리별로 그룹화
         Map<CategoryType, Long> learnedCountByCategory = todayUserCards.stream()
-                .filter(UserCard :: isConfirmed)
+                .filter(UserCard::isConfirmed)
                 .collect(Collectors.groupingBy(userCard -> userCard.getCard().getCategory(),
                         Collectors.counting()));
 
@@ -297,7 +297,7 @@ public class CardService {
 
 
         // TODO : badge 업데이트
-        List<String> newBades = List.of();
+        List<String> newBadges = List.of();
 
 
 
@@ -306,7 +306,7 @@ public class CardService {
                 .gainedXp(gainedXp)
                 .correctTerms(correctTerms)
                 .wrongTerms(wrongTerms)
-                .newBadges(newBades)
+                .newBadges(newBadges)
                 .build();
     }
 
