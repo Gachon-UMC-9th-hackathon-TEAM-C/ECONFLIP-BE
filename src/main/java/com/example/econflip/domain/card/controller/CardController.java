@@ -56,10 +56,12 @@ public class CardController implements CardControllerDocs{
     // 학습 완료 처리
     @Override
     @PostMapping("/study-sessions/today/complete")
-    public CardResDTO.StudyComplete completeStudy(
-            @AuthenticationPrincipal(expression = "user") User user,
-            @PathVariable Long studySetId
+    public ApiResponse<CardResDTO.StudyComplete> completeStudy(
+            @AuthenticationPrincipal(expression = "user") User user
     ) {
-        return null;
+
+        return ApiResponse.onSuccess(
+                CardSuccessCode.QUIZ_OK,
+                cardService.completeTodayStudy(user.getId()));
     }
 }
