@@ -93,22 +93,19 @@ public class UserCardService {
         return toBookmarkClick(cardId, bookmarked);
     }
 
-    public UserCardResDTO.libraryPage searchUserCardinEntire(Long userId, String q, int limit) {
-        String query = normalize(q);
-
+    public UserCardResDTO.libraryPage searchUserCardinEntire(Long userId, String query, int limit) {
+        String searchWord = normalize(query);
         int safeLimit = Math.min(Math.max(limit, 1), 20);
 
         // 전체 카테고리
         List<CategoryType> categories = List.of(CategoryType.values());
-
         List<libraryCard> libraryCardList;
 
-        // 정책 1) 빈값이면 빈 결과
         if (query.isEmpty()) {
             libraryCardList = List.of();
         }
         else{
-            libraryCardList = userCardRepository.findTopByTitlePrefix(userId, query, PageRequest.of(0, safeLimit));
+            libraryCardList = userCardRepository.findWordByPrefix(userId, searchWord, PageRequest.of(0, safeLimit));
         }
 
         if(libraryCardList.isEmpty()) throw new UserException(UserErrorCode.CARD_NOT_FOUND);
@@ -125,6 +122,27 @@ public class UserCardService {
         return q.trim().replaceAll("\\s+", " ");
     }
 
+    public UserCardResDTO.libraryPage searchUserCardinCategory(Long userId, CategoryType category, String query, int limit) {
+        String searchWord = normalize(query);
+        int safeLimit = Math.min(Math.max(limit, 1), 20);
+
+        List<CategoryType> categories = List.of(category);
+        List<libraryCard> libraryCardList;
+
+        if (query.isEmpty()) {
+            libraryCardList = List.of();
+        }
+        else{
+            libraryCardList = userCardRepository.findWordByPrefixWithCategory(userId, category, searchWord, PageRequest.of(0, safeLimit));
+        }
+
+        if(libraryCardList.isEmpty()) throw new UserException(UserErrorCode.CARD_NOT_FOUND);
+
+        UserCardResDTO.libraryPage page
+                = toLibraryPageDTO(categories, libraryCardList);
+
+        return page;
+    }
 
     // converter
     private UserCardResDTO.reviewPage toReviewPageDto(int count, List<reviewCard> list, int min) {

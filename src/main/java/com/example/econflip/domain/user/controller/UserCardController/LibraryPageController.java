@@ -49,11 +49,16 @@ public class LibraryPageController implements LibraryPageControllerDocs{
     @GetMapping("/search")
     public ApiResponse<UserCardResDTO.libraryPage> search(
             @AuthenticationPrincipal(expression = "user") User user,
-            @RequestParam(name = "q", required = false) String q
+            @RequestParam(name = "query", required = false) String query,
+            @RequestParam(required = false) CategoryType category
     ) {
         int limit = 10;
-        UserCardResDTO.libraryPage result = userCardService.searchUserCardinEntire(user.getId(), q, limit);
-
+        UserCardResDTO.libraryPage result;
+        if(category == null){
+            result = userCardService.searchUserCardinEntire(user.getId(), query, limit);
+        } else{
+            result = userCardService.searchUserCardinCategory(user.getId(), category, query, limit);
+        }
         UserSuccessCode code = UserSuccessCode.SEARCH_OK;
         return ApiResponse.onSuccess(code, result);
     }
