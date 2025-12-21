@@ -22,6 +22,7 @@ public class UserCardService {
 
     private final UserCardRepository userCardRepository;
     private final UserRepository userRepository;
+    private final BadgeService badgeService;
 
     public UserCardResDTO.reviewPage getReviewPage(Long userId){
         if (!userRepository.existsById(userId)) {
@@ -49,6 +50,7 @@ public class UserCardService {
 
         List<UserCard> userCardList = userCardRepository.findByUserIdAndIsConfirmed(userId, true);
         userCardList.forEach(UserCard::updateReviewComplete);
+        badgeService.tenReviewBadge(userId);
     }
 
     public UserCardResDTO.libraryPage getEntireLibraryPage(Long userId){

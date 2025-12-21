@@ -54,13 +54,15 @@ public class BadgeService {
         return getBadgeInfo(badgeId);
     }
 
-    // 오답노트에서 10개 연속 정답 달성 시 획득
+    // 복습 10개 이상 진행
     @Transactional
-    public UserResDTO.BadgeInfo tenReviewCorrectStreakBadge(Long userId, int cnt) {
-        if(cnt< 10) return null;
+    public UserResDTO.BadgeInfo tenReviewBadge(Long userId) {
         Long badgeId = 6L;
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
+
+        int count = userCardRepository.countByUser_IdAndQuizResult(userId, QuizResult.REVIEW_COMPLETE);
+        if (count < 10) return null;
 
         Badge badge = badgeRepository.findById(badgeId)
                 .orElseThrow(() -> new UserException(UserErrorCode.BADGE_NOT_FOUND));
@@ -75,7 +77,7 @@ public class BadgeService {
 
         userBadgeRepository.save(userBadge);
 
-        return getBadgeInfo(badgeId);
+        return giveBadge(user, badgeId);
     }
 
     // 뱃지 정보
