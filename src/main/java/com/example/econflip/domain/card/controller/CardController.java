@@ -37,7 +37,7 @@ public class CardController implements CardControllerDocs{
     public ApiResponse<Void> confirmCard(
             @AuthenticationPrincipal(expression = "user") User user,
             @PathVariable Long cardId,
-            @RequestBody Boolean request
+            @RequestBody UserCardReqDTO.DontKnowReqDTO request
     ) {
         cardService.confirmCard(user.getId(), cardId, request);
         return ApiResponse.onSuccess(CardSuccessCode.CARD_OK, null);
@@ -49,7 +49,7 @@ public class CardController implements CardControllerDocs{
     public ApiResponse<CardResDTO.QuizAnswer> submitQuizAnswer(
             @AuthenticationPrincipal(expression = "user") User user,
             @PathVariable Long cardId,
-            @RequestBody String request
+            @RequestBody CardReqDTO.QuizAnswer request
     ) {
         return ApiResponse.onSuccess(
                 CardSuccessCode.QUIZ_OK,

@@ -30,7 +30,7 @@ public interface CardControllerDocs {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "실패")
     })
-    ApiResponse<Void> confirmCard(User user, Long cardId, Boolean request);
+    ApiResponse<Void> confirmCard(User user, Long cardId, UserCardReqDTO.DontKnowReqDTO request);
 
 
     @Operation(
@@ -41,7 +41,7 @@ public interface CardControllerDocs {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "실패")
     })
-    ApiResponse<CardResDTO.QuizAnswer> submitQuizAnswer(User user, Long cardId, String request);
+    ApiResponse<CardResDTO.QuizAnswer> submitQuizAnswer(User user, Long cardId, CardReqDTO.QuizAnswer request);
 
 
     @Operation(
