@@ -69,12 +69,12 @@ public class CardService {
         // 3. 새로운 학습 생성
         if (isNewStudy) {
             // 학습분량, 주제개수를 고려해 주제별 카드 개수 분배
-            int categoryCount = categories.size();
-            int baseCount = user.getDailyStudy() / categoryCount;
-            int remain = user.getDailyStudy() % categoryCount; // 균등 분배 후 남는 카드 수
+            int categoryCount = categories.size(); //2개
+            int baseCount = user.getDailyStudy() / categoryCount; // 10/2 = 5개
+            int remain = user.getDailyStudy() % categoryCount; // 균등 분배 후 남는 카드 수 10%2=0개
 
-            int[] allocateCounts = new int[categoryCount]; // 주제별 할당 수를 같은 인덱스로 관리
-            Arrays.fill(allocateCounts, baseCount); // 기본 분배
+            int[] allocateCounts = new int[categoryCount]; // 주제별 할당 수를 같은 인덱스로 관리 (2개
+            Arrays.fill(allocateCounts, baseCount); // 기본 분배 (2, 5)
 
             Collections.shuffle(categories); // 남은 카드 수를 랜덤하게 분배
             for (int i = 0; i < remain; i++) {
@@ -84,7 +84,7 @@ public class CardService {
             // 사용자 pointer 조회
             List<UserCategory> userCategories = userCategoryRepository.findByUserIdAndCategoryIn(userId, categories);
 
-            for (int i = 0; i < categories.size(); i++) {
+            for (int i = 0; i < categories.size(); i++) { // 2개
                 CategoryType category = categories.get(i);
                 int needCount = allocateCounts[i];
 
@@ -214,6 +214,7 @@ public class CardService {
         return CardResDTO.QuizAnswer.builder()
                 .isCorrect(isCorrect)
                 .commentary(card.getDescript())
+                .correctAnswer(card.getTerm())
                 .build();
     }
 
