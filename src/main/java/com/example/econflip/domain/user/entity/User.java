@@ -53,7 +53,7 @@ public class User extends BaseEntity {
     @Builder.Default
     private Integer streak = 0;
 
-    @Column(name = "last_study_date", nullable = false)
+    @Column(name = "last_study_date")
     private LocalDate lastStudyDate;
 
     @Column(name = "active", nullable = false)
