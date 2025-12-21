@@ -18,6 +18,7 @@ import com.example.econflip.domain.user.exception.code.UserErrorCode;
 import com.example.econflip.domain.user.repository.UserCardRepository;
 import com.example.econflip.domain.user.repository.UserCategoryRepository;
 import com.example.econflip.domain.user.repository.UserRepository;
+import com.example.econflip.domain.user.service.BadgeService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,7 @@ public class CardService {
     private final UserCategoryRepository userCategoryRepository;
     private final UserCardRepository userCardRepository;
     private final UserRepository userRepository;
+    private final BadgeService badgeService;
 
     // 오늘의 학습 세트 시작/복구 API
     @Transactional
@@ -206,7 +208,7 @@ public class CardService {
         if(isCorrect) {
             userCard.updateQuizResult(QuizResult.CORRECT);
         } else {
-            userCard.updateQuizResult(QuizResult.UNSEEN);
+            userCard.updateQuizResult(QuizResult.WRONG);
         }
 
         return CardResDTO.QuizAnswer.builder()
@@ -214,10 +216,10 @@ public class CardService {
                 .commentary(card.getDescript())
                 .build();
     }
-    
+
     @Transactional
     public CardResDTO.StudyComplete completeTodayStudy(User user) {
-        
+
         if(user.getIsLearned()) {
             // TODO : 예외처리
         }
@@ -243,8 +245,6 @@ public class CardService {
         if (hasUnsolvedQuiz) {
             throw new CardException(CardErrorCode.STUDY_QUIZ_NOT_FINISHED);
         }
-
-
 
         // 퀴즈 결과 집계
         List<String> correctTerms = new ArrayList<>();
@@ -286,99 +286,21 @@ public class CardService {
             userCategory.updatePointer(currentPointer + (int) learnedCount);
         }
 
+        // 획득 가능한 뱃지 리스트 확인 및 저장
+        // 오늘의 총 퀴즈 개수 (퀴즈를 푼 카드 수)
+        int todayTotalCount = (int) todayUserCards.stream()
+                .filter(userCard -> userCard.getQuizResult() != QuizResult.UNSEEN).count();
 
-        // TODO : badge 업데이트
-        List<UserResDTO.BadgeInfo> newBadges = List.of();
+        // 획득 가능한 모든 뱃지 체크
+        List<UserResDTO.BadgeInfo> newBadges = badgeService.checkAndGiveStudyCompleteBadges(
+                user,
+                todayUserCards,
+                correctCount,
+                todayTotalCount
+        );
 
         // 마지막 학습 일자 업데이트
         user.updateLastStudyDate(LocalDate.now());
-
-        return CardResDTO.StudyComplete.builder()
-                .correctCount(correctCount)
-                .gainedXp(gainedXp)
-                .correctTerms(correctTerms)
-                .wrongTerms(wrongTerms)
-                .newBadges(newBadges)
-                .build();
-    }
-    
-    @Transactional
-    public CardResDTO.StudyComplete completeTodayStudy(Long userId) {
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
-        
-        if(user.getIsLearned()) {
-            // TODO : 예외처리
-        }
-
-        // 오늘의 user_card 조회
-        LocalDateTime start = LocalDate.now().atStartOfDay();
-        LocalDateTime end = start.plusDays(1);
-
-        // 오늘 학습한 카드 리스트
-        List<UserCard> todayUserCards = userCardRepository.findByUserIdAndCreatedAtBetween(userId, start, end);
-        if (todayUserCards.isEmpty()) {
-            // TODO : 예외처리
-        }
-
-        // 학습 완료 여부 검증 처리
-        boolean hasUnconfirmedCard = todayUserCards.stream().anyMatch(userCard -> !userCard.isConfirmed());
-        boolean hasUnsolvedQuiz = todayUserCards.stream()
-                .anyMatch(userCard -> userCard.getQuizResult() == QuizResult.UNSEEN);
-
-        if (hasUnconfirmedCard) {
-            throw new CardException(CardErrorCode.STUDY_CARD_NOT_FINISHED);
-        }
-        if (hasUnsolvedQuiz) {
-            throw new CardException(CardErrorCode.STUDY_QUIZ_NOT_FINISHED);
-        }
-
-
-
-        // 퀴즈 결과 집계
-        List<String> correctTerms = new ArrayList<>();
-        List<String> wrongTerms = new ArrayList<>();
-        int correctCount = 0;
-
-        for (UserCard userCard : todayUserCards) {
-            if (userCard.getQuizResult() == QuizResult.CORRECT) {
-                correctCount++;
-                correctTerms.add(userCard.getCard().getTerm());
-            } else if (userCard.getQuizResult() == QuizResult.WRONG) {
-                wrongTerms.add(userCard.getCard().getTerm());
-            }
-        }
-
-        // User XP, 레벨, streak, is_learned 업데이트
-        int gainedXp = correctCount * 10; // 한 문제당 10xp
-        int totalXp = user.getXp() + gainedXp;
-        int gainedLevel = totalXp / 50 - user.getXp() / 50;
-        user.completeTodayStudy(totalXp, gainedLevel);
-
-        // pointer 업데이트
-        // 오늘 학습한 카드들을 카테고리별로 그룹화
-        Map<CategoryType, Long> learnedCountByCategory = todayUserCards.stream()
-                .filter(UserCard::isConfirmed)
-                .collect(Collectors.groupingBy(userCard -> userCard.getCard().getCategory(),
-                        Collectors.counting()));
-
-        // 해당 카테고리의 UserCategory 조회
-        List<UserCategory> userCategories = userCategoryRepository.findByUserIdAndCategoryIn(userId,
-                new ArrayList<>(learnedCountByCategory.keySet()));
-
-        // 카테고리별 pointer 업데이트
-        for (UserCategory userCategory : userCategories) {
-            CategoryType category = userCategory.getCategory();
-            int currentPointer = userCategory.getPointer();
-            long learnedCount = learnedCountByCategory.get(category);
-
-            userCategory.updatePointer(currentPointer + (int) learnedCount);
-        }
-
-
-        // TODO : badge 업데이트
-        List<UserResDTO.BadgeInfo> newBadges = List.of();
 
         return CardResDTO.StudyComplete.builder()
                 .correctCount(correctCount)
