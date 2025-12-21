@@ -73,9 +73,27 @@ public interface UserCardRepository extends JpaRepository<UserCard, Long> {
     join uc.card c
     where uc.user.id = :userId
       and c.term like concat(:prefix, '%')
+      and c.category = :category
     order by c.term asc
 """)
-    List<libraryCard> findTopByTitlePrefix(
+    List<libraryCard> findWordByPrefixWithCategory(
+            @Param("userId") Long userId,
+            @Param("category") CategoryType category,
+            @Param("prefix") String prefix,
+            Pageable pageable
+    );
+
+    @Query("""
+    select new com.example.econflip.domain.user.dto.libraryCard(
+        uc.isBookmarked, c.id, c.term, c.descript, c.category
+    )
+    from UserCard uc
+    join uc.card c
+    where uc.user.id = :userId
+      and c.term like concat(:prefix, '%')
+    order by c.term asc
+""")
+    List<libraryCard> findWordByPrefix(
             @Param("userId") Long userId,
             @Param("prefix") String prefix,
             Pageable pageable

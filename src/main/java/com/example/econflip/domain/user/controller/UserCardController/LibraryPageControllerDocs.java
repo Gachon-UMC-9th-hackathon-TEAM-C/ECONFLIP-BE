@@ -47,7 +47,8 @@ public interface LibraryPageControllerDocs {
     );
 
     @Operation(
-            summary = "라이브러리 내 검색기능"
+            summary = "라이브러리 내 용어 검색",
+            description = "파라미터에 category 타입을 전달하면 해당 카테고리 내에서 검색합니다."
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공"),
@@ -56,6 +57,7 @@ public interface LibraryPageControllerDocs {
     @GetMapping("/search")
     public ApiResponse<UserCardResDTO.libraryPage> search(
             User user,
-            @RequestParam(name = "q", required = false) String q
+            @RequestParam(name = "query", required = false) String query,
+            @RequestParam(required = false) CategoryType category
     );
 }
