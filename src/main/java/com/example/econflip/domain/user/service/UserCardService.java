@@ -4,6 +4,7 @@ import com.example.econflip.domain.card.enums.CategoryType;
 import com.example.econflip.domain.user.dto.UserCardResDTO;
 import com.example.econflip.domain.user.dto.libraryCard;
 import com.example.econflip.domain.user.dto.reviewCard;
+import com.example.econflip.domain.user.entity.mapping.UserCard;
 import com.example.econflip.domain.user.exception.UserException;
 import com.example.econflip.domain.user.exception.code.UserErrorCode;
 import com.example.econflip.domain.user.repository.UserCardRepository;
@@ -38,6 +39,16 @@ public class UserCardService {
         // estimatedDurationMinutes 계산 기준 : 용어 1개당 퀴즈 1개 & 퀴즈 1개당 1분
 
         return reviewPage;
+    }
+
+    @Transactional
+    public void completeReview(Long userId){
+        if (!userRepository.existsById(userId)) {
+            throw new UserException(UserErrorCode.NOT_FOUND);
+        }
+
+        List<UserCard> userCardList = userCardRepository.findByUserIdAndIsConfirmed(userId, true);
+        userCardList.forEach(UserCard::updateReviewComplete);
     }
 
     public UserCardResDTO.libraryPage getEntireLibraryPage(Long userId){

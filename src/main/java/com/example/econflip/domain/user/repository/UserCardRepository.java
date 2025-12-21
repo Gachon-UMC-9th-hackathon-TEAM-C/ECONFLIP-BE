@@ -32,6 +32,8 @@ public interface UserCardRepository extends JpaRepository<UserCard, Long> {
 """)
     List<reviewCard> findReviewByUserId(Long userId);
 
+    List<UserCard> findByUserIdAndIsConfirmed(Long userId, boolean isConfirmed);
+
     List<UserCard> findByUserIdAndCreatedAtBetween(Long userId, LocalDateTime start, LocalDateTime end);
     Optional<UserCard> findByUserIdAndCardIdAndCreatedAtBetween(Long userId, Long cardId, LocalDateTime start, LocalDateTime end);
 
