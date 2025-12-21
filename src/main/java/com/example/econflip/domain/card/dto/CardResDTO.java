@@ -47,6 +47,7 @@ public class CardResDTO {
     public record StudyComplete (
             Integer correctCount,
             Integer gainedXp,
+            Integer totalStudyCount,
             List<String> correctTerms,
             List<String> wrongTerms,
             List<UserResDTO.BadgeInfo> newBadges
