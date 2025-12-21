@@ -17,7 +17,4 @@ public class Badge extends BaseEntity {
 
     @Column(name = "title", length = 50, nullable = false)
     private String title;
-
-    @Column(name = "comment", length = 255, nullable = false)
-    private String comment;
 }
