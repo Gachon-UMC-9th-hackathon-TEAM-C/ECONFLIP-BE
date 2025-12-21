@@ -45,4 +45,17 @@ public interface LibraryPageControllerDocs {
             @AuthenticationPrincipal(expression = "user") User user,
             @NotNull @PathVariable Long cardId
     );
+
+    @Operation(
+            summary = "라이브러리 내 검색기능"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "실패")
+    })
+    @GetMapping("/search")
+    public ApiResponse<UserCardResDTO.libraryPage> search(
+            User user,
+            @RequestParam(name = "q", required = false) String q
+    );
 }

@@ -5,6 +5,7 @@ import com.example.econflip.domain.user.dto.UserResDTO;
 import com.example.econflip.domain.user.dto.reviewCard;
 import com.example.econflip.domain.user.entity.mapping.UserCard;
 import com.example.econflip.domain.user.enums.QuizResult;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -63,6 +64,22 @@ public interface UserCardRepository extends JpaRepository<UserCard, Long> {
     where uc.user.id = :userId and uc.card.id = :cardId
 """)
     int toggleBookmark(@Param("userId") Long userId, @Param("cardId") Long cardId);
+
+    @Query("""
+    select new com.example.econflip.domain.user.dto.libraryCard(
+        uc.isBookmarked, c.id, c.term, c.descript, c.category
+    )
+    from UserCard uc
+    join uc.card c
+    where uc.user.id = :userId
+      and c.term like concat(:prefix, '%')
+    order by c.term asc
+""")
+    List<libraryCard> findTopByTitlePrefix(
+            @Param("userId") Long userId,
+            @Param("prefix") String prefix,
+            Pageable pageable
+    );
 
     @Query("""
         select uc.isBookmarked
