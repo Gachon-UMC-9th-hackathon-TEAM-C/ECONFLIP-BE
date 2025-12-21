@@ -63,6 +63,12 @@ public class CardService {
         LocalDateTime start = LocalDate.now().atStartOfDay();
         LocalDateTime end = start.plusDays(1);
         List<UserCard> todayUserCards = userCardRepository.findByUserIdAndCreatedAtBetween(userId, start, end);
+
+        // 오늘 이미 생성된 카드 ID 목록 추출 (중복 방지용)
+        Set<Long> existingCardIds = todayUserCards.stream()
+                .map(userCard -> userCard.getCard().getId())
+                .collect(Collectors.toSet());
+
         boolean isNewStudy = todayUserCards.isEmpty();
 
 
@@ -122,18 +128,23 @@ public class CardService {
 
                 int endIndex = Math.min(startIndex + needCount, cardList.size());
 
-                // user_card 생성
+                // user_card 생성 (중복 체크)
                 for (int k = startIndex; k < endIndex; k++) {
-                    userCardRepository.save(
-                            UserCard.builder()
-                                    .user(user)
-                                    .card(cardList.get(k))
-                                    .isConfirmed(false)  // 아직 학습 안함
-                                    .isBookmarked(false)
-                                    .dontKnow(false)
-                                    .quizResult(QuizResult.UNSEEN)
-                                    .build()
-                    );
+                    Card card = cardList.get(k);
+                    // 오늘 이미 생성된 카드가 아닌 경우에만 생성
+                    if (!existingCardIds.contains(card.getId())) {
+                        userCardRepository.save(
+                                UserCard.builder()
+                                        .user(user)
+                                        .card(card)
+                                        .isConfirmed(false)  // 아직 학습 안함
+                                        .isBookmarked(false)
+                                        .dontKnow(false)
+                                        .quizResult(QuizResult.UNSEEN)
+                                        .build()
+                        );
+                        existingCardIds.add(card.getId()); // 생성한 카드 ID 추가
+                    }
                 }
             }
 
@@ -207,7 +218,7 @@ public class CardService {
         if(!userCard.isConfirmed()) {
             userCard.confirm();
         }
-        if(dto.dontKnow()) {
+        if(dto != null && dto.dontKnow()) {
             userCard.dontknow();
         }
     }
@@ -224,6 +235,12 @@ public class CardService {
         }
 
         Card card = userCard.getCard();
+
+        // null 체크
+        if(answer == null || answer.selectedTerm() == null) {
+            throw new CardException(CardErrorCode.CARD_NOT_FOUND);
+        }
+
         boolean isCorrect = card.getTerm().equals(answer.selectedTerm());
 
         if(isCorrect) {
@@ -358,6 +375,4 @@ public class CardService {
                 ? card.getQuizFillBlank()
                 : card.getQuizCase();
     }
-
-
 }

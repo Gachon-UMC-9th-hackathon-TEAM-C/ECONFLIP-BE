@@ -34,12 +34,13 @@ public class CardController implements CardControllerDocs{
     // 카드 학습 완료 처리
     @Override
     @PostMapping("/{cardId}/confirm")
-    public void confirmCard(
+    public ApiResponse<Void> confirmCard(
             @AuthenticationPrincipal(expression = "user") User user,
             @PathVariable Long cardId,
-            UserCardReqDTO.DontKnowReqDTO request
+            @RequestBody UserCardReqDTO.DontKnowReqDTO request
     ) {
         cardService.confirmCard(user.getId(), cardId, request);
+        return ApiResponse.onSuccess(CardSuccessCode.CARD_OK, null);
     }
 
     // 퀴즈 답안 저장
