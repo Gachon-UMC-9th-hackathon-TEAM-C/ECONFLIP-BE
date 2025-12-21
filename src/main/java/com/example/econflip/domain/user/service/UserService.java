@@ -52,6 +52,7 @@ public class UserService {
         return myPage;
     }
     // 홈페이지 조회
+    @Transactional
     public UserResDTO.UserHomePage getHomePage(Long userId){
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
@@ -59,6 +60,8 @@ public class UserService {
         int studyCompletedCardCount = getTodayStudyCompletedCardCount(userId);
         int quizCompletedCardCount = getTodayQuizCompletedCardCount(userId);
         int reviewRequiredCardCount = getReviewRequiredCardCount(userId);
+
+        validateStreak(userId);
         UserResDTO.BadgeInfo earnedBadge = badgeService.giveStreakBadge(userId, user.getStreak());
 
         List<UserResDTO.CategoryCount> recCategory = getRecommendedCategories(userId);
@@ -105,6 +108,22 @@ public class UserService {
         }
 
         touchSelectedBadgesOrThrow(userId, normalizedIds);
+    }
+    // streak 초기화
+    private void validateStreak(Long userId){
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
+
+        LocalDate lastStudyDate = user.getLastStudyDate();
+        LocalDate today = LocalDate.now();
+
+        if (lastStudyDate == null) {
+            user.resetStreak();
+            return;
+        }
+        if (lastStudyDate.isBefore(today.minusDays(1))) {
+            user.resetStreak();
+        }
     }
 
     private List<Long> normalizeBadgeIds(List<Long> badgeIds) {

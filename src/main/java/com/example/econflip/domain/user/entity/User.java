@@ -103,4 +103,8 @@ public class User extends BaseEntity {
     public void updateLastStudyDate(LocalDate lastStudyDate) {
         this.lastStudyDate = lastStudyDate;
     }
+
+    public void resetStreak() {
+        this.streak = 0;
+    }
 }
