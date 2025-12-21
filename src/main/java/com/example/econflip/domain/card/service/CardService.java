@@ -1,11 +1,13 @@
 package com.example.econflip.domain.card.service;
 
+import com.example.econflip.domain.card.dto.CardReqDTO;
 import com.example.econflip.domain.card.dto.CardResDTO;
 import com.example.econflip.domain.card.entity.Card;
 import com.example.econflip.domain.card.enums.CategoryType;
 import com.example.econflip.domain.card.exception.CardException;
 import com.example.econflip.domain.card.exception.code.CardErrorCode;
 import com.example.econflip.domain.card.repository.CardRepository;
+import com.example.econflip.domain.user.dto.UserCardReqDTO;
 import com.example.econflip.domain.user.dto.UserResDTO;
 import com.example.econflip.domain.user.entity.User;
 import com.example.econflip.domain.user.entity.mapping.UserCard;
