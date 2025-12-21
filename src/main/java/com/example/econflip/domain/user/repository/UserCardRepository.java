@@ -157,4 +157,6 @@ public interface UserCardRepository extends JpaRepository<UserCard, Long> {
     int countLearnedCard(@Param("userId") Long userId,
                          @Param("quizResult1") QuizResult quizResult1,
                          @Param("quizResult2") QuizResult quizResult2);
+
+    int countByUser_IdAndQuizResult(Long userId, QuizResult quizResult);
 }

@@ -54,29 +54,17 @@ public class BadgeService {
         return getBadgeInfo(badgeId);
     }
 
-    // 오답노트에서 10개 연속 정답 달성 시 획득
+    // 복습 10개 이상 진행
     @Transactional
-    public UserResDTO.BadgeInfo tenReviewCorrectStreakBadge(Long userId, int streak) {
-        if(streak < 7) return null;
-
+    public UserResDTO.BadgeInfo checkTenReviewBadge(User user) {
         Long badgeId = 6L;
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
 
-        Badge badge = badgeRepository.findById(badgeId)
-                .orElseThrow(() -> new UserException(UserErrorCode.BADGE_NOT_FOUND));
+        int count = userCardRepository.countByUser_IdAndQuizResult(user.getId(), QuizResult.REVIEW_COMPLETE);
+        if (count < 10) return null;
 
-        boolean exists = userBadgeRepository.existsByUser_IdAndBadge_Id(userId, badgeId);
-        if (exists) return null;
+        if (userBadgeRepository.existsByUser_IdAndBadge_Id(user.getId(), badgeId)) return null;
 
-        UserBadge userBadge = UserBadge.builder()
-                .user(user)
-                .badge(badge)
-                .build();
-
-        userBadgeRepository.save(userBadge);
-
-        return getBadgeInfo(badgeId);
+        return giveBadge(user, badgeId);
     }
 
     // 뱃지 정보
@@ -125,6 +113,10 @@ public class BadgeService {
         // 뱃지 7: 7일 이상 미접속 후 복귀 당일 일일 학습 완주 + 퀴즈 10문항 달성 시 획득
         UserResDTO.BadgeInfo badge7 = checkReturnBadge(user, todayTotalCount);
         if (badge7 != null) newBadges.add(badge7);
+
+        //뱃지: 복습 10문제 이상 진행시 획득
+        UserResDTO.BadgeInfo badge8 = checkTenReviewBadge(user);
+        if(badge8 != null) newBadges.add(badge8);
 
         return newBadges;
     }
