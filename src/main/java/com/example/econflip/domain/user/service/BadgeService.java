@@ -56,9 +56,8 @@ public class BadgeService {
 
     // 오답노트에서 10개 연속 정답 달성 시 획득
     @Transactional
-    public UserResDTO.BadgeInfo tenReviewCorrectStreakBadge(Long userId, int streak) {
-        if(streak < 7) return null;
-
+    public UserResDTO.BadgeInfo tenReviewCorrectStreakBadge(Long userId, int cnt) {
+        if(cnt< 10) return null;
         Long badgeId = 6L;
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
