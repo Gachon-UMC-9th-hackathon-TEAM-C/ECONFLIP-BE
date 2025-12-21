@@ -7,5 +7,8 @@ import lombok.Builder;
 public record reviewCard(
         // card table
         String term,
-        CategoryType category
+        CategoryType category,
+        String descript,
+        String tip,
+        String example
 ) { }
