@@ -28,8 +28,9 @@ public class UserCardService {
         }
         // 나중에 파라미터 단에서 예외처리
 
-        List<reviewCard> reviewCardList =
-                userCardRepository.findReviewByUserId(userId);
+        List<reviewCard> reviewCardList = Optional
+                .ofNullable(userCardRepository.findReviewByUserId(userId))
+                .orElse(List.of());
         int totalReviewCount = reviewCardList.size();
 
         UserCardResDTO.reviewPage reviewPage
@@ -45,8 +46,9 @@ public class UserCardService {
 
         List<CategoryType> categories = List.of(CategoryType.values());
 
-        List<libraryCard> libraryCardList =
-                userCardRepository.findLibraryCardByUserId(userId);
+        List<libraryCard> libraryCardList = Optional
+                .ofNullable(userCardRepository.findLibraryCardByUserId(userId))
+                .orElse(List.of());
 
         UserCardResDTO.libraryPage page
                 = toLibraryPageDTO(categories, libraryCardList);
@@ -64,8 +66,9 @@ public class UserCardService {
 
         List<CategoryType> categories = List.of(category);
 
-        List<libraryCard> list =
-                userCardRepository.findCategoryLibraryCardByUserId(userId, category);
+        List<libraryCard> list = Optional
+                .ofNullable(userCardRepository.findCategoryLibraryCardByUserId(userId, category))
+                .orElse(List.of());
 
         UserCardResDTO.libraryPage page
                 = toLibraryPageDTO(categories, list);
@@ -75,6 +78,11 @@ public class UserCardService {
 
     @Transactional
     public UserCardResDTO.bookmarkClick updateBookmark(Long userId, Long cardId){
+        userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
+        if (cardId == null || cardId <= 0){
+            throw new UserException(UserErrorCode.CARD_NOT_FOUND);
+        }
         int updated = userCardRepository.toggleBookmark(userId, cardId);
         if(updated==0) throw new UserException(UserErrorCode.BOOKMARK_FAILED);
 
