@@ -100,5 +100,9 @@ public class UserResDTO {
         private CategoryType category;
         @Schema(description = "학습한 카드 개수", example = "5")
         private Long isLearnedCount;
+
+        public Long getCount() {
+            return isLearnedCount;
+        }
     }
 }

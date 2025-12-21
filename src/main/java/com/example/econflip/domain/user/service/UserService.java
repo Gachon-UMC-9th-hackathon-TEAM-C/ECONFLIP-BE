@@ -1,5 +1,6 @@
 package com.example.econflip.domain.user.service;
 
+import com.example.econflip.domain.card.enums.CategoryType;
 import com.example.econflip.domain.user.dto.UserResDTO;
 import com.example.econflip.domain.user.entity.User;
 import com.example.econflip.domain.user.entity.mapping.UserBadge;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -229,7 +231,22 @@ public class UserService {
 
     // 추천 주제
     private List<UserResDTO.CategoryCount> getRecommendedCategories(Long userId){
-        return userCardRepository.getRecCategory(userId);
+
+        List<UserResDTO.CategoryCount> raw =
+                userCardRepository.getRecCategory(userId);
+
+        Map<CategoryType, Long> map = raw.stream()
+                .collect(Collectors.toMap(
+                        UserResDTO.CategoryCount::getCategory,
+                        UserResDTO.CategoryCount::getCount
+                ));
+
+        return Arrays.stream(CategoryType.values())
+                .map(cat -> new UserResDTO.CategoryCount(
+                        cat,
+                        map.getOrDefault(cat, 0L)
+                ))
+                .toList();
     }
 
     // 칭호 최신 1개 가져오기
