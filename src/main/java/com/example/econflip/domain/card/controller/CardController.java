@@ -61,9 +61,8 @@ public class CardController implements CardControllerDocs{
     public ApiResponse<CardResDTO.StudyComplete> completeStudy(
             @AuthenticationPrincipal(expression = "user") User user
     ) {
-
         return ApiResponse.onSuccess(
                 CardSuccessCode.QUIZ_OK,
-                cardService.completeTodayStudy(user.getId()));
+                cardService.completeTodayStudy(user));
     }
 }

@@ -3,13 +3,12 @@ package com.example.econflip.domain.card.service;
 import com.example.econflip.domain.card.dto.CardReqDTO;
 import com.example.econflip.domain.card.dto.CardResDTO;
 import com.example.econflip.domain.card.entity.Card;
-import com.example.econflip.domain.card.entity.Quiz;
 import com.example.econflip.domain.card.enums.CategoryType;
 import com.example.econflip.domain.card.exception.CardException;
 import com.example.econflip.domain.card.exception.code.CardErrorCode;
 import com.example.econflip.domain.card.repository.CardRepository;
-import com.example.econflip.domain.card.repository.QuizRepository;
 import com.example.econflip.domain.user.dto.UserCardReqDTO;
+import com.example.econflip.domain.user.dto.UserResDTO;
 import com.example.econflip.domain.user.entity.User;
 import com.example.econflip.domain.user.entity.mapping.UserCard;
 import com.example.econflip.domain.user.entity.mapping.UserCategory;
@@ -19,6 +18,7 @@ import com.example.econflip.domain.user.exception.code.UserErrorCode;
 import com.example.econflip.domain.user.repository.UserCardRepository;
 import com.example.econflip.domain.user.repository.UserCategoryRepository;
 import com.example.econflip.domain.user.repository.UserRepository;
+import com.example.econflip.domain.user.service.BadgeService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,9 +34,9 @@ import java.util.stream.Collectors;
 public class CardService {
     private final CardRepository cardRepository;
     private final UserCategoryRepository userCategoryRepository;
-    private final QuizRepository quizRepository;
     private final UserCardRepository userCardRepository;
     private final UserRepository userRepository;
+    private final BadgeService badgeService;
 
     // 오늘의 학습 세트 시작/복구 API
     @Transactional
@@ -150,30 +151,24 @@ public class CardService {
             );
 
             // 퀴즈 DTO
-            List<Quiz> quizList = quizRepository.findByCard(card);
-            if(quizList.isEmpty()) {
-                throw new CardException(CardErrorCode.QUIZ_NOT_FOUND);
-            }
-            List<CardResDTO.QuizChoice> choices = new ArrayList<>();
-            for (int m = 0; m < quizList.size(); m++) {
-                CardResDTO.QuizChoice choice =
-                        CardResDTO.QuizChoice.builder()
-                                .answerId(quizList.get(m).getId())
-                                .answer(quizList.get(m).getAnswer())
-                                .build();
+            // 보기 생성
+            List<String> choices = new ArrayList<>();
+            choices.add(card.getTerm()); // 정답
 
-                choices.add(choice);
-            }
-            Collections.shuffle(choices); // 보기 순서 섞기
-
+            List<String> wrongTerms = pickRelatedTerms(
+                    cardRepository.findByCategoryOrderByIdAsc(card.getCategory()),
+                    card.getTerm()
+            );
+            choices.addAll(wrongTerms);
+            Collections.shuffle(choices);
             quizzes.add(
                     CardResDTO.QuizQuestion.builder()
                             .cardId(card.getId())
-                            .question(card.getQuiz())
-                            .quizType(quizList.get(0).getQuizType().name())
-                            .choices(choices)
-                            .commentary(quizList.get(0).getCommentary())
-                            .build()
+                            .question(pickRandomQuiz(card))
+                            .choices(choices.stream().map(term ->
+                                    CardResDTO.QuizChoice.builder()
+                                            .term(term)
+                                            .build()).toList()).build()
             );
         }
 
@@ -207,30 +202,24 @@ public class CardService {
             throw new CardException(CardErrorCode.QUIZ_ALREADY_ANSWERED);
         }
 
-        Quiz choiceQuiz = quizRepository.findById(answer.answerId())
-                .orElseThrow(() -> new CardException(CardErrorCode.QUIZ_NOT_FOUND));
-        Quiz correctQuiz = quizRepository.findCorrectQuizByCardId(cardId)
-                .orElseThrow(() -> new CardException(CardErrorCode.QUIZ_NOT_FOUND));
+        Card card = userCard.getCard();
+        boolean isCorrect = card.getTerm().equals(answer.selectedTerm());
 
-        boolean isCorrect = false;
-        if(correctQuiz.getId().equals(answer.answerId())) {
+        if(isCorrect) {
             userCard.updateQuizResult(QuizResult.CORRECT);
-            isCorrect = true;
         } else {
             userCard.updateQuizResult(QuizResult.WRONG);
         }
 
         return CardResDTO.QuizAnswer.builder()
                 .isCorrect(isCorrect)
-                .commentary(choiceQuiz.getCommentary())
+                .commentary(card.getDescript())
                 .build();
     }
-    
+
     @Transactional
-    public CardResDTO.StudyComplete completeTodayStudy(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
-        
+    public CardResDTO.StudyComplete completeTodayStudy(User user) {
+
         if(user.getIsLearned()) {
             // TODO : 예외처리
         }
@@ -240,7 +229,7 @@ public class CardService {
         LocalDateTime end = start.plusDays(1);
 
         // 오늘 학습한 카드 리스트
-        List<UserCard> todayUserCards = userCardRepository.findByUserIdAndCreatedAtBetween(userId, start, end);
+        List<UserCard> todayUserCards = userCardRepository.findByUserIdAndCreatedAtBetween(user.getId(), start, end);
         if (todayUserCards.isEmpty()) {
             // TODO : 예외처리
         }
@@ -256,8 +245,6 @@ public class CardService {
         if (hasUnsolvedQuiz) {
             throw new CardException(CardErrorCode.STUDY_QUIZ_NOT_FINISHED);
         }
-
-
 
         // 퀴즈 결과 집계
         List<String> correctTerms = new ArrayList<>();
@@ -287,7 +274,7 @@ public class CardService {
                         Collectors.counting()));
 
         // 해당 카테고리의 UserCategory 조회
-        List<UserCategory> userCategories = userCategoryRepository.findByUserIdAndCategoryIn(userId,
+        List<UserCategory> userCategories = userCategoryRepository.findByUserIdAndCategoryIn(user.getId(),
                 new ArrayList<>(learnedCountByCategory.keySet()));
 
         // 카테고리별 pointer 업데이트
@@ -299,11 +286,21 @@ public class CardService {
             userCategory.updatePointer(currentPointer + (int) learnedCount);
         }
 
+        // 획득 가능한 뱃지 리스트 확인 및 저장
+        // 오늘의 총 퀴즈 개수 (퀴즈를 푼 카드 수)
+        int todayTotalCount = (int) todayUserCards.stream()
+                .filter(userCard -> userCard.getQuizResult() != QuizResult.UNSEEN).count();
 
-        // TODO : badge 업데이트
-        List<String> newBadges = List.of();
+        // 획득 가능한 모든 뱃지 체크
+        List<UserResDTO.BadgeInfo> newBadges = badgeService.checkAndGiveStudyCompleteBadges(
+                user,
+                todayUserCards,
+                correctCount,
+                todayTotalCount
+        );
 
-
+        // 마지막 학습 일자 업데이트
+        user.updateLastStudyDate(LocalDate.now());
 
         return CardResDTO.StudyComplete.builder()
                 .correctCount(correctCount)
@@ -338,4 +335,13 @@ public class CardService {
                 .findByUserIdAndCardIdAndCreatedAtBetween(userId, cardId, start, end)
                 .orElseThrow(() -> new CardException(CardErrorCode.CARD_NOT_FOUND));
     }
+
+    // 두 개 타입의 퀴즈 문제(quiz_fill_blank, quiz_case) 중 랜덤하게 한개 선택
+    private String pickRandomQuiz(Card card) {
+        return ThreadLocalRandom.current().nextBoolean()
+                ? card.getQuizFillBlank()
+                : card.getQuizCase();
+    }
+
+
 }

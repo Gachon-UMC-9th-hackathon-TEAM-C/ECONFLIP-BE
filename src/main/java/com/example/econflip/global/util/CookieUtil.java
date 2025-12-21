@@ -4,6 +4,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseCookie;
 
+import java.time.Duration;
 import java.util.Arrays;
 
 public class CookieUtil {
@@ -14,6 +15,7 @@ public class CookieUtil {
                 .secure(true)
                 .sameSite("None")
                 .path("/")
+                .maxAge(Duration.ofMinutes(30))
                 .build();
     }
 
@@ -29,6 +31,9 @@ public class CookieUtil {
 
     public static ResponseCookie delete(String name) {
         return ResponseCookie.from(name, "")
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("None")
                 .path("/")
                 .maxAge(0)
                 .build();

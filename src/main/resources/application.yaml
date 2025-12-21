@@ -11,3 +11,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+app:
+  frontend:
+    url: https://localhost:5173

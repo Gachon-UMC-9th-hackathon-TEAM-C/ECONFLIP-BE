@@ -31,7 +31,8 @@ public class SecurityConfig {
             "/v3/api-docs/**",
             "/swagger/login/**",
             "/oauth2/authorization/**",
-            "/login/oauth2/code/**"
+            "/login/oauth2/code/**",
+            "/api/auth/logout"
     };
 
     @Bean
@@ -42,24 +43,25 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> {})
                 .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-                )
-
-                .exceptionHandling(ex -> ex
-                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/logout").authenticated()
                         .requestMatchers(PERMIT_URLS).permitAll()
                         .anyRequest().authenticated()
                 )
+
                 .oauth2Login(oauth -> oauth
                         .userInfoEndpoint(userInfo ->
                                 userInfo.userService(customOAuth2UserService)
                         )
                         .successHandler(successHandler)
                 )
+
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                )
+
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
