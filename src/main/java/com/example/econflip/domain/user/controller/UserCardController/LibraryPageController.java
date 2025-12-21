@@ -45,4 +45,16 @@ public class LibraryPageController implements LibraryPageControllerDocs{
         UserSuccessCode code = UserSuccessCode.BOOKMARK_OK;
         return ApiResponse.onSuccess(code, result);
     }
+
+    @GetMapping("/search")
+    public ApiResponse<UserCardResDTO.libraryPage> search(
+            @AuthenticationPrincipal(expression = "user") User user,
+            @RequestParam(name = "q", required = false) String q
+    ) {
+        int limit = 10;
+        UserCardResDTO.libraryPage result = userCardService.searchUserCardinEntire(user.getId(), q, limit);
+
+        UserSuccessCode code = UserSuccessCode.SEARCH_OK;
+        return ApiResponse.onSuccess(code, result);
+    }
 }

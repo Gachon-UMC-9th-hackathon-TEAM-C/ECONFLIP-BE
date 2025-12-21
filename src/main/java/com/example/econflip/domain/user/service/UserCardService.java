@@ -9,6 +9,7 @@ import com.example.econflip.domain.user.exception.code.UserErrorCode;
 import com.example.econflip.domain.user.repository.UserCardRepository;
 import com.example.econflip.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,11 +24,6 @@ public class UserCardService {
     private final UserRepository userRepository;
 
     public UserCardResDTO.reviewPage getReviewPage(Long userId){
-        if (!userRepository.existsById(userId)) {
-            throw new UserException(UserErrorCode.NOT_FOUND);
-        }
-        // 나중에 파라미터 단에서 예외처리
-
         List<reviewCard> reviewCardList = Optional
                 .ofNullable(userCardRepository.findReviewByUserId(userId))
                 .orElse(List.of());
@@ -41,9 +37,6 @@ public class UserCardService {
     }
 
     public UserCardResDTO.libraryPage getEntireLibraryPage(Long userId){
-        userRepository.findById(userId)
-                .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
-
         List<CategoryType> categories = List.of(CategoryType.values());
 
         List<libraryCard> libraryCardList = Optional
@@ -57,9 +50,6 @@ public class UserCardService {
     }
 
     public UserCardResDTO.libraryPage getCategoryLibraryPage(Long userId, CategoryType category){
-        userRepository.findById(userId)
-                .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
-
         if (category == null) {
             throw new UserException(UserErrorCode.CATEGORY_NOT_FOUND);
         }
@@ -91,6 +81,39 @@ public class UserCardService {
         // 또는 orElse(false)
         return toBookmarkClick(cardId, bookmarked);
     }
+
+    public UserCardResDTO.libraryPage searchUserCardinEntire(Long userId, String q, int limit) {
+        String query = normalize(q);
+
+        int safeLimit = Math.min(Math.max(limit, 1), 20);
+
+        // 전체 카테고리
+        List<CategoryType> categories = List.of(CategoryType.values());
+
+        List<libraryCard> libraryCardList;
+
+        // 정책 1) 빈값이면 빈 결과
+        if (query.isEmpty()) {
+            libraryCardList = List.of();
+        }
+        else{
+            libraryCardList = userCardRepository.findTopByTitlePrefix(userId, query, PageRequest.of(0, safeLimit));
+        }
+
+        if(libraryCardList.isEmpty()) throw new UserException(UserErrorCode.CARD_NOT_FOUND);
+
+        UserCardResDTO.libraryPage page
+                = toLibraryPageDTO(categories, libraryCardList);
+
+        return page;
+    }
+
+    private String normalize(String q) {
+        if (q == null) return "";
+        // 공백 정리 (연속 공백 -> 1개)
+        return q.trim().replaceAll("\\s+", " ");
+    }
+
 
     // converter
     private UserCardResDTO.reviewPage toReviewPageDto(int count, List<reviewCard> list, int min) {
