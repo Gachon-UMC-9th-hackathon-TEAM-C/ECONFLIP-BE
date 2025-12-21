@@ -54,6 +54,31 @@ public class BadgeService {
         return getBadgeInfo(badgeId);
     }
 
+    // 오답노트에서 10개 연속 정답 달성 시 획득
+    @Transactional
+    public UserResDTO.BadgeInfo tenReviewCorrectStreakBadge(Long userId, int streak) {
+        if(streak < 7) return null;
+
+        Long badgeId = 6L;
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
+
+        Badge badge = badgeRepository.findById(badgeId)
+                .orElseThrow(() -> new UserException(UserErrorCode.BADGE_NOT_FOUND));
+
+        boolean exists = userBadgeRepository.existsByUser_IdAndBadge_Id(userId, badgeId);
+        if (exists) return null;
+
+        UserBadge userBadge = UserBadge.builder()
+                .user(user)
+                .badge(badge)
+                .build();
+
+        userBadgeRepository.save(userBadge);
+
+        return getBadgeInfo(badgeId);
+    }
+
     // 뱃지 정보
     private UserResDTO.BadgeInfo getBadgeInfo(Long badgeId) {
         Badge badge = badgeRepository.findById(badgeId)
@@ -142,7 +167,7 @@ public class BadgeService {
     // 일일 학습 완주 누적 3회일시 획득
     @Transactional
     public UserResDTO.BadgeInfo checkThreeDayStreakBadge(User user) {
-        Long badgeId = 2L;
+        Long badgeId = 3L;
         Long userId = user.getId();
 
         if (userBadgeRepository.existsByUser_IdAndBadge_Id(userId, badgeId)) {
@@ -158,7 +183,7 @@ public class BadgeService {
     // 최근 5일 연속 정답률 80% 이상(최소 30문항)일시 획득
     @Transactional
     public UserResDTO.BadgeInfo checkFiveDayAccuracyBadge(User user) {
-        Long badgeId = 3L; // 뱃지 ID는 실제 DB의 badge 테이블 ID로 설정 필요
+        Long badgeId = 4L; // 뱃지 ID는 실제 DB의 badge 테이블 ID로 설정 필요
         Long userId = user.getId();
 
         if (userBadgeRepository.existsByUser_IdAndBadge_Id(userId, badgeId)) {
@@ -196,7 +221,7 @@ public class BadgeService {
     // 하루 퀴즈 10개 이상 풀이 + 정답률 100% 획득
     @Transactional
     public UserResDTO.BadgeInfo checkPerfectDayBadge(User user, int todayCorrectCount, int todayTotalCount) {
-        Long badgeId = 4L;
+        Long badgeId = 5L;
         Long userId = user.getId();
 
         // 일일 학습량이 10개 미만이면 획득 불가능
@@ -218,7 +243,7 @@ public class BadgeService {
     // 4개 카테고리에서 각각 5개 이상 용어 학습 시점에 획득
     @Transactional
     public UserResDTO.BadgeInfo checkFourCategoryBadge(User user) {
-        Long badgeId = 5L;
+        Long badgeId = 7L;
         Long userId = user.getId();
 
         if (userBadgeRepository.existsByUser_IdAndBadge_Id(userId, badgeId)) {
@@ -239,7 +264,7 @@ public class BadgeService {
     // 난이도4 콘텐츠 누적 20개 이상 학습 + 누적 정답률 70% 이상일시 획득
     @Transactional
     public UserResDTO.BadgeInfo checkDifficulty4Badge(User user) {
-        Long badgeId = 6L;
+        Long badgeId = 8L;
         Long userId = user.getId();
 
         if (userBadgeRepository.existsByUser_IdAndBadge_Id(userId, badgeId)) {
@@ -269,7 +294,7 @@ public class BadgeService {
     // 7일 이상 미접속 후 복귀 당일 일일 학습 완주 + 퀴즈 10문항 달성 시 획득
     @Transactional
     public UserResDTO.BadgeInfo checkReturnBadge(User user, int todayTotalCount) {
-        Long badgeId = 7L;
+        Long badgeId = 9L;
         Long userId = user.getId();
 
         // 일일 학습량이 10개 미만이면 획득 불가능
