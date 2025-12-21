@@ -9,7 +9,6 @@ import com.example.econflip.domain.user.exception.UserException;
 import com.example.econflip.domain.user.exception.code.UserErrorCode;
 import com.example.econflip.domain.user.repository.UserCardRepository;
 import com.example.econflip.domain.user.repository.UserRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
