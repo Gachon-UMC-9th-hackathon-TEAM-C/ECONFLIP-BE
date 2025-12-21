@@ -38,6 +38,9 @@ public class UserCardService {
     }
 
     public UserCardResDTO.libraryPage getEntireLibraryPage(Long userId){
+        userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
+
         List<CategoryType> categories = List.of(CategoryType.values());
 
         List<libraryCard> libraryCardList =
@@ -50,6 +53,13 @@ public class UserCardService {
     }
 
     public UserCardResDTO.libraryPage getCategoryLibraryPage(Long userId, CategoryType category){
+        userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
+
+        if (category == null) {
+            throw new UserException(UserErrorCode.CATEGORY_NOT_FOUND);
+        }
+
         List<CategoryType> categories = List.of(category);
 
         List<libraryCard> list =
