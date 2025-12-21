@@ -22,7 +22,6 @@ public class UserCardService {
 
     private final UserCardRepository userCardRepository;
     private final UserRepository userRepository;
-    private final BadgeService badgeService;
 
     public UserCardResDTO.reviewPage getReviewPage(Long userId){
         if (!userRepository.existsById(userId)) {
