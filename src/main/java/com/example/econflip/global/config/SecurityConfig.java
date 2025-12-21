@@ -32,7 +32,8 @@ public class SecurityConfig {
             "/swagger/login/**",
             "/oauth2/authorization/**",
             "/login/oauth2/code/**",
-            "/api/auth/logout"
+            "/api/auth/logout",
+            "/api/auth/refresh"
     };
 
     @Bean
@@ -57,6 +58,7 @@ public class SecurityConfig {
                         )
                         .successHandler(successHandler)
                 )
+
 
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint)
