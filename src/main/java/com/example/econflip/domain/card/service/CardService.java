@@ -69,29 +69,50 @@ public class CardService {
         // 3. 새로운 학습 생성
         if (isNewStudy) {
             // 학습분량, 주제개수를 고려해 주제별 카드 개수 분배
-            int categoryCount = categories.size(); //2개
-            int baseCount = user.getDailyStudy() / categoryCount; // 10/2 = 5개
-            int remain = user.getDailyStudy() % categoryCount; // 균등 분배 후 남는 카드 수 10%2=0개
+            int categoryCount = categories.size();
+            int baseCount = user.getDailyStudy() / categoryCount;
+            int remain = user.getDailyStudy() % categoryCount; // 균등 분배 후 남는 카드 수
 
-            int[] allocateCounts = new int[categoryCount]; // 주제별 할당 수를 같은 인덱스로 관리 (2개
-            Arrays.fill(allocateCounts, baseCount); // 기본 분배 (2, 5)
-
-            Collections.shuffle(categories); // 남은 카드 수를 랜덤하게 분배
-            for (int i = 0; i < remain; i++) {
-                allocateCounts[i]++;
+            // 카테고리별 할당 개수를 Map으로 관리 (카테고리 순서와 무관하게 처리)
+            Map<CategoryType, Integer> allocateCountsMap = new HashMap<>();
+            for (CategoryType category : categories) {
+                allocateCountsMap.put(category, baseCount);
             }
 
-            // 사용자 pointer 조회
+            // 남은 카드 수를 랜덤하게 분배하기 위해 categories를 섞어서 앞쪽부터 추가
+            List<CategoryType> shuffledCategories = new ArrayList<>(categories);
+            Collections.shuffle(shuffledCategories);
+            for (int i = 0; i < remain; i++) {
+                CategoryType category = shuffledCategories.get(i);
+                allocateCountsMap.put(category, allocateCountsMap.get(category) + 1);
+            }
+
+            // 사용자 pointer 조회 (UserCategory가 없으면 생성)
             List<UserCategory> userCategories = userCategoryRepository.findByUserIdAndCategoryIn(userId, categories);
+            Map<CategoryType, UserCategory> userCategoryMap = new HashMap<>();
 
-            for (int i = 0; i < categories.size(); i++) { // 2개
-                CategoryType category = categories.get(i);
-                int needCount = allocateCounts[i];
+            // 기존 UserCategory를 Map에 저장
+            for (UserCategory userCategory : userCategories) {
+                userCategoryMap.put(userCategory.getCategory(), userCategory);
+            }
 
-                int startIndex = userCategories.stream()
-                        .filter(userCategory -> userCategory.getCategory() == category)
-                        .map(UserCategory::getPointer)
-                        .findFirst().orElse(0);
+            // UserCategory가 없는 카테고리는 생성
+            for (CategoryType category : categories) {
+                if (!userCategoryMap.containsKey(category)) {
+                    UserCategory newUserCategory = UserCategory.builder()
+                            .user(user)
+                            .category(category)
+                            .pointer(0)
+                            .build();
+                    userCategoryMap.put(category, userCategoryRepository.save(newUserCategory));
+                }
+            }
+
+            // 각 카테고리별로 카드 생성
+            for (CategoryType category : categories) {
+                int needCount = allocateCountsMap.get(category);
+                UserCategory userCategory = userCategoryMap.get(category);
+                int startIndex = userCategory.getPointer();
 
                 List<Card> cardList = cardRepository.findByCategoryOrderByIdAsc(category);
 
