@@ -39,7 +39,8 @@ public class CardResDTO {
     @Builder
     public record QuizAnswer (
             Boolean isCorrect,
-            String commentary
+            String commentary,
+            String correctAnswer
     ){}
 
     @Builder
