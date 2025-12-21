@@ -22,7 +22,10 @@ public enum UserErrorCode implements BaseCode {
             "획득한 배지만 선택할 수 있습니다."),
     BADGE_NOT_FOUND(HttpStatus.NOT_FOUND,
             "USER404_2",
-            "해당 배지를 찾을 수 없습니다.")
+            "해당 배지를 찾을 수 없습니다."),
+    CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND,
+            "LIBRARY404_1",
+            "해당 카테고리를 찾을 수 없습니다.")
     ;
     private final HttpStatus status;
     private final String code;
