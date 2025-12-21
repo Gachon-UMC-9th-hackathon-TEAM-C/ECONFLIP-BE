@@ -9,4 +9,7 @@ import java.util.Optional;
 @Repository
 public interface UserTitleRepository extends JpaRepository<UserTitle, Long> {
 
-    Optional<UserTitle> findTopByUser_IdOrderByCreatedAtDesc(Long userId);}
+    Optional<UserTitle> findTopByUser_IdOrderByCreatedAtDesc(Long userId);
+    boolean existsByUser_Id(Long userId);
+}
+

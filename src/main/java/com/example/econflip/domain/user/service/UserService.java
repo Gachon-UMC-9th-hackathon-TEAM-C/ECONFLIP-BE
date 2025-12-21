@@ -2,6 +2,7 @@ package com.example.econflip.domain.user.service;
 
 import com.example.econflip.domain.card.enums.CategoryType;
 import com.example.econflip.domain.user.dto.UserResDTO;
+import com.example.econflip.domain.user.entity.Title;
 import com.example.econflip.domain.user.entity.User;
 import com.example.econflip.domain.user.entity.mapping.UserBadge;
 import com.example.econflip.domain.user.entity.mapping.UserTitle;
@@ -27,7 +28,9 @@ public class UserService {
     private final UserBadgeRepository userBadgeRepository;
     private final UserCardRepository userCardRepository;
     private final BadgeService badgeService;
+    private final TitleRepository titleRepository;
     // 마이페이지 조회
+    @Transactional
     public UserResDTO.UserMyPage getMypage(Long userId){
 
         User user = userRepository.findById(userId)
@@ -250,15 +253,31 @@ public class UserService {
     }
 
     // 칭호 최신 1개 가져오기
-    private String getLatestTitleName(Long userId) {
-        UserTitle userTitle = userTitleRepository
-                .findTopByUser_IdOrderByCreatedAtDesc(userId)
-                .orElse(null);
+    public String getLatestTitleName(Long userId) {
 
-        if (userTitle == null || userTitle.getTitle() == null) {
-            return "경제 학습자";
+        Optional<UserTitle> existing = userTitleRepository
+                .findTopByUser_IdOrderByCreatedAtDesc(userId);
+
+        if (existing.isPresent() && existing.get().getTitle() != null) {
+            return existing.get().getTitle().getTitle();
         }
-        return userTitle.getTitle().getTitle();
+
+        int randomTitleId = new Random().nextInt(10) + 1;
+
+        Title randomTitle = titleRepository.findById((long) randomTitleId)
+                .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
+
+        UserTitle userTitle = UserTitle.builder()
+                .user(user)
+                .title(randomTitle)
+                .build();
+
+        userTitleRepository.save(userTitle);
+
+        return randomTitle.getTitle();
     }
 
     // 마이페이지 배지 4개: 획득한 배지 우선 부족하면 미획득 배지로 채워서 4개 반환
