@@ -31,6 +31,9 @@ public class CookieUtil {
 
     public static ResponseCookie delete(String name) {
         return ResponseCookie.from(name, "")
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("None")
                 .path("/")
                 .maxAge(0)
                 .build();
