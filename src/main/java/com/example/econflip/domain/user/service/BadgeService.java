@@ -56,26 +56,13 @@ public class BadgeService {
 
     // 복습 10개 이상 진행
     @Transactional
-    public UserResDTO.BadgeInfo tenReviewBadge(Long userId) {
+    public UserResDTO.BadgeInfo checkTenReviewBadge(User user) {
         Long badgeId = 6L;
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
 
-        int count = userCardRepository.countByUser_IdAndQuizResult(userId, QuizResult.REVIEW_COMPLETE);
+        int count = userCardRepository.countByUser_IdAndQuizResult(user.getId(), QuizResult.REVIEW_COMPLETE);
         if (count < 10) return null;
 
-        Badge badge = badgeRepository.findById(badgeId)
-                .orElseThrow(() -> new UserException(UserErrorCode.BADGE_NOT_FOUND));
-
-        boolean exists = userBadgeRepository.existsByUser_IdAndBadge_Id(userId, badgeId);
-        if (exists) return null;
-
-        UserBadge userBadge = UserBadge.builder()
-                .user(user)
-                .badge(badge)
-                .build();
-
-        userBadgeRepository.save(userBadge);
+        if (userBadgeRepository.existsByUser_IdAndBadge_Id(user.getId(), badgeId)) return null;
 
         return giveBadge(user, badgeId);
     }
@@ -126,6 +113,10 @@ public class BadgeService {
         // 뱃지 7: 7일 이상 미접속 후 복귀 당일 일일 학습 완주 + 퀴즈 10문항 달성 시 획득
         UserResDTO.BadgeInfo badge7 = checkReturnBadge(user, todayTotalCount);
         if (badge7 != null) newBadges.add(badge7);
+
+        //뱃지: 복습 10문제 이상 진행시 획득
+        UserResDTO.BadgeInfo badge8 = checkTenReviewBadge(user);
+        if(badge8 != null) newBadges.add(badge8);
 
         return newBadges;
     }

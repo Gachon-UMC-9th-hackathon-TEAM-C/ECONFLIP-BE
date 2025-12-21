@@ -50,7 +50,6 @@ public class UserCardService {
 
         List<UserCard> userCardList = userCardRepository.findByUserIdAndIsConfirmed(userId, true);
         userCardList.forEach(UserCard::updateReviewComplete);
-        badgeService.tenReviewBadge(userId);
     }
 
     public UserCardResDTO.libraryPage getEntireLibraryPage(Long userId){
