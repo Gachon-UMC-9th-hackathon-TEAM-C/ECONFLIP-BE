@@ -213,14 +213,12 @@ public class CardService {
 
     // 카드 학습 완료 처리 API
     @Transactional
-    public void confirmCard(Long userId, Long cardId, UserCardReqDTO.DontKnowReqDTO dto) {
+    public void confirmCard(Long userId, Long cardId, Boolean dto) {
         UserCard userCard = findTodayUserCard(userId, cardId);
         if(!userCard.isConfirmed()) {
             userCard.confirm();
         }
-        if(dto != null && dto.dontKnow()) {
-            userCard.dontknow();
-        }
+        userCard.dontknow(dto);
     }
 
     // 퀴즈 답안 채점 및 저장 API

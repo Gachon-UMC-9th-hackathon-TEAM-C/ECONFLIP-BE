@@ -37,7 +37,7 @@ public class CardController implements CardControllerDocs{
     public ApiResponse<Void> confirmCard(
             @AuthenticationPrincipal(expression = "user") User user,
             @PathVariable Long cardId,
-            @RequestBody UserCardReqDTO.DontKnowReqDTO request
+            @RequestBody Boolean request
     ) {
         cardService.confirmCard(user.getId(), cardId, request);
         return ApiResponse.onSuccess(CardSuccessCode.CARD_OK, null);
