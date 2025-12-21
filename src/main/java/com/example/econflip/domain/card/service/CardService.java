@@ -62,7 +62,8 @@ public class CardService {
         // 2. 오늘 생성된 user_card 존재 여부 확인 => (학습 복구 or 새 학습 시작)
         LocalDateTime start = LocalDate.now().atStartOfDay();
         LocalDateTime end = start.plusDays(1);
-        List<UserCard> todayUserCards = userCardRepository.findByUserIdAndCreatedAtBetween(userId, start, end);
+        List<UserCard> todayUserCards = userCardRepository.findByUserIdAndCreatedAtBetween(userId, start, end)
+                .orElseThrow(() -> new CardException(CardErrorCode.TODAY_USERCARD_NOT_FOUND));;
         boolean isNewStudy = todayUserCards.isEmpty();
 
 
@@ -82,7 +83,8 @@ public class CardService {
             }
 
             // 사용자 pointer 조회
-            List<UserCategory> userCategories = userCategoryRepository.findByUserIdAndCategoryIn(userId, categories);
+            List<UserCategory> userCategories = userCategoryRepository.findByUserIdAndCategoryIn(userId, categories)
+                    .orElseThrow(() -> new CardException(CardErrorCode.USERCATEGORY_NOT_FOUND));
 
             for (int i = 0; i < categories.size(); i++) {
                 CategoryType category = categories.get(i);
@@ -117,7 +119,8 @@ public class CardService {
             }
 
             // 새로 생성한 user_card 다시 조회
-            todayUserCards = userCardRepository.findByUserIdAndCreatedAtBetween(userId, start, end);
+            todayUserCards = userCardRepository.findByUserIdAndCreatedAtBetween(userId, start, end)
+                    .orElseThrow(() -> new CardException(CardErrorCode.TODAY_USERCARD_NOT_FOUND));;
         }
 
         // 4. is_confirmed=false(학습완료되지 않음)인 카드부터 DTO 리스트 구성
@@ -226,10 +229,8 @@ public class CardService {
         // 오늘의 user_card 조회
         LocalDateTime start = LocalDate.now().atStartOfDay();
         LocalDateTime end = start.plusDays(1);
-        List<UserCard> todayUserCards = userCardRepository.findByUserIdAndCreatedAtBetween(user.getId(), start, end);
-        if (todayUserCards.isEmpty()) { // 오늘 완료한 학습카드가 존재하지 않음
-            throw new CardException(CardErrorCode.TODAY_USERCARD_NOT_FOUND);
-        }
+        List<UserCard> todayUserCards = userCardRepository.findByUserIdAndCreatedAtBetween(user.getId(), start, end)
+                .orElseThrow(() -> new CardException(CardErrorCode.TODAY_USERCARD_NOT_FOUND));
 
         // 학습 완료 여부 검증 처리
         boolean hasUnconfirmedCard = todayUserCards.stream().anyMatch(userCard -> !userCard.isConfirmed());
@@ -272,7 +273,8 @@ public class CardService {
 
         // 해당 카테고리의 UserCategory 조회
         List<UserCategory> userCategories = userCategoryRepository.findByUserIdAndCategoryIn(user.getId(),
-                new ArrayList<>(learnedCountByCategory.keySet()));
+                new ArrayList<>(learnedCountByCategory.keySet()))
+                .orElseThrow(() -> new CardException(CardErrorCode.USERCATEGORY_NOT_FOUND));
 
         // 카테고리별 pointer 업데이트
         for (UserCategory userCategory : userCategories) {
