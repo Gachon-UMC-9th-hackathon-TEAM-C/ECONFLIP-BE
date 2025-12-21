@@ -1,13 +1,11 @@
 package com.example.econflip.domain.card.service;
 
-import com.example.econflip.domain.card.dto.CardReqDTO;
 import com.example.econflip.domain.card.dto.CardResDTO;
 import com.example.econflip.domain.card.entity.Card;
 import com.example.econflip.domain.card.enums.CategoryType;
 import com.example.econflip.domain.card.exception.CardException;
 import com.example.econflip.domain.card.exception.code.CardErrorCode;
 import com.example.econflip.domain.card.repository.CardRepository;
-import com.example.econflip.domain.user.dto.UserCardReqDTO;
 import com.example.econflip.domain.user.dto.UserResDTO;
 import com.example.econflip.domain.user.entity.User;
 import com.example.econflip.domain.user.entity.mapping.UserCard;
@@ -318,7 +316,6 @@ public class CardService {
 
             userCategory.updatePointer(currentPointer + (int) learnedCount);
         }
-
         // 획득 가능한 뱃지 리스트 확인 및 저장
         // 오늘의 총 퀴즈 개수 (퀴즈를 푼 카드 수)
         int todayTotalCount = (int) todayUserCards.stream()
@@ -331,13 +328,14 @@ public class CardService {
                 correctCount,
                 todayTotalCount
         );
-
         // 마지막 학습 일자 업데이트
         user.updateLastStudyDate(LocalDate.now());
+        int totalStudyCount = todayUserCards.size();
 
         return CardResDTO.StudyComplete.builder()
                 .correctCount(correctCount)
                 .gainedXp(gainedXp)
+                .totalStudyCount(totalStudyCount)
                 .correctTerms(correctTerms)
                 .wrongTerms(wrongTerms)
                 .newBadges(newBadges)
