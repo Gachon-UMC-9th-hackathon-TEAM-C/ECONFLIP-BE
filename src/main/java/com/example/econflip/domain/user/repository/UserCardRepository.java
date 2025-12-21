@@ -155,6 +155,6 @@ public interface UserCardRepository extends JpaRepository<UserCard, Long> {
     or uc.quizResult = :quizResult2)
 """)
     int countLearnedCard(@Param("userId") Long userId,
-                                               @Param("quizResult1") QuizResult quizResult1,
-                                               @Param("quizResult2") QuizResult quizResult2);
+                         @Param("quizResult1") QuizResult quizResult1,
+                         @Param("quizResult2") QuizResult quizResult2);
 }
