@@ -225,7 +225,7 @@ public class CardService {
 
     // 퀴즈 답안 채점 및 저장 API
     @Transactional
-    public CardResDTO.QuizAnswer submitQuizAnswer(Long userId, Long cardId, CardReqDTO.QuizAnswer answer)
+    public CardResDTO.QuizAnswer submitQuizAnswer(Long userId, Long cardId, String answer)
     {
         UserCard userCard = findTodayUserCard(userId, cardId);
 
@@ -237,11 +237,11 @@ public class CardService {
         Card card = userCard.getCard();
 
         // null 체크
-        if(answer == null || answer.selectedTerm() == null) {
+        if(answer == null) {
             throw new CardException(CardErrorCode.CARD_NOT_FOUND);
         }
 
-        boolean isCorrect = card.getTerm().equals(answer.selectedTerm());
+        boolean isCorrect = card.getTerm().equals(answer);
 
         if(isCorrect) {
             userCard.updateQuizResult(QuizResult.CORRECT);

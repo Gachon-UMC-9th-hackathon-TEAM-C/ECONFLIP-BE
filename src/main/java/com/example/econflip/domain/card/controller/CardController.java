@@ -49,7 +49,7 @@ public class CardController implements CardControllerDocs{
     public ApiResponse<CardResDTO.QuizAnswer> submitQuizAnswer(
             @AuthenticationPrincipal(expression = "user") User user,
             @PathVariable Long cardId,
-            @RequestBody CardReqDTO.QuizAnswer request
+            @RequestBody String request
     ) {
         return ApiResponse.onSuccess(
                 CardSuccessCode.QUIZ_OK,
