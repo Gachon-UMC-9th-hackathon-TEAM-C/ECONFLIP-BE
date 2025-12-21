@@ -278,7 +278,7 @@ public class UserService {
 
     // 학습 카드 총 개수
     private int getTotalLearnedCardCount(Long userId) {
-        return userCardRepository.countByUser_IdAndQuizResult(userId, QuizResult.CORRECT);
+        return userCardRepository.countLearnedCard(userId, QuizResult.CORRECT, QuizResult.REVIEW_COMPLETE);
     }
 
     // 북마크 카드 총 개수
