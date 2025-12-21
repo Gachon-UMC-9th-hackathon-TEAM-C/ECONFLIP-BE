@@ -302,16 +302,16 @@ public class CardService {
         List<UserCard> todayUserCards = userCardRepository.findByUserIdAndCreatedAtBetween(user.getId(), start, end);
 
         // 학습 완료 여부 검증 처리
-        boolean hasUnconfirmedCard = todayUserCards.stream().anyMatch(userCard -> !userCard.isConfirmed());
-        boolean hasUnsolvedQuiz = todayUserCards.stream()
-                .anyMatch(userCard -> userCard.getQuizResult() == QuizResult.UNSEEN);
-
-        if (hasUnconfirmedCard) { // 학습 완료 상태가 아닌 카드 존재 예외처리
-            throw new CardException(CardErrorCode.STUDY_CARD_NOT_FINISHED);
-        }
-        if (hasUnsolvedQuiz) { // 아직 풀지 않은 퀴즈 존재 예외처리
-            throw new CardException(CardErrorCode.STUDY_QUIZ_NOT_FINISHED);
-        }
+//        boolean hasUnconfirmedCard = todayUserCards.stream().anyMatch(userCard -> !userCard.isConfirmed());
+//        boolean hasUnsolvedQuiz = todayUserCards.stream()
+//                .anyMatch(userCard -> userCard.getQuizResult() == QuizResult.UNSEEN);
+//
+//        if (hasUnconfirmedCard) { // 학습 완료 상태가 아닌 카드 존재 예외처리
+//            throw new CardException(CardErrorCode.STUDY_CARD_NOT_FINISHED);
+//        }
+//        if (hasUnsolvedQuiz) { // 아직 풀지 않은 퀴즈 존재 예외처리
+//            throw new CardException(CardErrorCode.STUDY_QUIZ_NOT_FINISHED);
+//        }
 
         // 퀴즈 결과 집계
         List<String> correctTerms = new ArrayList<>();
