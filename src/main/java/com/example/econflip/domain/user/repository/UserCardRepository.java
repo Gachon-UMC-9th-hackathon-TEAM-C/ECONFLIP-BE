@@ -36,7 +36,21 @@ public interface UserCardRepository extends JpaRepository<UserCard, Long> {
     List<UserCard> findByUserIdAndIsConfirmed(Long userId, boolean isConfirmed);
 
     List<UserCard> findByUserIdAndCreatedAtBetween(Long userId, LocalDateTime start, LocalDateTime end);
-    Optional<UserCard> findByUserIdAndCardIdAndCreatedAtBetween(Long userId, Long cardId, LocalDateTime start, LocalDateTime end);
+    @Query("""
+        select uc
+        from UserCard uc
+        where uc.user.id = :userId
+          and uc.card.id = :cardId
+          and uc.createdAt >= :start
+          and uc.createdAt < :end
+        order by uc.createdAt desc
+    """)
+    Optional<UserCard> findByUserIdAndCardIdAndCreatedAtBetween(
+            @Param("userId") Long userId,
+            @Param("cardId") Long cardId,
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end
+    );
 
     @Query("""
     select new com.example.econflip.domain.user.dto.libraryCard(uc.isBookmarked, c.id, c.term, c.descript, c.category)

@@ -213,17 +213,19 @@ public class CardService {
 
     // 카드 학습 완료 처리 API
     @Transactional
-    public void confirmCard(Long userId, Long cardId, Boolean dto) {
+    public void confirmCard(Long userId, Long cardId, UserCardReqDTO.DontKnowReqDTO dto) {
         UserCard userCard = findTodayUserCard(userId, cardId);
         if(!userCard.isConfirmed()) {
             userCard.confirm();
         }
-        userCard.dontknow(dto);
+        if(dto != null && dto.dontKnow()) {
+            userCard.dontknow();
+        }
     }
 
     // 퀴즈 답안 채점 및 저장 API
     @Transactional
-    public CardResDTO.QuizAnswer submitQuizAnswer(Long userId, Long cardId, String answer)
+    public CardResDTO.QuizAnswer submitQuizAnswer(Long userId, Long cardId, CardReqDTO.QuizAnswer answer)
     {
         UserCard userCard = findTodayUserCard(userId, cardId);
 
@@ -235,11 +237,11 @@ public class CardService {
         Card card = userCard.getCard();
 
         // null 체크
-        if(answer == null) {
+        if(answer == null || answer.selectedTerm() == null) {
             throw new CardException(CardErrorCode.CARD_NOT_FOUND);
         }
 
-        boolean isCorrect = card.getTerm().equals(answer);
+        boolean isCorrect = card.getTerm().equals(answer.selectedTerm());
 
         if(isCorrect) {
             userCard.updateQuizResult(QuizResult.CORRECT);
