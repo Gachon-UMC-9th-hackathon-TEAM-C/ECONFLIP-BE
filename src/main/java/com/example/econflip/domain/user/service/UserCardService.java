@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -77,7 +78,9 @@ public class UserCardService {
         int updated = userCardRepository.toggleBookmark(userId, cardId);
         if(updated==0) throw new UserException(UserErrorCode.BOOKMARK_FAILED);
 
-        boolean bookmarked = userCardRepository.findBookmark(userId, cardId);
+        boolean bookmarked = userCardRepository.findBookmark(userId, cardId)
+                .orElseThrow(() -> new UserException(UserErrorCode.BOOKMARK_FAILED));
+        // 또는 orElse(false)
         return toBookmarkClick(cardId, bookmarked);
     }
 

@@ -67,7 +67,7 @@ public interface UserCardRepository extends JpaRepository<UserCard, Long> {
         from UserCard uc
         where uc.user.id = :userId and uc.card.id = :cardId
     """)
-    boolean findBookmark(@Param("userId") Long userId, @Param("cardId") Long cardId);
+    Optional<Boolean> findBookmark(@Param("userId") Long userId, @Param("cardId") Long cardId);
 
 
     // 유저가 학습한 전체 카드 수
