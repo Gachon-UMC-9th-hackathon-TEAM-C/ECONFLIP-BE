@@ -198,7 +198,7 @@ public class UserService {
 
     // 복습 필요한 카드 개수
     private int getReviewRequiredCardCount(Long userId) {
-        return userCardRepository.countReviewRequiredCardsOrIsBookmarked(userId, QuizResult.WRONG, true);
+        return userCardRepository.countReviewRequiredCards(userId, QuizResult.WRONG);
     }
 
     // 오늘 학습완료 카드 개수
@@ -278,7 +278,7 @@ public class UserService {
 
     // 학습 카드 총 개수
     private int getTotalLearnedCardCount(Long userId) {
-        return userCardRepository.countByUser_IdAndQuizResult(userId, QuizResult.CORRECT);
+        return userCardRepository.countLearnedCard(userId, QuizResult.CORRECT, QuizResult.REVIEW_COMPLETE);
     }
 
     // 북마크 카드 총 개수

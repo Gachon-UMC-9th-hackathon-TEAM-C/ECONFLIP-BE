@@ -69,10 +69,6 @@ public interface UserCardRepository extends JpaRepository<UserCard, Long> {
     """)
     Optional<Boolean> findBookmark(@Param("userId") Long userId, @Param("cardId") Long cardId);
 
-
-    // 유저가 학습한 전체 카드 수
-    int countByUser_IdAndQuizResult(Long userId, QuizResult quizResult);
-
     // 유저가 북마크한 카드 수
     int countByUser_IdAndIsBookmarkedTrue(Long userId);
 
@@ -148,15 +144,15 @@ public interface UserCardRepository extends JpaRepository<UserCard, Long> {
     """)
     long countConfirmedCardsByUserIdAndCategory(@Param("userId") Long userId,
                                                 @Param("category") CategoryType category);
-
+    // 유저가 학습한 전체 카드 수
     @Query("""
     select count(uc)
     from UserCard uc
     where uc.user.id = :userId
-    and (uc.quizResult = :quizResult
-    or uc.isBookmarked = :b)
+    and (uc.quizResult = :quizResult1
+    or uc.quizResult = :quizResult2)
 """)
-    int countReviewRequiredCardsOrIsBookmarked(@Param("userId") Long userId,
-                                               @Param("quizResult") QuizResult quizResult,
-                                               @Param("b") boolean b);
+    int countLearnedCard(@Param("userId") Long userId,
+                                               @Param("quizResult1") QuizResult quizResult1,
+                                               @Param("quizResult2") QuizResult quizResult2);
 }
