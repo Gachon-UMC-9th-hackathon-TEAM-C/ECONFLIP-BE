@@ -46,6 +46,11 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
 
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(PERMIT_URLS).permitAll()
+                        .anyRequest().authenticated()
+                )
+
                 .oauth2Login(oauth -> oauth
                         .userInfoEndpoint(userInfo ->
                                 userInfo.userService(customOAuth2UserService)
@@ -57,10 +62,6 @@ public class SecurityConfig {
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 )
 
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(PERMIT_URLS).permitAll()
-                        .anyRequest().authenticated()
-                )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

@@ -53,15 +53,12 @@ public class AuthService {
                         )
                 );
 
-        // 쿠키 설정
-        response.addHeader(
-                "Set-Cookie",
-                CookieUtil.accessToken(accessToken).toString()
-        );
-        response.addHeader(
-                "Set-Cookie",
-                CookieUtil.refreshToken(refreshToken).toString()
-        );
+        // 쿠키 설정 (여러 쿠키를 개별 헤더로 추가)
+        String accessCookie = CookieUtil.accessToken(accessToken).toString();
+        String refreshCookie = CookieUtil.refreshToken(refreshToken).toString();
+        
+        response.addHeader("Set-Cookie", accessCookie);
+        response.addHeader("Set-Cookie", refreshCookie);
 
         return ResponseEntity.ok().build();
     }
