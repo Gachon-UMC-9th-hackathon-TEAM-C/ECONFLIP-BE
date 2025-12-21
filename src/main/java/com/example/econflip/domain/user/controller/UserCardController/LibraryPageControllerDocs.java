@@ -7,12 +7,14 @@ import com.example.econflip.global.apiPayload.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
-
+@Validated
 @Tag(name = "Library", description = "라이브러리 페이지 API")
 public interface LibraryPageControllerDocs {
 
@@ -40,7 +42,7 @@ public interface LibraryPageControllerDocs {
     })
     @PatchMapping("/user-card/{cardId}/bookmark")
     public ApiResponse<UserCardResDTO.bookmarkClick> updateBookmark(
-            User user,
-            @PathVariable Long cardId
+            @AuthenticationPrincipal(expression = "user") User user,
+            @NotNull @PathVariable Long cardId
     );
 }
