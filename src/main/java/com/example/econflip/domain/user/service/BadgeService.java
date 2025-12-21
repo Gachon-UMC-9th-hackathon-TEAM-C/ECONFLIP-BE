@@ -146,9 +146,13 @@ public class BadgeService {
         Long badgeId = 2L;
         Long userId = user.getId();
 
-        if (userBadgeRepository.existsByUser_IdAndBadge_Id(userId, badgeId) && user.getStreak() != 3) {
+        if (userBadgeRepository.existsByUser_IdAndBadge_Id(userId, badgeId)) {
             return null;
         }
+        if(user.getStreak() != 3) {
+            return null;
+        }
+
         return giveBadge(user, badgeId);
     }
 
