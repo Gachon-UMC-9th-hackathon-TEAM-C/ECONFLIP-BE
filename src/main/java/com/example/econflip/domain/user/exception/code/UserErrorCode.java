@@ -23,9 +23,15 @@ public enum UserErrorCode implements BaseCode {
     BADGE_NOT_FOUND(HttpStatus.NOT_FOUND,
             "USER404_2",
             "해당 배지를 찾을 수 없습니다."),
+    BOOKMARK_FAILED(HttpStatus.BAD_REQUEST,
+            "USER400_4",
+            "북마크 업데이트에 실패했습니다."),
     CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND,
             "LIBRARY404_1",
-            "해당 카테고리를 찾을 수 없습니다.")
+            "해당 카테고리를 찾을 수 없습니다."),
+    CARD_NOT_FOUND(HttpStatus.NOT_FOUND,
+            "CARD404_1",
+            "해당 카드를 찾을 수 없습니다.")
     ;
     private final HttpStatus status;
     private final String code;

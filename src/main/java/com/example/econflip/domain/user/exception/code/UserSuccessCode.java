@@ -34,7 +34,10 @@ public enum UserSuccessCode implements BaseCode {
             "전체 라이브러리 페이지 조회에 성공했습니다."),
     CATEGORY_LIBRARY_OK(HttpStatus.OK,
             "USER200_9",
-            "카테고리 라이브러리 페이지 조회에 성공했습니다.")
+            "카테고리 라이브러리 페이지 조회에 성공했습니다."),
+    BOOKMARK_OK(HttpStatus.OK,
+            "USER200_10",
+            "북마크 업데이트에 성공했습니다.")
     ;
     private final HttpStatus status;
     private final String code;

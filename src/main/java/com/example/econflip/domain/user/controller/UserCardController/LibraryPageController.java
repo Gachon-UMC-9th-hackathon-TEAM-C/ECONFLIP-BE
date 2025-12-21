@@ -6,12 +6,12 @@ import com.example.econflip.domain.user.entity.User;
 import com.example.econflip.domain.user.exception.code.UserSuccessCode;
 import com.example.econflip.domain.user.service.UserCardService;
 import com.example.econflip.global.apiPayload.ApiResponse;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+@Validated
 @RestController
 @RequiredArgsConstructor
 public class LibraryPageController implements LibraryPageControllerDocs{
@@ -33,6 +33,16 @@ public class LibraryPageController implements LibraryPageControllerDocs{
             UserSuccessCode code = UserSuccessCode.CATEGORY_LIBRARY_OK;
             return ApiResponse.onSuccess(code, result);
         }
+    }
 
+    @PatchMapping("/user-card/{cardId}/bookmark")
+    public ApiResponse<UserCardResDTO.bookmarkClick> updateBookmark(
+            @AuthenticationPrincipal(expression = "user") User user,
+            @NotNull @PathVariable Long cardId
+    ){
+        UserCardResDTO.bookmarkClick result = userCardService.updateBookmark(user.getId(), cardId);
+
+        UserSuccessCode code = UserSuccessCode.BOOKMARK_OK;
+        return ApiResponse.onSuccess(code, result);
     }
 }

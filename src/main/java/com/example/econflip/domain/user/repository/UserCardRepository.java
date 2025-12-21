@@ -6,6 +6,7 @@ import com.example.econflip.domain.user.dto.reviewCard;
 import com.example.econflip.domain.user.entity.mapping.UserCard;
 import com.example.econflip.domain.user.enums.QuizResult;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -35,7 +36,7 @@ public interface UserCardRepository extends JpaRepository<UserCard, Long> {
     Optional<UserCard> findByUserIdAndCardIdAndCreatedAtBetween(Long userId, Long cardId, LocalDateTime start, LocalDateTime end);
 
     @Query("""
-    select new com.example.econflip.domain.user.dto.libraryCard(uc.isBookmarked, c.term, c.descript, c.category)
+    select new com.example.econflip.domain.user.dto.libraryCard(uc.isBookmarked, c.id, c.term, c.descript, c.category)
     from UserCard uc
     join uc.card c
     where uc.user.id = :userId
@@ -43,7 +44,7 @@ public interface UserCardRepository extends JpaRepository<UserCard, Long> {
     List<libraryCard> findLibraryCardByUserId(Long userId);
 
     @Query("""
-    select new com.example.econflip.domain.user.dto.libraryCard(uc.isBookmarked, c.term, c.descript, c.category)
+    select new com.example.econflip.domain.user.dto.libraryCard(uc.isBookmarked, c.id, c.term, c.descript, c.category)
     from UserCard uc
     join uc.card c
     where uc.user.id = :userId
@@ -51,6 +52,23 @@ public interface UserCardRepository extends JpaRepository<UserCard, Long> {
 """)
     List<libraryCard> findCategoryLibraryCardByUserId(@Param("userId") Long userId,
                                                       @Param("category") CategoryType category);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("""
+    update UserCard uc
+    set uc.isBookmarked =
+        case when uc.isBookmarked = true then false else true end
+    where uc.user.id = :userId and uc.card.id = :cardId
+""")
+    int toggleBookmark(@Param("userId") Long userId, @Param("cardId") Long cardId);
+
+    @Query("""
+        select uc.isBookmarked
+        from UserCard uc
+        where uc.user.id = :userId and uc.card.id = :cardId
+    """)
+    Optional<Boolean> findBookmark(@Param("userId") Long userId, @Param("cardId") Long cardId);
+
 
     // 유저가 학습한 전체 카드 수
     int countByUser_IdAndQuizResult(Long userId, QuizResult quizResult);
