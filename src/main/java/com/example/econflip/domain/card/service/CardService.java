@@ -219,19 +219,16 @@ public class CardService {
 
     @Transactional
     public CardResDTO.StudyComplete completeTodayStudy(User user) {
-
-        if(user.getIsLearned()) {
-            // TODO : 예외처리
+        if(user.getIsLearned()) { // 이미 학습 완료된 상태 예외처리
+            throw new CardException(CardErrorCode.STUDY_ALREADY_FINISHED);
         }
 
         // 오늘의 user_card 조회
         LocalDateTime start = LocalDate.now().atStartOfDay();
         LocalDateTime end = start.plusDays(1);
-
-        // 오늘 학습한 카드 리스트
         List<UserCard> todayUserCards = userCardRepository.findByUserIdAndCreatedAtBetween(user.getId(), start, end);
-        if (todayUserCards.isEmpty()) {
-            // TODO : 예외처리
+        if (todayUserCards.isEmpty()) { // 오늘 완료한 학습카드가 존재하지 않음
+            throw new CardException(CardErrorCode.TODAY_USERCARD_NOT_FOUND);
         }
 
         // 학습 완료 여부 검증 처리
@@ -239,10 +236,10 @@ public class CardService {
         boolean hasUnsolvedQuiz = todayUserCards.stream()
                 .anyMatch(userCard -> userCard.getQuizResult() == QuizResult.UNSEEN);
 
-        if (hasUnconfirmedCard) {
+        if (hasUnconfirmedCard) { // 학습 완료 상태가 아닌 카드 존재 예외처리
             throw new CardException(CardErrorCode.STUDY_CARD_NOT_FINISHED);
         }
-        if (hasUnsolvedQuiz) {
+        if (hasUnsolvedQuiz) { // 아직 풀지 않은 퀴즈 존재 예외처리
             throw new CardException(CardErrorCode.STUDY_QUIZ_NOT_FINISHED);
         }
 
