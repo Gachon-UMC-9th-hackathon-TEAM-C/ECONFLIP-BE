@@ -148,4 +148,15 @@ public interface UserCardRepository extends JpaRepository<UserCard, Long> {
     """)
     long countConfirmedCardsByUserIdAndCategory(@Param("userId") Long userId,
                                                 @Param("category") CategoryType category);
+
+    @Query("""
+    select count(uc)
+    from UserCard uc
+    where uc.user.id = :userId
+    and (uc.quizResult = :quizResult
+    or uc.isBookmarked = :b)
+""")
+    int countReviewRequiredCardsOrIsBookmarked(@Param("userId") Long userId,
+                                               @Param("quizResult") QuizResult quizResult,
+                                               @Param("b") boolean b);
 }
