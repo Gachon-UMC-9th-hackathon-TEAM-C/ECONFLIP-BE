@@ -62,7 +62,6 @@ public class BadgeService {
         return UserResDTO.BadgeInfo.builder()
                 .badgeId(badge.getId())
                 .title(badge.getTitle())
-                .comment(badge.getComment())
                 .build();
     }
 
