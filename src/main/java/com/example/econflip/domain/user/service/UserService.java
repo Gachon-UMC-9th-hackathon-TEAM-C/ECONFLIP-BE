@@ -61,7 +61,7 @@ public class UserService {
         int quizCompletedCardCount = getTodayQuizCompletedCardCount(userId);
         int reviewRequiredCardCount = getReviewRequiredCardCount(userId);
 
-        validateStreak(userId);
+        validateStreak(user);
         UserResDTO.BadgeInfo earnedBadge = badgeService.giveStreakBadge(userId, user.getStreak());
 
         List<UserResDTO.CategoryCount> recCategory = getRecommendedCategories(userId);
@@ -110,10 +110,7 @@ public class UserService {
         touchSelectedBadgesOrThrow(userId, normalizedIds);
     }
     // streak 초기화
-    private void validateStreak(Long userId){
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
-
+    private void validateStreak(User user){
         LocalDate lastStudyDate = user.getLastStudyDate();
         LocalDate today = LocalDate.now();
 
