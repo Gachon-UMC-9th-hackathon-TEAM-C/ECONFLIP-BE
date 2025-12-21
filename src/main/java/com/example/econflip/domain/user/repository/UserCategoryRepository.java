@@ -10,5 +10,5 @@ import java.util.Optional;
 public interface UserCategoryRepository extends JpaRepository<UserCategory, Long> {
 
     // 유저가 선택한 주제들에 대해 주제별 학습 진행도(pointer)를 한 번에 조회
-    Optional<List<UserCategory>> findByUserIdAndCategoryIn(Long userId, List<CategoryType> categories);
+    List<UserCategory> findByUserIdAndCategoryIn(Long userId, List<CategoryType> categories);
 }
