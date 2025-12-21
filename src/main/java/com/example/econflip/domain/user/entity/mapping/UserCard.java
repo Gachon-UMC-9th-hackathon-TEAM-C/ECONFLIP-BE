@@ -7,12 +7,22 @@ import com.example.econflip.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
+
 @Entity
 @Builder
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Table(name = "user_card")
+@Table(
+        name = "user_card",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_user_card_date",
+                        columnNames = {"user_id", "card_id", "study_date"}
+                )
+        }
+)
 public class UserCard extends BaseEntity {
 
     @Id
@@ -39,6 +49,9 @@ public class UserCard extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "card_id")
     private Card card;
+
+    @Column(name = "study_date", nullable = false)
+    private LocalDate studyDate;
 
     public void confirm() {
         this.isConfirmed = true;

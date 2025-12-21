@@ -66,6 +66,7 @@ public class CardService {
 
         // 오늘 이미 생성된 카드 ID 목록 추출 (중복 방지용)
         Set<Long> existingCardIds = todayUserCards.stream()
+                .filter(userCard -> userCard.getCard() != null)
                 .map(userCard -> userCard.getCard().getId())
                 .collect(Collectors.toSet());
 
@@ -76,6 +77,9 @@ public class CardService {
         if (isNewStudy) {
             // 학습분량, 주제개수를 고려해 주제별 카드 개수 분배
             int categoryCount = categories.size();
+            if (categoryCount == 0) {
+                throw new CardException(CardErrorCode.CATEGORY_NOT_FOUND);
+            }
             int baseCount = user.getDailyStudy() / categoryCount;
             int remain = user.getDailyStudy() % categoryCount; // 균등 분배 후 남는 카드 수
 
@@ -129,6 +133,7 @@ public class CardService {
                 int endIndex = Math.min(startIndex + needCount, cardList.size());
 
                 // user_card 생성 (중복 체크)
+                LocalDate today = LocalDate.now();
                 for (int k = startIndex; k < endIndex; k++) {
                     Card card = cardList.get(k);
                     // 오늘 이미 생성된 카드가 아닌 경우에만 생성
@@ -141,6 +146,7 @@ public class CardService {
                                         .isBookmarked(false)
                                         .dontKnow(false)
                                         .quizResult(QuizResult.UNSEEN)
+                                        .studyDate(today)  // 학습 날짜 설정
                                         .build()
                         );
                         existingCardIds.add(card.getId()); // 생성한 카드 ID 추가
@@ -166,6 +172,18 @@ public class CardService {
         // 아직 학습하지 않은 카드들로 학습 이어서 진행
         for(UserCard userCard : remainingCards) {
             Card card = userCard.getCard();
+
+            // card null 체크
+            if (card == null) {
+                continue; // 카드가 삭제된 경우 건너뛰기
+            }
+
+            // 필수 필드 null 체크
+            if (card.getCategory() == null || card.getTerm() == null ||
+                    card.getDescript() == null || card.getExample() == null ||
+                    card.getTip() == null) {
+                continue; // 필수 필드가 없는 경우 건너뛰기
+            }
 
             // 카드 DTO
             List<Card> cardList = cardRepository.findByCategoryOrderByIdAsc(card.getCategory());
@@ -193,10 +211,16 @@ public class CardService {
             );
             choices.addAll(wrongTerms);
             Collections.shuffle(choices);
+
+            String quizQuestion = pickRandomQuiz(card);
+            if (quizQuestion == null) {
+                continue; // 퀴즈 문제가 없는 경우 건너뛰기
+            }
+
             quizzes.add(
                     CardResDTO.QuizQuestion.builder()
                             .cardId(card.getId())
-                            .question(pickRandomQuiz(card))
+                            .question(quizQuestion)
                             .choices(choices.stream().map(term ->
                                     CardResDTO.QuizChoice.builder()
                                             .term(term)
@@ -236,8 +260,18 @@ public class CardService {
 
         Card card = userCard.getCard();
 
+        // card null 체크
+        if (card == null) {
+            throw new CardException(CardErrorCode.CARD_NOT_FOUND);
+        }
+
         // null 체크
         if(answer == null || answer.selectedTerm() == null) {
+            throw new CardException(CardErrorCode.CARD_NOT_FOUND);
+        }
+
+        // card 필드 null 체크
+        if (card.getTerm() == null || card.getDescript() == null) {
             throw new CardException(CardErrorCode.CARD_NOT_FOUND);
         }
 
@@ -285,11 +319,16 @@ public class CardService {
         int correctCount = 0;
 
         for (UserCard userCard : todayUserCards) {
+            Card card = userCard.getCard();
+            if (card == null || card.getTerm() == null) {
+                continue; // 카드가 삭제되었거나 필수 필드가 없는 경우 건너뛰기
+            }
+
             if (userCard.getQuizResult() == QuizResult.CORRECT) {
                 correctCount++;
-                correctTerms.add(userCard.getCard().getTerm());
+                correctTerms.add(card.getTerm());
             } else if (userCard.getQuizResult() == QuizResult.WRONG) {
-                wrongTerms.add(userCard.getCard().getTerm());
+                wrongTerms.add(card.getTerm());
             }
         }
 
@@ -303,20 +342,25 @@ public class CardService {
         // 오늘 학습한 카드들을 카테고리별로 그룹화
         Map<CategoryType, Long> learnedCountByCategory = todayUserCards.stream()
                 .filter(UserCard::isConfirmed)
+                .filter(userCard -> userCard.getCard() != null && userCard.getCard().getCategory() != null)
                 .collect(Collectors.groupingBy(userCard -> userCard.getCard().getCategory(),
                         Collectors.counting()));
 
         // 해당 카테고리의 UserCategory 조회
-        List<UserCategory> userCategories = userCategoryRepository.findByUserIdAndCategoryIn(user.getId(),
-                new ArrayList<>(learnedCountByCategory.keySet()));
+        if (!learnedCountByCategory.isEmpty()) {
+            List<UserCategory> userCategories = userCategoryRepository.findByUserIdAndCategoryIn(user.getId(),
+                    new ArrayList<>(learnedCountByCategory.keySet()));
 
-        // 카테고리별 pointer 업데이트
-        for (UserCategory userCategory : userCategories) {
-            CategoryType category = userCategory.getCategory();
-            int currentPointer = userCategory.getPointer();
-            long learnedCount = learnedCountByCategory.get(category);
+            // 카테고리별 pointer 업데이트
+            for (UserCategory userCategory : userCategories) {
+                CategoryType category = userCategory.getCategory();
+                Long learnedCount = learnedCountByCategory.get(category);
 
-            userCategory.updatePointer(currentPointer + (int) learnedCount);
+                if (learnedCount != null) {
+                    int currentPointer = userCategory.getPointer();
+                    userCategory.updatePointer(currentPointer + learnedCount.intValue());
+                }
+            }
         }
         // 획득 가능한 뱃지 리스트 확인 및 저장
         // 오늘의 총 퀴즈 개수 (퀴즈를 푼 카드 수)
@@ -351,7 +395,8 @@ public class CardService {
         // 같은 카테고리 카드들에서 용어(term)만 추출
         for (int i = 0; i < categoryCards.size(); i++) {
             Card card = categoryCards.get(i);
-            if (!card.getTerm().equals(currentTerm)) {
+            if (card != null && card.getTerm() != null &&
+                    !card.getTerm().equals(currentTerm)) {
                 terms.add(card.getTerm());
             }
         }
@@ -371,8 +416,29 @@ public class CardService {
 
     // 두 개 타입의 퀴즈 문제(quiz_fill_blank, quiz_case) 중 랜덤하게 한개 선택
     private String pickRandomQuiz(Card card) {
+        if (card == null) {
+            return null;
+        }
+
+        String quizFillBlank = card.getQuizFillBlank();
+        String quizCase = card.getQuizCase();
+
+        // 둘 다 null이면 null 반환
+        if (quizFillBlank == null && quizCase == null) {
+            return null;
+        }
+
+        // 하나만 null이면 null이 아닌 것 반환
+        if (quizFillBlank == null) {
+            return quizCase;
+        }
+        if (quizCase == null) {
+            return quizFillBlank;
+        }
+
+        // 둘 다 있으면 랜덤 선택
         return ThreadLocalRandom.current().nextBoolean()
-                ? card.getQuizFillBlank()
-                : card.getQuizCase();
+                ? quizFillBlank
+                : quizCase;
     }
 }
