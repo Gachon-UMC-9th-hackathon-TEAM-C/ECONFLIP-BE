@@ -19,5 +19,15 @@ public interface ReviewPageControllerDocs {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "실패")
     })
-    ApiResponse<UserCardResDTO.reviewPage> reviewPage(@AuthenticationPrincipal(expression = "user") User user);
+    ApiResponse<UserCardResDTO.reviewPage> reviewPage(User user);
+
+    // api/review/complete
+    @Operation(
+            summary = "복습 완료 처리"
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "실패")
+    })
+    void completeReview(User user);
 }

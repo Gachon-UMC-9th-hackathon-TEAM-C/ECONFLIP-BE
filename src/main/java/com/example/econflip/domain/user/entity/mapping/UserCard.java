@@ -51,4 +51,10 @@ public class UserCard extends BaseEntity {
     public void updateQuizResult(QuizResult result) {
         this.quizResult = result;
     }
+
+    public void updateReviewComplete() {
+        this.dontKnow = false;
+        this.quizResult = QuizResult.REVIEW_COMPLETE;
+    }
+
 }

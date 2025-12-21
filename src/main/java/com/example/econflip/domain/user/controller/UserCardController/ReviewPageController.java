@@ -8,6 +8,7 @@ import com.example.econflip.global.apiPayload.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -19,9 +20,16 @@ public class ReviewPageController implements ReviewPageControllerDocs{
     public ApiResponse<UserCardResDTO.reviewPage> reviewPage(
             @AuthenticationPrincipal(expression = "user") User user
     ){
-        UserCardResDTO.reviewPage result = userCardService.getReviewPage(user.getId());
+        return ApiResponse.onSuccess(
+                UserSuccessCode.REVIEW_PAGE_OK,
+                userCardService.getReviewPage(user.getId()));
+    }
 
-        UserSuccessCode code = UserSuccessCode.REVIEW_PAGE_OK;
-        return ApiResponse.onSuccess(code, result);
+    // 복습 완료 처리
+    @PostMapping("/api/review/complete")
+    public void completeReview(
+            @AuthenticationPrincipal(expression = "user") User user
+    ) {
+        userCardService.completeReview(user.getId());
     }
 }
