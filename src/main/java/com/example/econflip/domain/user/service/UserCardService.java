@@ -31,7 +31,7 @@ public class UserCardService {
         int totalReviewCount = reviewCardList.size();
 
         UserCardResDTO.reviewPage reviewPage
-            = toReviewPageDto(totalReviewCount, reviewCardList, totalReviewCount);
+                = toReviewPageDto(totalReviewCount, reviewCardList, totalReviewCount);
         // estimatedDurationMinutes 계산 기준 : 용어 1개당 퀴즈 1개 & 퀴즈 1개당 1분
 
         return reviewPage;
@@ -43,8 +43,9 @@ public class UserCardService {
             throw new UserException(UserErrorCode.NOT_FOUND);
         }
 
-        List<UserCard> userCardList = userCardRepository.findByUserIdAndIsConfirmed(userId, true);
-        userCardList.forEach(UserCard::updateReviewComplete);
+        // 복습이 필요한 카드들만 조회 (북마크, 오답, 모르겠어요)
+        List<UserCard> reviewRequiredCards = userCardRepository.findReviewRequiredCardsByUserId(userId);
+        reviewRequiredCards.forEach(UserCard::updateReviewComplete);
     }
 
     public UserCardResDTO.libraryPage getEntireLibraryPage(Long userId){

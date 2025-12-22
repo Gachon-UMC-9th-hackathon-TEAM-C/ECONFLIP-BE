@@ -36,6 +36,7 @@ public interface UserCardRepository extends JpaRepository<UserCard, Long> {
     List<UserCard> findByUserIdAndIsConfirmed(Long userId, boolean isConfirmed);
 
     List<UserCard> findByUserIdAndCreatedAtBetween(Long userId, LocalDateTime start, LocalDateTime end);
+
     @Query("""
         select uc
         from UserCard uc
@@ -137,6 +138,18 @@ public interface UserCardRepository extends JpaRepository<UserCard, Long> {
         or uc.dontKnow = true)
 """)
     int countReviewRequiredCards(@Param("userId") Long userId, @Param("wrong") QuizResult wrong);
+
+    // 복습 완료 처리를 위한 복습 대상 카드 조회
+    @Query("""
+    select uc
+    from UserCard uc
+    where uc.user.id = :userId
+      and (
+           uc.quizResult = com.example.econflip.domain.user.enums.QuizResult.WRONG
+        or uc.dontKnow = true
+      )
+""")
+    List<UserCard> findReviewRequiredCardsByUserId(@Param("userId") Long userId);
 
     @Query("""
     select new com.example.econflip.domain.user.dto.UserResDTO$CategoryCount(c.category, count(uc))
