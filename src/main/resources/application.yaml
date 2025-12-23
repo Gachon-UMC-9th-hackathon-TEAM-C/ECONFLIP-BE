@@ -14,4 +14,4 @@ spring:
 
 app:
   frontend:
-    url: https://localhost:5173
+    url: https://econflip.vercel.app

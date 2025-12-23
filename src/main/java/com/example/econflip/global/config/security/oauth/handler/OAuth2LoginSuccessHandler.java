@@ -22,7 +22,7 @@ public class OAuth2LoginSuccessHandler
 
     private final AuthService authService;
 
-    @Value("${app.frontend.url:https://localhost:5173}")
+    @Value("${app.frontend.url}")
     private String frontendUrl;
 
     @Override
